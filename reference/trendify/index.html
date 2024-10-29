@@ -1,177 +1,108 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="auto">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        <meta name="author" content="Talbot Knighton">
-        <link rel="canonical" href="https://talbotknighton.github.io/trendify/reference/trendify/">
-        <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>trendify - Trendify</title>
-        <link href="../../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../../css/fontawesome.min.css" rel="stylesheet">
-        <link href="../../css/brands.min.css" rel="stylesheet">
-        <link href="../../css/solid.min.css" rel="stylesheet">
-        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
-        <link href="../../css/base.css" rel="stylesheet">
-        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" disabled>
-        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
-        <link href="../../assets/_mkdocstrings.css" rel="stylesheet">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Talbot Knighton" /><link rel="canonical" href="https://talbotknighton.github.io/trendify/reference/trendify/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>trendify - Trendify</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "trendify";
+        var mkdocs_page_input_path = "reference/trendify/index.md";
+        var mkdocs_page_url = "/trendify/reference/trendify/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/django.min.js"></script>
-        <script>hljs.highlightAll();</script> 
-    </head>
+      <script>hljs.highlightAll();</script> 
+</head>
 
-    <body>
-        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="../..">Trendify</a>
-                <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+<body class="wy-body-for-nav" role="document">
 
-                <!-- Expanded navigation -->
-                <div id="navbar-collapse" class="navbar-collapse collapse">
-                        <!-- Main navigation -->
-                        <ul class="nav navbar-nav">
-                            <li class="nav-item">
-                                <a href="../.." class="nav-link">Home</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Code Reference</a>
-                                <ul class="dropdown-menu">
-                                    
-  <li class="dropdown-submenu">
-    <a href="#" class="dropdown-item">grafana_api</a>
-    <ul class="dropdown-menu">
-            
-<li>
-    <a href="../grafana_api/dashboard/" class="dropdown-item">dashboard</a>
-</li>
-            
-  <li class="dropdown-submenu">
-    <a href="#" class="dropdown-item">panels</a>
-    <ul class="dropdown-menu">
-            
-<li>
-    <a href="../grafana_api/panels/xy_chart/" class="dropdown-item">xy_chart</a>
-</li>
-    </ul>
-  </li>
-            
-  <li class="dropdown-submenu">
-    <a href="#" class="dropdown-item">transformations</a>
-    <ul class="dropdown-menu">
-            
-<li>
-    <a href="../grafana_api/transformations/transformations/" class="dropdown-item">transformations</a>
-</li>
-    </ul>
-  </li>
-    </ul>
-  </li>
-                                    
-  <li class="dropdown-submenu">
-    <a href="#" class="dropdown-item">trendify</a>
-    <ul class="dropdown-menu">
-            
-<li>
-    <a href="cli/" class="dropdown-item">cli</a>
-</li>
-            
-<li>
-    <a href="products/" class="dropdown-item">products</a>
-</li>
-            
-<li>
-    <a href="server/" class="dropdown-item">server</a>
-</li>
-    </ul>
-  </li>
-                                </ul>
-                            </li>
-                        </ul>
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Trendify
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
 
-                    <ul class="nav navbar-nav ms-md-auto">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
-                                <i class="fa fa-search"></i> Search
-                            </a>
-                        </li>
-                            <li class="nav-item">
-                                <a rel="prev" href="../grafana_api/transformations/transformations/" class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" href="cli/" class="nav-link">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="https://github.com/TalbotKnighton/trendify/edit/master/docs/src/trendify/__init__.py" class="nav-link"><i class="fa-brands fa-github"></i> Edit on GitHub</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                              <button id="theme-menu" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme" class="nav-link dropdown-toggle">
-                                <i class="fa-solid fa-circle-half-stroke fa-fw"></i>
-                                <span class="d-lg-none ms-2">Toggle theme</span>
-                              </button>
-                              <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                  <button class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
-                                    <i class="fa-solid fa-sun fa-fw"></i>
-                                    <span class="ms-2">Light</span>
-                                    <i class="fa-solid fa-check ms-auto d-none"></i>
-                                  </button>
-                                </li>
-                                <li>
-                                  <button class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
-                                    <i class="fa-solid fa-moon fa-fw"></i>
-                                    <span class="ms-2">Dark</span>
-                                    <i class="fa-solid fa-check ms-auto d-none"></i>
-                                  </button>
-                                </li>
-                                <li>
-                                  <button class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="true">
-                                    <i class="fa-solid fa-circle-half-stroke fa-fw"></i>
-                                    <span class="ms-2">Auto</span>
-                                    <i class="fa-solid fa-check ms-auto"></i>
-                                  </button>
-                                </li>
-                              </ul>
-                            </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <script src="../../js/darkmode.js"></script>
-
-        <div class="container">
-            <div class="row">
-                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
-            <span class="fa fa-angle-down"></span>
-        </button>
-    </div>
-
-    
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
-        <ul class="nav flex-column">
-            
-            <li class="nav-item" data-bs-level="2"><a href="#trendify" class="nav-link">trendify</a>
-              <ul class="nav flex-column">
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
               </ul>
-            </li>
-        </ul>
+              <p class="caption"><span class="caption-text">Code Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../grafana_api/">grafana_api</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../grafana_api/dashboard/">dashboard</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../grafana_api/panels/">panels</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../grafana_api/panels/xy_chart/">xy_chart</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../grafana_api/transformations/">transformations</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../grafana_api/transformations/transformations/">transformations</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">trendify</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="cli/">cli</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="products/">products</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="server/">server</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
     </div>
-</div></div>
-                    <div class="col-md-9" role="main">
+    </nav>
 
-<div class="doc doc-object doc-module">
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Trendify</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Code Reference</li>
+      <li class="breadcrumb-item active">trendify</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/TalbotKnighton/trendify/edit/master/docs/src/trendify/__init__.py" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
 
 
 
@@ -298,30 +229,52 @@
 Requires that the label and title fields are identical for all format objects in the list.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>format2ds</code></b>
-              (<code><span title="typing.Iterable">Iterable</span>[<a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a>]</code>)
-          –
-          <div class="doc-md-description">
-            <p>Iterable of <code>Format2D</code> objects.</p>
-          </div>
-        </li>
-    </ul>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>format2ds</code></b>
+                  (<code><span title="typing.Iterable">Iterable</span>[<a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Iterable of <code>Format2D</code> objects.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>
-          –
-          <div class="doc-md-description">
-            <p>Single format object from list of objects.</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>
+              –
+              <div class="doc-md-description">
+                <p>Single format object from list of objects.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -549,17 +502,28 @@ Requires that the label and title fields are identical for all format objects in
 
 
 
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code>dict</code>
-          –
-          <div class="doc-md-description">
-            <p>dictionary of <code>kwargs</code> for [matplotlib scatter][matplotlib.axes.Axes.scatter]</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>dict</code>
+              –
+              <div class="doc-md-description">
+                <p>dictionary of <code>kwargs</code> for [matplotlib scatter][matplotlib.axes.Axes.scatter]</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -591,58 +555,69 @@ Requires that the label and title fields are identical for all format objects in
         <p>Label and style data for generating histogram bars</p>
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramStyle.color">color</span></code></b>
-              (<code>str</code>)
-          –
-          <div class="doc-md-description">
-            <p>Color of bars</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramStyle.label">label</span></code></b>
-              (<code>str | None</code>)
-          –
-          <div class="doc-md-description">
-            <p>Legend entry</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramStyle.histtype">histtype</span></code></b>
-              (<code>str</code>)
-          –
-          <div class="doc-md-description">
-            <p>Histogram type corresponding to matplotlib argument of same name</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramStyle.alpha_edge">alpha_edge</span></code></b>
-              (<code>float</code>)
-          –
-          <div class="doc-md-description">
-            <p>Opacity of bar edge</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramStyle.alpha_face">alpha_face</span></code></b>
-              (<code>float</code>)
-          –
-          <div class="doc-md-description">
-            <p>Opacity of bar face</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramStyle.linewidth">linewidth</span></code></b>
-              (<code>float</code>)
-          –
-          <div class="doc-md-description">
-            <p>Line width of bar outline</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>color</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>Color of bars</p>
+              </div>
+            </li>
+            <li>
+              <b><code>label</code></b>
+                  (<code>str | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>Legend entry</p>
+              </div>
+            </li>
+            <li>
+              <b><code>histtype</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>Histogram type corresponding to matplotlib argument of same name</p>
+              </div>
+            </li>
+            <li>
+              <b><code>alpha_edge</code></b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>Opacity of bar edge</p>
+              </div>
+            </li>
+            <li>
+              <b><code>alpha_face</code></b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>Opacity of bar face</p>
+              </div>
+            </li>
+            <li>
+              <b><code>linewidth</code></b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>Line width of bar outline</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 
 
@@ -674,17 +649,28 @@ Requires that the label and title fields are identical for all format objects in
 
 
 
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code>dict</code>
-          –
-          <div class="doc-md-description">
-            <p>kwargs for matplotlib <code>hist</code> method</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>dict</code>
+              –
+              <div class="doc-md-description">
+                <p>kwargs for matplotlib <code>hist</code> method</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -717,45 +703,56 @@ Requires that the label and title fields are identical for all format objects in
 Use the <a class="autorefs autorefs-internal" href="products/#trendify.products.Trace2D.from_xy">Trace2D.from_xy</a> constructor.</p>
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.Trace2D.product_type">product_type</span></code></b>
-              (<code><span title="typing.Literal">Literal</span>[&#39;Trace2D&#39;]</code>)
-          –
-          <div class="doc-md-description">
-            <p>Name of class type to be used as a constructor.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.Trace2D.points">points</span></code></b>
-              (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="trendify.products.Point2D" href="products/#trendify.products.Point2D">Point2D</a>]</code>)
-          –
-          <div class="doc-md-description">
-            <p>List of points.  Usually the points would have null values 
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>product_type</code></b>
+                  (<code><span title="typing.Literal">Literal</span>[&#39;Trace2D&#39;]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Name of class type to be used as a constructor.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>points</code></b>
+                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="trendify.products.Point2D" href="products/#trendify.products.Point2D">Point2D</a>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>List of points.  Usually the points would have null values 
 for <code>marker</code> and <code>format2d</code> fields to save space.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.Trace2D.pen">pen</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Style and label information for drawing to matplotlib axes.
+              </div>
+            </li>
+            <li>
+              <b><code>pen</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Style and label information for drawing to matplotlib axes.
 Only the label information is used in Grafana.
 Eventually style information will be used in grafana.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.Trace2D.format2d">format2d</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Formatting information for matplotlib figure.</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+            <li>
+              <b><code>format2d</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Formatting information for matplotlib figure.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 
 
@@ -791,17 +788,28 @@ Eventually style information will be used in grafana.</p>
         <p>Returns an array of x values from <code>self.points</code></p>
 
 
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><span title="numpydantic.NDArray">NDArray</span>[<span title="numpydantic.Shape">Shape</span>[&#39;*&#39;], float]</code>
-          –
-          <div class="doc-md-description">
-            <p>array of x values from <code>self.points</code></p>
-          </div>
-        </li>
-    </ul>
-        <p>'</p>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="numpydantic.NDArray">NDArray</span>[<span title="numpydantic.Shape">Shape</span>[&#39;*&#39;], float]</code>
+              –
+              <div class="doc-md-description">
+                <p>array of x values from <code>self.points</code></p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>        <p>'</p>
     </div>
 
 </div>
@@ -825,17 +833,28 @@ Eventually style information will be used in grafana.</p>
         <p>Returns an array of y values from <code>self.points</code></p>
 
 
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><span title="numpydantic.NDArray">NDArray</span>[<span title="numpydantic.Shape">Shape</span>[&#39;*&#39;], float]</code>
-          –
-          <div class="doc-md-description">
-            <p>array of y values from <code>self.points</code></p>
-          </div>
-        </li>
-    </ul>
-    </div>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="numpydantic.NDArray">NDArray</span>[<span title="numpydantic.Shape">Shape</span>[&#39;*&#39;], float]</code>
+              –
+              <div class="doc-md-description">
+                <p>array of y values from <code>self.points</code></p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>    </div>
 
 </div>
 
@@ -899,20 +918,31 @@ I thought this would  be useful for grafana before I learned better methods for 
 It still may end up being useful if my plotting method changes.  Keeping for potential future use case.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>marker_symbol</code></b>
-              (<code>str</code>, default:
-                  <code>&#39;.&#39;</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>marker_symbol</code></b>
+                  (<code>str</code>, default:
+                      <code>&#39;.&#39;</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Valid matplotlib marker symbol</p>
-          </div>
-        </li>
-    </ul>
-
+              –
+              <div class="doc-md-description">
+                <p>Valid matplotlib marker symbol</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -935,54 +965,65 @@ It still may end up being useful if my plotting method changes.  Keeping for pot
         <p>Creates a list of <a class="autorefs autorefs-internal" href="products/#trendify.products.Point2D">Point2D</a>s from xy data and returns a new <a class="autorefs autorefs-internal" href="products/#trendify.products.Trace2D">Trace2D</a> product.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>tags</code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Hashable tags used to sort data products</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>x</code></b>
-              (<code><span title="numpydantic.NDArray">NDArray</span>[<span title="numpydantic.Shape">Shape</span>[&#39;*&#39;], float]</code>)
-          –
-          <div class="doc-md-description">
-            <p>x values</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>y</code></b>
-              (<code><span title="numpydantic.NDArray">NDArray</span>[<span title="numpydantic.Shape">Shape</span>[&#39;*&#39;], float]</code>)
-          –
-          <div class="doc-md-description">
-            <p>y values</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>pen</code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a></code>, default:
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a>()</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>tags</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Hashable tags used to sort data products</p>
+              </div>
+            </li>
+            <li>
+              <b><code>x</code></b>
+                  (<code><span title="numpydantic.NDArray">NDArray</span>[<span title="numpydantic.Shape">Shape</span>[&#39;*&#39;], float]</code>)
+              –
+              <div class="doc-md-description">
+                <p>x values</p>
+              </div>
+            </li>
+            <li>
+              <b><code>y</code></b>
+                  (<code><span title="numpydantic.NDArray">NDArray</span>[<span title="numpydantic.Shape">Shape</span>[&#39;*&#39;], float]</code>)
+              –
+              <div class="doc-md-description">
+                <p>y values</p>
+              </div>
+            </li>
+            <li>
+              <b><code>pen</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a></code>, default:
+                      <code><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a>()</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Style and label for trace</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>format2d</code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>, default:
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a>()</code>
+              –
+              <div class="doc-md-description">
+                <p>Style and label for trace</p>
+              </div>
+            </li>
+            <li>
+              <b><code>format2d</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>, default:
+                      <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a>()</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>format to apply to matplotlib</p>
-          </div>
-        </li>
-    </ul>
-
+              –
+              <div class="doc-md-description">
+                <p>format to apply to matplotlib</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1001,18 +1042,29 @@ It still may end up being useful if my plotting method changes.  Keeping for pot
         <p>Plots xy data from trace to a matplotlib axes object.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>ax</code></b>
-              (<code><span title="matplotlib.pyplot.Axes">Axes</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>axes to which xy data should be plotted</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>ax</code></b>
+                  (<code><span title="matplotlib.pyplot.Axes">Axes</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>axes to which xy data should be plotted</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1043,45 +1095,56 @@ It still may end up being useful if my plotting method changes.  Keeping for pot
 
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.Point2D.product_type">product_type</span></code></b>
-              (<code><span title="typing.Literal">Literal</span>[&#39;Trace2D&#39;]</code>)
-          –
-          <div class="doc-md-description">
-            <p>Name of class type to be used as a constructor.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.Point2D.points">points</span></code></b>
-              (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="trendify.products.Point2D" href="products/#trendify.products.Point2D">Point2D</a>]</code>)
-          –
-          <div class="doc-md-description">
-            <p>List of points.  Usually the points would have null values 
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>product_type</code></b>
+                  (<code><span title="typing.Literal">Literal</span>[&#39;Trace2D&#39;]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Name of class type to be used as a constructor.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>points</code></b>
+                  (<code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="trendify.products.Point2D" href="products/#trendify.products.Point2D">Point2D</a>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>List of points.  Usually the points would have null values 
 for <code>marker</code> and <code>format2d</code> fields to save space.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.Point2D.marker">marker</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Marker" href="products/#trendify.products.Marker">Marker</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Style and label information for scattering points to matplotlib axes.
+              </div>
+            </li>
+            <li>
+              <b><code>marker</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Marker" href="products/#trendify.products.Marker">Marker</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Style and label information for scattering points to matplotlib axes.
 Only the label information is used in Grafana.
 Eventually style information will be used in grafana.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.Point2D.format2d">format2d</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Formatting information for matplotlib figure.</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+            <li>
+              <b><code>format2d</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Formatting information for matplotlib figure.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 
 
@@ -1169,50 +1232,61 @@ Eventually style information will be used in grafana.</p>
         <p>Use this class to specify a value to be collected into a matplotlib histogram.</p>
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramEntry.product_type">product_type</span></code></b>
-              (<code><span title="typing.Literal">Literal</span>[&#39;Trace2D&#39;]</code>)
-          –
-          <div class="doc-md-description">
-            <p>Name of class type to be used as a constructor.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramEntry.value">value</span></code></b>
-              (<code>float | str</code>)
-          –
-          <div class="doc-md-description">
-            <p>Value to be binned</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramEntry.tags">tags</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Hashable tags used to sort data products</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramEntry.style">style</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.HistogramStyle" href="products/#trendify.products.HistogramStyle">HistogramStyle</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Style of histogram display</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.HistogramEntry.format2d">format2d</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Format to apply to single axis figure</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>product_type</code></b>
+                  (<code><span title="typing.Literal">Literal</span>[&#39;Trace2D&#39;]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Name of class type to be used as a constructor.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>value</code></b>
+                  (<code>float | str</code>)
+              –
+              <div class="doc-md-description">
+                <p>Value to be binned</p>
+              </div>
+            </li>
+            <li>
+              <b><code>tags</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Hashable tags used to sort data products</p>
+              </div>
+            </li>
+            <li>
+              <b><code>style</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.HistogramStyle" href="products/#trendify.products.HistogramStyle">HistogramStyle</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Style of histogram display</p>
+              </div>
+            </li>
+            <li>
+              <b><code>format2d</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Format to apply to single axis figure</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 
 
@@ -1299,50 +1373,61 @@ Eventually style information will be used in grafana.</p>
 
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.TableEntry.product_type">product_type</span></code></b>
-              (<code><span title="typing.Literal">Literal</span>[&#39;Trace2D&#39;]</code>)
-          –
-          <div class="doc-md-description">
-            <p>Name of class type to be used as a constructor.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.TableEntry.row">row</span></code></b>
-              (<code>float | str</code>)
-          –
-          <div class="doc-md-description">
-            <p>Value to be binned</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.TableEntry.col">col</span></code></b>
-              (<code>float | str</code>)
-          –
-          <div class="doc-md-description">
-            <p>Hashable tags used to sort data products</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.TableEntry.value">value</span></code></b>
-              (<code>float | str</code>)
-          –
-          <div class="doc-md-description">
-            <p>Style of histogram display</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.TableEntry.unit">unit</span></code></b>
-              (<code>str | None</code>)
-          –
-          <div class="doc-md-description">
-            <p>Format to apply to single axis figure</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>product_type</code></b>
+                  (<code><span title="typing.Literal">Literal</span>[&#39;Trace2D&#39;]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Name of class type to be used as a constructor.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>row</code></b>
+                  (<code>float | str</code>)
+              –
+              <div class="doc-md-description">
+                <p>Value to be binned</p>
+              </div>
+            </li>
+            <li>
+              <b><code>col</code></b>
+                  (<code>float | str</code>)
+              –
+              <div class="doc-md-description">
+                <p>Hashable tags used to sort data products</p>
+              </div>
+            </li>
+            <li>
+              <b><code>value</code></b>
+                  (<code>float | str</code>)
+              –
+              <div class="doc-md-description">
+                <p>Style of histogram display</p>
+              </div>
+            </li>
+            <li>
+              <b><code>unit</code></b>
+                  (<code>str | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>Format to apply to single axis figure</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 
 
@@ -1375,17 +1460,28 @@ Eventually style information will be used in grafana.</p>
         <p>Returns a dictionary of entries to be used in creating a table.</p>
 
 
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code>dict[str, str | float]</code>
-          –
-          <div class="doc-md-description">
-            <p>Dictionary of entries to be used in creating a melted [DataFrame][pandas.DataFrame]</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>dict[str, str | float]</code>
+              –
+              <div class="doc-md-description">
+                <p>Dictionary of entries to be used in creating a melted [DataFrame][pandas.DataFrame]</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1408,31 +1504,53 @@ Eventually style information will be used in grafana.</p>
         <p>Attempts to pivot melted row, col, value DataFrame into a wide form DataFrame</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>melted</code></b>
-              (<code><span title="pandas.DataFrame">DataFrame</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Melted data frame having columns named <code>'row'</code>, <code>'col'</code>, <code>'value'</code>.</p>
-          </div>
-        </li>
-    </ul>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>melted</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Melted data frame having columns named <code>'row'</code>, <code>'col'</code>, <code>'value'</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><span title="pandas.DataFrame">DataFrame</span> | None</code>
-          –
-          <div class="doc-md-description">
-            <p>pivoted DataFrame if pivot works else <code>None</code>. Pivot operation fails if 
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="pandas.DataFrame">DataFrame</span> | None</code>
+              –
+              <div class="doc-md-description">
+                <p>pivoted DataFrame if pivot works else <code>None</code>. Pivot operation fails if 
 row or column index pairs are repeated.</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1456,30 +1574,52 @@ row or column index pairs are repeated.</p>
 csv should have columns named <code>'row'</code>, <code>'col'</code>, and <code>'value'</code>.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>path</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>path to CSV file</p>
-          </div>
-        </li>
-    </ul>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>path</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>path to CSV file</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><span title="pandas.DataFrame">DataFrame</span> | None</code>
-          –
-          <div class="doc-md-description">
-            <p>Pivoted data frame or elese <code>None</code> if pivot operation fails.</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="pandas.DataFrame">DataFrame</span> | None</code>
+              –
+              <div class="doc-md-description">
+                <p>Pivoted data frame or elese <code>None</code> if pivot operation fails.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1512,18 +1652,29 @@ csv should have columns named <code>'row'</code>, <code>'col'</code>, and <code>
 <p>Use this class to serialize data products to JSON, de-serialized them from JSON, filter the products, etc.</p>
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.DataProductCollection.elements">elements</span></code></b>
-              (<code><span title="trendify.products.ProductList">ProductList</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>A list of data products.</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>elements</code></b>
+                  (<code><span title="trendify.products.ProductList">ProductList</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>A list of data products.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 
 
@@ -1560,32 +1711,54 @@ csv should have columns named <code>'row'</code>, <code>'col'</code>, and <code>
         <p>Returns a new instance containing all of the products provided in the <code>*products</code> argument.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>products</code></b>
-              (<code><span title="typing.Tuple">Tuple</span>[<span title="trendify.products.ProductList">ProductList</span>, ...]</code>, default:
-                  <code>()</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>products</code></b>
+                  (<code><span title="typing.Tuple">Tuple</span>[<span title="trendify.products.ProductList">ProductList</span>, ...]</code>, default:
+                      <code>()</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Lists of data products to combine into a collection</p>
-          </div>
-        </li>
-    </ul>
+              –
+              <div class="doc-md-description">
+                <p>Lists of data products to combine into a collection</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code>cls</code>
-          –
-          <div class="doc-md-description">
-            <p>A data product collection containing all of the provided products in the <code>*products</code> argument.</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>cls</code>
+              –
+              <div class="doc-md-description">
+                <p>A data product collection containing all of the provided products in the <code>*products</code> argument.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1604,32 +1777,54 @@ csv should have columns named <code>'row'</code>, <code>'col'</code>, and <code>
         <p>Gets the tags related to a given type of <code>DataProduct</code>.  Parent classes will match all child class types.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>data_product_type</code></b>
-              (<code><span title="typing.Type">Type</span>[<a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a>] | None</code>, default:
-                  <code>None</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>data_product_type</code></b>
+                  (<code><span title="typing.Type">Type</span>[<a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a>] | None</code>, default:
+                      <code>None</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>type for which you want to get the list of tags</p>
-          </div>
-        </li>
-    </ul>
+              –
+              <div class="doc-md-description">
+                <p>type for which you want to get the list of tags</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code>set</code>
-          –
-          <div class="doc-md-description">
-            <p>set of tags applying to the given <code>data_product_type</code>.</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>set</code>
+              –
+              <div class="doc-md-description">
+                <p>set of tags applying to the given <code>data_product_type</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1647,21 +1842,32 @@ csv should have columns named <code>'row'</code>, <code>'col'</code>, and <code>
 
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>products</code></b>
-              (<code><span title="typing.Tuple">Tuple</span>[<a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a> | <span title="trendify.products.ProductList">ProductList</span>, ...]</code>, default:
-                  <code>()</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>products</code></b>
+                  (<code><span title="typing.Tuple">Tuple</span>[<a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a> | <span title="trendify.products.ProductList">ProductList</span>, ...]</code>, default:
+                      <code>()</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Products or lists of products to be
+              –
+              <div class="doc-md-description">
+                <p>Products or lists of products to be
 appended to collection elements.</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1680,42 +1886,64 @@ appended to collection elements.</p>
         <p>Removes products matching <code>tag</code> and/or <code>object_type</code> from collection elements.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>tag</code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Tag" href="products/#trendify.products.Tag">Tag</a> | None</code>, default:
-                  <code>None</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>tag</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Tag" href="products/#trendify.products.Tag">Tag</a> | None</code>, default:
+                      <code>None</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Tag for which data products should be dropped</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>object_type</code></b>
-              (<code><span title="typing.Type">Type</span> | None</code>, default:
-                  <code>None</code>
+              –
+              <div class="doc-md-description">
+                <p>Tag for which data products should be dropped</p>
+              </div>
+            </li>
+            <li>
+              <b><code>object_type</code></b>
+                  (<code><span title="typing.Type">Type</span> | None</code>, default:
+                      <code>None</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Type of data product to drop</p>
-          </div>
-        </li>
-    </ul>
+              –
+              <div class="doc-md-description">
+                <p>Type of data product to drop</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a></code>
-          –
-          <div class="doc-md-description">
-            <p>A new collection from which matching elements have been dropped.</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a></code>
+              –
+              <div class="doc-md-description">
+                <p>A new collection from which matching elements have been dropped.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1735,42 +1963,64 @@ appended to collection elements.</p>
 Both <code>tag</code> and <code>object_type</code> default to <code>None</code> which matches all products.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>tag</code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Tag" href="products/#trendify.products.Tag">Tag</a> | None</code>, default:
-                  <code>None</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>tag</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Tag" href="products/#trendify.products.Tag">Tag</a> | None</code>, default:
+                      <code>None</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Tag of data products to be kept.  <code>None</code> matches all products.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>object_type</code></b>
-              (<code><span title="typing.Type">Type</span> | None</code>, default:
-                  <code>None</code>
+              –
+              <div class="doc-md-description">
+                <p>Tag of data products to be kept.  <code>None</code> matches all products.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>object_type</code></b>
+                  (<code><span title="typing.Type">Type</span> | None</code>, default:
+                      <code>None</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Type of data product to keep.  <code>None</code> matches all products.</p>
-          </div>
-        </li>
-    </ul>
+              –
+              <div class="doc-md-description">
+                <p>Type of data product to keep.  <code>None</code> matches all products.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a></code>
-          –
-          <div class="doc-md-description">
-            <p>A new collection containing matching elements.</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a></code>
+              –
+              <div class="doc-md-description">
+                <p>A new collection containing matching elements.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1793,34 +2043,56 @@ Both <code>tag</code> and <code>object_type</code> default to <code>None</code> 
         <p>Aggregates all of the products from multiple collections into a new larger collection.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>collections</code></b>
-              (<code><span title="typing.Tuple">Tuple</span>[<a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a>, ...]</code>, default:
-                  <code>()</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>collections</code></b>
+                  (<code><span title="typing.Tuple">Tuple</span>[<a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a>, ...]</code>, default:
+                      <code>()</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Data product collections
+              –
+              <div class="doc-md-description">
+                <p>Data product collections
 for which the products should be combined into a new collection.</p>
-          </div>
-        </li>
-    </ul>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><span title="typing.Type">Type</span>[<span title="typing.Self">Self</span>]</code>
-          –
-          <div class="doc-md-description">
-            <p>A new data product collection containing all products from
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.Type">Type</span>[<span title="typing.Self">Self</span>]</code>
+              –
+              <div class="doc-md-description">
+                <p>A new data product collection containing all products from
 the provided <code>*collections</code>.</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1845,44 +2117,66 @@ If recursive is set to <code>True</code>, the directories will be searched recur
 (this could lead to double counting if you pass in subdirectories of a parent).</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>dirs</code></b>
-              (<code><span title="typing.Tuple">Tuple</span>[<span title="pathlib.Path">Path</span>, ...]</code>, default:
-                  <code>()</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>dirs</code></b>
+                  (<code><span title="typing.Tuple">Tuple</span>[<span title="pathlib.Path">Path</span>, ...]</code>, default:
+                      <code>()</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Directories from which to load data product JSON files.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>recursive</code></b>
-              (<code>bool</code>, default:
-                  <code>False</code>
+              –
+              <div class="doc-md-description">
+                <p>Directories from which to load data product JSON files.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>recursive</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>whether or not to search each of the provided directories recursively for 
+              –
+              <div class="doc-md-description">
+                <p>whether or not to search each of the provided directories recursively for 
 data product json files.</p>
-          </div>
-        </li>
-    </ul>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><span title="typing.Type">Type</span>[<span title="typing.Self">Self</span>] | None</code>
-          –
-          <div class="doc-md-description">
-            <p>Data product collection if JSON files are found.<br />
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.Type">Type</span>[<span title="typing.Self">Self</span>] | None</code>
+              –
+              <div class="doc-md-description">
+                <p>Data product collection if JSON files are found.<br />
 Otherwise, returns None if no product JSON files were found.</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1908,27 +2202,38 @@ The nested directory structure is generated accordint to the data tags.
 Resulting product files are named according to the directory from which they were originally loaded.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>dirs_in</code></b>
-              (<code><span title="typing.List">List</span>[<span title="pathlib.Path">Path</span>]</code>)
-          –
-          <div class="doc-md-description">
-            <p>Directories from which the data product JSON files are to be loaded.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>dir_out</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Directory to which the sorted data products will be written into a 
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>dirs_in</code></b>
+                  (<code><span title="typing.List">List</span>[<span title="pathlib.Path">Path</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Directories from which the data product JSON files are to be loaded.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dir_out</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Directory to which the sorted data products will be written into a 
 nested folder structure generated according to the data tags.</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -1953,58 +2258,69 @@ This method should be called on a directory containing jsons for which the produ
 sorted.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>dir_in</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>dir_out</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>make_tables</code></b>
-              (<code>bool</code>)
-          –
-          <div class="doc-md-description">
-            
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>make_xy_plots</code></b>
-              (<code>bool</code>)
-          –
-          <div class="doc-md-description">
-            
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>make_histograms</code></b>
-              (<code>bool</code>)
-          –
-          <div class="doc-md-description">
-            
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>dpi</code></b>
-              (<code>int</code>)
-          –
-          <div class="doc-md-description">
-            
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>dir_in</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                
+              </div>
+            </li>
+            <li>
+              <b><code>dir_out</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                
+              </div>
+            </li>
+            <li>
+              <b><code>make_tables</code></b>
+                  (<code>bool</code>)
+              –
+              <div class="doc-md-description">
+                
+              </div>
+            </li>
+            <li>
+              <b><code>make_xy_plots</code></b>
+                  (<code>bool</code>)
+              –
+              <div class="doc-md-description">
+                
+              </div>
+            </li>
+            <li>
+              <b><code>make_histograms</code></b>
+                  (<code>bool</code>)
+              –
+              <div class="doc-md-description">
+                
+              </div>
+            </li>
+            <li>
+              <b><code>dpi</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -2029,26 +2345,37 @@ This method should be called on a directory containing jsons for which the produ
 sorted.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>dir_in</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Directory from which to read data products (should be sorted first)</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>panel_dir</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Where to put the panel information</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>dir_in</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Directory from which to read data products (should be sorted first)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>panel_dir</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Where to put the panel information</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -2080,35 +2407,46 @@ sorted.</p>
         <p>Base class for data products to be generated and handled.</p>
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.DataProduct.product_type">product_type</span></code></b>
-              (<code><span title="typing.Hashable">Hashable</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Product type should be the same as the class name.
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>product_type</code></b>
+                  (<code><span title="typing.Hashable">Hashable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Product type should be the same as the class name.
 The product type is used to search for products from a <a class="autorefs autorefs-internal" href="products/#trendify.products.DataProductCollection">DataProductCollection</a>.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.DataProduct.tags">tags</span></code></b>
-              (<code><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Tags to be used for sorting data.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-          <b><code><span title="trendify.DataProduct.metadata">metadata</span></code></b>
-              (<code>dict[str, str]</code>)
-          –
-          <div class="doc-md-description">
-            <p>A dictionary of metadata to be used as a tool tip for mousover in grafana</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+            <li>
+              <b><code>tags</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Tags to be used for sorting data.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>metadata</code></b>
+                  (<code>dict[str, str]</code>)
+              –
+              <div class="doc-md-description">
+                <p>A dictionary of metadata to be used as a tool tip for mousover in grafana</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 
 
@@ -2201,30 +2539,52 @@ The product type is used to search for products from a <a class="autorefs autore
         <p>Appends self to list.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>l</code></b>
-              (<code><span title="typing.List">List</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>list to which <code>self</code> will be appended</p>
-          </div>
-        </li>
-    </ul>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>l</code></b>
+                  (<code><span title="typing.List">List</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>list to which <code>self</code> will be appended</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><span title="typing.Self">Self</span></code>
-          –
-          <div class="doc-md-description">
-            <p>returns instance of <code>self</code></p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.Self">Self</span></code>
+              –
+              <div class="doc-md-description">
+                <p>returns instance of <code>self</code></p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -2247,28 +2607,39 @@ The product type is used to search for products from a <a class="autorefs autore
         <p>Loads json data to pydandic dataclass of whatever DataProduct child time is appropriate</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>key</code></b>
-              (<code>str</code>)
-          –
-          <div class="doc-md-description">
-            <p>json key</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>kwargs</code></b>
-              (<code>dict</code>, default:
-                  <code>{}</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>key</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>json key</p>
+              </div>
+            </li>
+            <li>
+              <b><code>kwargs</code></b>
+                  (<code>dict</code>, default:
+                      <code>{}</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>json entries stored under given key</p>
-          </div>
-        </li>
-    </ul>
-
+              –
+              <div class="doc-md-description">
+                <p>json entries stored under given key</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -2343,40 +2714,51 @@ Nested folders are generated for tags that are Tuples.  Sorted data files are na
 directory from which they were loaded.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>product_generator</code></b>
-              (<code><span title="typing.Callable">Callable</span>[[<span title="pathlib.Path">Path</span>], <span title="trendify.products.ProductList">ProductList</span>] | None</code>)
-          –
-          <div class="doc-md-description">
-            <p>A callable function that returns
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>product_generator</code></b>
+                  (<code><span title="typing.Callable">Callable</span>[[<span title="pathlib.Path">Path</span>], <span title="trendify.products.ProductList">ProductList</span>] | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>A callable function that returns
 a list of data products given a working directory.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>dirs</code></b>
-              (<code><span title="typing.List">List</span>[<span title="pathlib.Path">Path</span>]</code>)
-          –
-          <div class="doc-md-description">
-            <p>Directories over which to map the <code>product_generator</code></p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>n_procs</code></b>
-              (<code>int = 1</code>, default:
-                  <code>1</code>
+              </div>
+            </li>
+            <li>
+              <b><code>dirs</code></b>
+                  (<code><span title="typing.List">List</span>[<span title="pathlib.Path">Path</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Directories over which to map the <code>product_generator</code></p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_procs</code></b>
+                  (<code>int = 1</code>, default:
+                      <code>1</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Number of processes to run in parallel.  If <code>n_procs==1</code>, directories will be
+              –
+              <div class="doc-md-description">
+                <p>Number of processes to run in parallel.  If <code>n_procs==1</code>, directories will be
 processed sequentially (easier for debugging since the full traceback will be provided).
 If <code>n_procs &gt; 1</code>, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
 be used to load and process directories and/or tags in parallel.</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -2395,26 +2777,37 @@ be used to load and process directories and/or tags in parallel.</p>
         <p>Loads the tagged data products from <code>data_dirs</code> and sorts them (by tag) into a nested folder structure rooted at <code>output_dir</code>.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>data_dirs</code></b>
-              (<code><span title="typing.List">List</span>[<span title="pathlib.Path">Path</span>]</code>)
-          –
-          <div class="doc-md-description">
-            <p>Directories containing JSON data product files</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>output_dir</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Directory to which sorted products will be written</p>
-          </div>
-        </li>
-    </ul>
-
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>data_dirs</code></b>
+                  (<code><span title="typing.List">List</span>[<span title="pathlib.Path">Path</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Directories containing JSON data product files</p>
+              </div>
+            </li>
+            <li>
+              <b><code>output_dir</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Directory to which sorted products will be written</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -2433,36 +2826,47 @@ be used to load and process directories and/or tags in parallel.</p>
         <p>Makes a JSON file to import to Grafana for displaying tagged data tables, histograms and XY plots.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>sorted_products_dir</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Root directory into which products have been sorted by tag</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>output_dir</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Root directory into which Grafana dashboard and panal definitions will be written</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>n_procs</code></b>
-              (<code>int</code>, default:
-                  <code>1</code>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>sorted_products_dir</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Root directory into which products have been sorted by tag</p>
+              </div>
+            </li>
+            <li>
+              <b><code>output_dir</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Root directory into which Grafana dashboard and panal definitions will be written</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_procs</code></b>
+                  (<code>int</code>, default:
+                      <code>1</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Number of parallel tasks used for processing data product tags</p>
-          </div>
-        </li>
-    </ul>
-
+              –
+              <div class="doc-md-description">
+                <p>Number of parallel tasks used for processing data product tags</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -2482,85 +2886,96 @@ be used to load and process directories and/or tags in parallel.</p>
 <p>Tags will be processed in parallel and output in nested directory structure under <code>output_dir</code>.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>products_dir</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Directory to which the sorted data products will be written</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>output_dir</code></b>
-              (<code><span title="pathlib.Path">Path</span></code>)
-          –
-          <div class="doc-md-description">
-            <p>Directory to which tables and matplotlib histograms and plots will be written if
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>products_dir</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Directory to which the sorted data products will be written</p>
+              </div>
+            </li>
+            <li>
+              <b><code>output_dir</code></b>
+                  (<code><span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Directory to which tables and matplotlib histograms and plots will be written if
 the appropriate boolean variables <code>make_tables</code>, <code>make_xy_plots</code>, <code>make_histograms</code> are true.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>n_procs</code></b>
-              (<code>int = 1</code>, default:
-                  <code>1</code>
+              </div>
+            </li>
+            <li>
+              <b><code>n_procs</code></b>
+                  (<code>int = 1</code>, default:
+                      <code>1</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Number of processes to run in parallel.  If <code>n_procs==1</code>, directories will be
+              –
+              <div class="doc-md-description">
+                <p>Number of processes to run in parallel.  If <code>n_procs==1</code>, directories will be
 processed sequentially (easier for debugging since the full traceback will be provided).
 If <code>n_procs &gt; 1</code>, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
 be used to load and process directories and/or tags in parallel.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>dpi</code></b>
-              (<code>int = 500</code>, default:
-                  <code>500</code>
+              </div>
+            </li>
+            <li>
+              <b><code>dpi</code></b>
+                  (<code>int = 500</code>, default:
+                      <code>500</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Resolution of output plots when using matplotlib 
+              –
+              <div class="doc-md-description">
+                <p>Resolution of output plots when using matplotlib 
 (for <code>make_xy_plots==True</code> and/or <code>make_histograms==True</code>)</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>make_tables</code></b>
-              (<code>bool = True</code>, default:
-                  <code>True</code>
+              </div>
+            </li>
+            <li>
+              <b><code>make_tables</code></b>
+                  (<code>bool = True</code>, default:
+                      <code>True</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Whether or not to collect the 
+              –
+              <div class="doc-md-description">
+                <p>Whether or not to collect the 
 <a class="autorefs autorefs-internal" href="products/#trendify.products.TableEntry"><code>TableEntry</code></a> products and write them
 to CSV files (<code>&lt;tag&gt;_melted.csv</code> with <code>&lt;tag&gt;_pivot.csv</code> and <code>&lt;tag&gt;_stats.csv</code> when possible).</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>make_xy_plots</code></b>
-              (<code>bool = True</code>, default:
-                  <code>True</code>
+              </div>
+            </li>
+            <li>
+              <b><code>make_xy_plots</code></b>
+                  (<code>bool = True</code>, default:
+                      <code>True</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Whether or not to plot the <a class="autorefs autorefs-internal" href="products/#trendify.products.XYData"><code>XYData</code></a> products using matplotlib</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>make_histograms</code></b>
-              (<code>bool = True</code>, default:
-                  <code>True</code>
+              –
+              <div class="doc-md-description">
+                <p>Whether or not to plot the <a class="autorefs autorefs-internal" href="products/#trendify.products.XYData"><code>XYData</code></a> products using matplotlib</p>
+              </div>
+            </li>
+            <li>
+              <b><code>make_histograms</code></b>
+                  (<code>bool = True</code>, default:
+                      <code>True</code>
 )
-          –
-          <div class="doc-md-description">
-            <p>Whether or not to generate histograms of the 
+              –
+              <div class="doc-md-description">
+                <p>Whether or not to generate histograms of the 
 <a class="autorefs autorefs-internal" href="products/#trendify.products.HistogramEntry"><code>HistogramEntry</code></a> products
 using matplotlib.</p>
-          </div>
-        </li>
-    </ul>
-
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
 </div>
@@ -2599,83 +3014,57 @@ using matplotlib.</p>
 
     </div>
 
-</div></div>
-            </div>
-        </div>
-
-        <footer class="col-md-12">
-            <hr>
-                <p>Copyright &copy; 2024 <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>, Maintained by the <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>.</p>
-            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
-        <script src="../../js/bootstrap.bundle.min.js"></script>
-        <script>
-            var base_url = "../..",
-                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
-        </script>
-        <script src="../../js/base.js"></script>
-        <script src="../../search/main.js"></script>
-
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>From here you can search these documents. Enter your search terms below.</p>
-                <form>
-                    <div class="form-group">
-                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
-                    </div>
-                </form>
-                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th style="width: 20%;">Keys</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="help shortcut"><kbd>?</kbd></td>
-                    <td>Open this help</td>
-                  </tr>
-                  <tr>
-                    <td class="next shortcut"><kbd>n</kbd></td>
-                    <td>Next page</td>
-                  </tr>
-                  <tr>
-                    <td class="prev shortcut"><kbd>p</kbd></td>
-                    <td>Previous page</td>
-                  </tr>
-                  <tr>
-                    <td class="search shortcut"><kbd>s</kbd></td>
-                    <td>Search</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
 </div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../grafana_api/transformations/transformations/" class="btn btn-neutral float-left" title="transformations"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="cli/" class="btn btn-neutral float-right" title="cli">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
-    </body>
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2024 <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>, Maintained by the <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>.</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/TalbotKnighton/trendify" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../grafana_api/transformations/transformations/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="cli/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
 </html>
