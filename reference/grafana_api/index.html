@@ -1,117 +1,979 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Talbot Knighton" /><link rel="canonical" href="https://talbotknighton.github.io/trendify/reference/grafana_api/" />
-      <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>grafana_api - Trendify</title>
-    <link rel="stylesheet" href="../../css/theme.css" />
-    <link rel="stylesheet" href="../../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
-        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
-        <link href="../../css/code_select.css" rel="stylesheet" />
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
     
-      <script>
-        // Current page data
-        var mkdocs_page_name = "grafana_api";
-        var mkdocs_page_input_path = "reference/grafana_api/index.md";
-        var mkdocs_page_url = "/trendify/reference/grafana_api/";
-      </script>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Data visualization for batch processes via data models.">
+      
+      
+        <meta name="author" content="Talbot Knighton">
+      
+      
+        <link rel="canonical" href="https://talbotknighton.github.io/trendify/reference/grafana_api/">
+      
+      
+        <link rel="prev" href="../../usage/">
+      
+      
+        <link rel="next" href="dashboard/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.42">
     
-    <!--[if lt IE 9]>
-      <script src="../../js/html5shiv.min.js"></script>
-    <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/django.min.js"></script>
-      <script>hljs.highlightAll();</script> 
-</head>
+    
+      
+        <title>grafana_api - Trendify</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0253249f.min.css">
+      
+      
 
-<body class="wy-body-for-nav" role="document">
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> Trendify
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
-</div>
-      </div>
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../css/code_select.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
-                </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Code Reference</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">grafana_api</a>
-    <ul class="current">
-                <li class="toctree-l2"><a class="reference internal" href="dashboard/">dashboard</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="panels/">panels</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="panels/xy_chart/">xy_chart</a>
-                </li>
-    </ul>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="transformations/">transformations</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="transformations/transformations/">transformations</a>
-                </li>
-    </ul>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../trendify/">trendify</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../trendify/cli/">cli</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../trendify/products/">products</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../trendify/server/">server</a>
-                </li>
-    </ul>
-                  </li>
-              </ul>
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#grafana_api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Trendify" class="md-header__button md-logo" aria-label="Trendify" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Trendify
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              grafana_api
+            
+          </span>
+        </div>
       </div>
     </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">Trendify</a>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
         
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
       </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Code Reference</li>
-      <li class="breadcrumb-item active">grafana_api</li>
-    <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/TalbotKnighton/trendify/edit/master/docs/src/grafana_api/__init__.py" class="icon icon-github"> Edit on GitHub</a>
-    </li>
-  </ul>
-  <hr/>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/TalbotKnighton/trendify" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Welcome
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../usage/" class="md-tabs__link">
+        
+  
+    
+  
+  Usage
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  Code Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
               
-                <div class="doc doc-object doc-module">
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Trendify" class="md-nav__button md-logo" aria-label="Trendify" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Trendify
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/TalbotKnighton/trendify" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Welcome
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Code Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Code Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
+  
+  <span class="md-ellipsis">
+    grafana_api
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            grafana_api
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dashboard/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dashboard
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="panels/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    panels
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1_2" id="__nav_3_1_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            panels
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="panels/xy_chart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    xy_chart
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="transformations/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    transformations
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1_3" id="__nav_3_1_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            transformations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="transformations/transformations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    transformations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../trendify/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    trendify
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            trendify
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trendify/cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cli
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trendify/products/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    products
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trendify/server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#grafana_api" class="md-nav__link">
+    <span class="md-ellipsis">
+      grafana_api
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="grafana_api">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Annotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Annotation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Annotations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dashboard
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.DataSource" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataSource
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.DefaultDataSource" class="md-nav__link">
+    <span class="md-ellipsis">
+      DefaultDataSource
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.FieldConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      FieldConfig
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.GridPosition" class="md-nav__link">
+    <span class="md-ellipsis">
+      GridPosition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.HideFrom" class="md-nav__link">
+    <span class="md-ellipsis">
+      HideFrom
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legend
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.LineStyle" class="md-nav__link">
+    <span class="md-ellipsis">
+      LineStyle
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Panel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.PointSize" class="md-nav__link">
+    <span class="md-ellipsis">
+      PointSize
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.ScaleDistribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScaleDistribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Series" class="md-nav__link">
+    <span class="md-ellipsis">
+      Series
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Target" class="md-nav__link">
+    <span class="md-ellipsis">
+      Target
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Threshold" class="md-nav__link">
+    <span class="md-ellipsis">
+      Threshold
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      Thresholds
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.ToolTip" class="md-nav__link">
+    <span class="md-ellipsis">
+      ToolTip
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.Transformation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transformation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_api.URLOptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      URLOptions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>grafana_api</h1>
+
+<div class="doc doc-object doc-module">
 
 
 
 <h2 id="grafana_api" class="doc doc-heading">
-            <code>grafana_api</code>
+            <span class="doc doc-object-name doc-module-name">grafana_api</span>
 
 
-<a href="#grafana_api" class="headerlink" title="Permanent link"></a></h2>
+<a href="#grafana_api" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents first">
 
@@ -135,55 +997,11 @@
 
 
 
-<h3 id="grafana_api.Transformation" class="doc doc-heading">
-            <code>Transformation</code>
-
-
-<a href="#grafana_api.Transformation" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
 <h3 id="grafana_api.Annotation" class="doc doc-heading">
-            <code>Annotation</code>
+            <span class="doc doc-object-name doc-class-name">Annotation</span>
 
 
-<a href="#grafana_api.Annotation" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.Annotation" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -198,6 +1016,19 @@
 
 
 
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/dashboard.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Annotation(BaseModel):
+    """
+    """
+    builtIn: int = 1
+    datasource: dict = {"type": "grafana", "uid": "-- Grafana --"}
+    enable: bool = True
+    hide: bool = True
+    iconColor: str = 'rgba(0, 211, 255, 1)'
+    name: str = 'Annotation &amp; Alers'
+    type: str = 'dashboard'</code></pre>
+              </details>
 
 
 
@@ -224,10 +1055,10 @@
 
 
 <h3 id="grafana_api.Annotations" class="doc doc-heading">
-            <code>Annotations</code>
+            <span class="doc doc-object-name doc-class-name">Annotations</span>
 
 
-<a href="#grafana_api.Annotations" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.Annotations" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -242,6 +1073,13 @@
 
 
 
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/dashboard.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Annotations(BaseModel):
+    """
+    """
+    list: List[Annotation] = [Annotation()]</code></pre>
+              </details>
 
 
 
@@ -268,10 +1106,10 @@
 
 
 <h3 id="grafana_api.Dashboard" class="doc doc-heading">
-            <code>Dashboard</code>
+            <span class="doc doc-object-name doc-class-name">Dashboard</span>
 
 
-<a href="#grafana_api.Dashboard" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.Dashboard" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -286,6 +1124,31 @@
 
 
 
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/dashboard.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Dashboard(BaseModel):
+    """
+    """
+    annotations: Annotations = Annotations()
+    description: str = "Try Parsing JSON Data"
+    editable: bool = True
+    fiscalYearStartMonth: int = 0
+    graphTooltip: int = 0
+    id: int = 1
+    links: list = []
+    panels: list[Panel] = [Panel()]
+    refresh: str = ""
+    schemaVersion: int = 39
+    tags: list = []
+    templating: Dict = {'list': []}
+    time: Dict = {'from': 'now-6h', 'to': 'now'}
+    timepicker: Dict = {}
+    timezone: str = 'browser'
+    title: str = 'DemoDashboard'
+    uid: str = 'de1dapkdr47wgf'
+    version: int = 20
+    weekStart: str = ''</code></pre>
+              </details>
 
 
 
@@ -312,10 +1175,10 @@
 
 
 <h3 id="grafana_api.DataSource" class="doc doc-heading">
-            <code>DataSource</code>
+            <span class="doc doc-object-name doc-class-name">DataSource</span>
 
 
-<a href="#grafana_api.DataSource" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.DataSource" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -330,6 +1193,14 @@
 
 
 
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class DataSource(BaseModel):
+    """
+    """
+    type: str = 'yesoreyeram-infinity-datasource'
+    uid: str = 'be1d76jvnf668b'</code></pre>
+              </details>
 
 
 
@@ -356,10 +1227,10 @@
 
 
 <h3 id="grafana_api.DefaultDataSource" class="doc doc-heading">
-            <code>DefaultDataSource</code>
+            <span class="doc doc-object-name doc-class-name">DefaultDataSource</span>
 
 
-<a href="#grafana_api.DefaultDataSource" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.DefaultDataSource" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -374,288 +1245,13 @@
 
 
 
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="grafana_api.HideFrom" class="doc doc-heading">
-            <code>HideFrom</code>
-
-
-<a href="#grafana_api.HideFrom" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        <p>{
-    "legend": false,
-    "tooltip": false,
-    "viz": false
-}</p>
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="grafana_api.LineStyle" class="doc doc-heading">
-            <code>LineStyle</code>
-
-
-<a href="#grafana_api.LineStyle" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        <pre class="highlight"><code class="language-json">{
-    "fill": "solid"
-}</code></pre>
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="grafana_api.PointSize" class="doc doc-heading">
-            <code>PointSize</code>
-
-
-<a href="#grafana_api.PointSize" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        <pre class="highlight"><code class="language-json">{
-    "fixed": 3
-}</code></pre>
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="grafana_api.ScaleDistribution" class="doc doc-heading">
-            <code>ScaleDistribution</code>
-
-
-<a href="#grafana_api.ScaleDistribution" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        <pre class="highlight"><code class="language-json">{
-    "type": "linear"
-}</code></pre>
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="grafana_api.Threshold" class="doc doc-heading">
-            <code>Threshold</code>
-
-
-<a href="#grafana_api.Threshold" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        <pre class="highlight"><code class="language-json">{
-    "color": "green",
-    "value": null
-}</code></pre>
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="grafana_api.Thresholds" class="doc doc-heading">
-            <code>Thresholds</code>
-
-
-<a href="#grafana_api.Thresholds" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        <pre class="highlight"><code class="language-json">"thresholds": {
-    "mode": "absolute",
-    "steps": [
-
-    ]
-}</code></pre>
-
-
-
-
-
-
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class DefaultDataSource(DataSource):
+    """
+    """
+    default: bool = True</code></pre>
+              </details>
 
 
 
@@ -682,10 +1278,10 @@
 
 
 <h3 id="grafana_api.FieldConfig" class="doc doc-heading">
-            <code>FieldConfig</code>
+            <span class="doc doc-object-name doc-class-name">FieldConfig</span>
 
 
-<a href="#grafana_api.FieldConfig" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.FieldConfig" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -708,6 +1304,25 @@
 
 
 
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class FieldConfig(BaseModel):
+    """
+    ```json
+     "fieldConfig": {
+        "defaults": {
+
+            "fieldMinMax": false,
+            "mappings": [],
+
+        },
+        "overrides": []
+    },
+    ```
+    """
+    defaults: Defaults = Defaults()
+    overrides: list = []</code></pre>
+              </details>
 
 
 
@@ -734,10 +1349,10 @@
 
 
 <h3 id="grafana_api.GridPosition" class="doc doc-heading">
-            <code>GridPosition</code>
+            <span class="doc doc-object-name doc-class-name">GridPosition</span>
 
 
-<a href="#grafana_api.GridPosition" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.GridPosition" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -757,6 +1372,86 @@
 
 
 
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class GridPosition(BaseModel):
+    """
+    ```json
+    "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+    }
+    ```
+    """
+    h: int = 16
+    w: int = 24
+    x: int = 0
+    y: int = 0</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.HideFrom" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">HideFrom</span>
+
+
+<a href="#grafana_api.HideFrom" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        <p>{
+    "legend": false,
+    "tooltip": false,
+    "viz": false
+}</p>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class HideFrom(BaseModel):
+    """
+    {
+        "legend": false,
+        "tooltip": false,
+        "viz": false
+    }
+    """
+    legend: bool = False
+    tooltip: bool = False
+    viz: bool = False</code></pre>
+              </details>
 
 
 
@@ -783,10 +1478,10 @@
 
 
 <h3 id="grafana_api.Legend" class="doc doc-heading">
-            <code>Legend</code>
+            <span class="doc doc-object-name doc-class-name">Legend</span>
 
 
-<a href="#grafana_api.Legend" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.Legend" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -801,6 +1496,18 @@
 
 
 
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Legend(BaseModel):
+    """
+    """
+    calcs: list = []
+    displayMode: str = 'list'  # 'list' or 'table'
+    placement: str = 'bottom'
+    showLegend: bool = True
+    sortBy: str = 'Name'
+    sortDesc: bool = False</code></pre>
+              </details>
 
 
 
@@ -826,55 +1533,11 @@
 
 
 
-<h3 id="grafana_api.Series" class="doc doc-heading">
-            <code>Series</code>
+<h3 id="grafana_api.LineStyle" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LineStyle</span>
 
 
-<a href="#grafana_api.Series" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="grafana_api.ToolTip" class="doc doc-heading">
-            <code>ToolTip</code>
-
-
-<a href="#grafana_api.ToolTip" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.LineStyle" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -882,13 +1545,27 @@
               Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
 
 
-        
+        <pre class="highlight"><code class="language-json">{
+    "fill": "solid"
+}</code></pre>
 
 
 
 
 
 
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class LineStyle(BaseModel):
+    """
+    ```json
+    {
+        "fill": "solid"
+    }
+    ```
+    """
+    fill: str = 'solid'</code></pre>
+              </details>
 
 
 
@@ -915,54 +1592,10 @@
 
 
 <h3 id="grafana_api.Options" class="doc doc-heading">
-            <code>Options</code>
+            <span class="doc doc-object-name doc-class-name">Options</span>
 
 
-<a href="#grafana_api.Options" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="grafana_api.URLOptions" class="doc doc-heading">
-            <code>URLOptions</code>
-
-
-<a href="#grafana_api.URLOptions" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.Options" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -977,50 +1610,16 @@
 
 
 
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="grafana_api.Target" class="doc doc-heading">
-            <code>Target</code>
-
-
-<a href="#grafana_api.Target" class="headerlink" title="Permanent link"></a></h3>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
-
-
-        
-
-
-
-
-
-
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Options(BaseModel):
+    """
+    """
+    legend: Legend = Legend()
+    mapping: str = 'auto'
+    series: list[Series] = [Series()]
+    tooltop: ToolTip = ToolTip()</code></pre>
+              </details>
 
 
 
@@ -1047,10 +1646,10 @@
 
 
 <h3 id="grafana_api.Panel" class="doc doc-heading">
-            <code>Panel</code>
+            <span class="doc doc-object-name doc-class-name">Panel</span>
 
 
-<a href="#grafana_api.Panel" class="headerlink" title="Permanent link"></a></h3>
+<a href="#grafana_api.Panel" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -1065,6 +1664,536 @@
 
 
 
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Panel(BaseModel):
+    """
+    """
+    datasource: DataSource = DefaultDataSource()
+    fieldConfig: FieldConfig = FieldConfig()
+    gridPos: GridPosition = GridPosition()
+    id: int = 1
+    options: Options = Options()
+    pluginVersion: str = '11.2.2'
+    targets: list[Target] = [Target()]
+    title: str = "Example XY Chart for Trace2D Data"
+    transformations: list[Transformation] = []
+    type: str = 'xychart'</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.PointSize" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PointSize</span>
+
+
+<a href="#grafana_api.PointSize" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        <pre class="highlight"><code class="language-json">{
+    "fixed": 3
+}</code></pre>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class PointSize(BaseModel):
+    """
+    ```json
+    {
+        "fixed": 3
+    }
+    ```
+    """
+    fixed: int = 3</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.ScaleDistribution" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ScaleDistribution</span>
+
+
+<a href="#grafana_api.ScaleDistribution" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        <pre class="highlight"><code class="language-json">{
+    "type": "linear"
+}</code></pre>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class ScaleDistribution(BaseModel):
+    """
+    ```json
+    {
+        "type": "linear"
+    }
+    ```
+    """
+    type: str = 'linear'</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.Series" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Series</span>
+
+
+<a href="#grafana_api.Series" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Series(BaseModel):
+    """
+    """
+    x: Matcher = Matcher(matcher=MatcherOptions(options='x'))
+    y: Matcher = Matcher(matcher=MatcherOptions(options='y'))</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.Target" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Target</span>
+
+
+<a href="#grafana_api.Target" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Target(BaseModel):
+    """
+    """
+    columns: list = []
+    datasource: DataSource = DataSource()
+    filters: list = []
+    format: str = 'table'
+    global_query_id: str = ''
+    hide: bool = False
+    parser: str = 'uql'
+    refId: str = 'A'  # Table name
+    root_selector: str = ''
+    source: str = 'url'
+    type: str = 'json'
+    uql: str = "parse-json\n| project \"elements\"\n| extend \"label\"=\"pen.label\"\n| extend \"label1\"=substring(\"label\",0,2)\n| extend \"label2\"=substring(\"label\",3)\n| mv-expand \"points\"\n| extend \"x\"=\"points.x\", \"y\"=\"points.y\"\n#| project \"label1\", \"label2\", \"x\", \"y\", \"color\"=mul(\"label2\", 0.1)\n#| project \"label1\", \"x\", \"y\"\n| project \"label\", \"x\", \"y\", \"metadata\"\n\n\n"
+    url: str = "http://localhost:8000/data_products/workdir.products/trace_plots/Trace2D"
+    url_options: URLOptions = URLOptions()</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.Threshold" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Threshold</span>
+
+
+<a href="#grafana_api.Threshold" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        <pre class="highlight"><code class="language-json">{
+    "color": "green",
+    "value": null
+}</code></pre>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Threshold(BaseModel):
+    """
+    ```json
+    {
+        "color": "green",
+        "value": null
+    }
+    ```
+    """
+    color: str = 'green'
+    value: float | None = None</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.Thresholds" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Thresholds</span>
+
+
+<a href="#grafana_api.Thresholds" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        <pre class="highlight"><code class="language-json">"thresholds": {
+    "mode": "absolute",
+    "steps": [
+
+    ]
+}</code></pre>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Thresholds(BaseModel):
+    """
+    ```json
+    "thresholds": {
+        "mode": "absolute",
+        "steps": [
+
+        ]
+    }
+    ```
+    """
+    mode: str = 'absolute'
+    steps: list[Threshold] = [Threshold()]</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.ToolTip" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ToolTip</span>
+
+
+<a href="#grafana_api.ToolTip" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class ToolTip(BaseModel):
+    """
+    """
+    mode: str = 'single'
+    sort: str = 'none'</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.Transformation" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Transformation</span>
+
+
+<a href="#grafana_api.Transformation" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/transformations/transformations.py</code></summary>
+                <pre class="highlight"><code class="language-python">class Transformation(BaseModel):
+    """
+
+    """
+    id: str</code></pre>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grafana_api.URLOptions" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">URLOptions</span>
+
+
+<a href="#grafana_api.URLOptions" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="pydantic.BaseModel" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a></code></p>
+
+
+        
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/grafana_api/panels/xy_chart.py</code></summary>
+                <pre class="highlight"><code class="language-python">class URLOptions(BaseModel):
+    """
+    """
+    data: str = ''
+    method: str = 'GET'</code></pre>
+              </details>
 
 
 
@@ -1094,56 +2223,63 @@
     </div>
 
 </div>
-              
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
             </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../.." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="dashboard/" class="btn btn-neutral float-right" title="dashboard">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-      <p>Copyright &copy; 2024 <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>, Maintained by the <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>.</p>
-  </div>
-
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
           
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/TalbotKnighton/trendify" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
-    
-    
-      <span><a href="../.." style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="dashboard/" style="color: #fcfcfc">Next &raquo;</a></span>
-    
-  </span>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>, Maintained by the <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
 </div>
-    <script src="../../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "../..";</script>
-    <script src="../../js/theme_extra.js"></script>
-    <script src="../../js/theme.js"></script>
-      <script src="../../search/main.js"></script>
-    <script>
-        jQuery(function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        });
-    </script>
-
-</body>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["header.autohide", "content.tabs.link", "content.tabs", "navigation.tabs"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
 </html>
