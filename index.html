@@ -368,44 +368,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#functionality" class="md-nav__link">
+  <a href="#functionality-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Functionality
+      Functionality Overview
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
+  <a href="#recipe" class="md-nav__link">
     <span class="md-ellipsis">
-      Usage
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#user-defined-data-product-generator" class="md-nav__link">
-    <span class="md-ellipsis">
-      User-Defined Data Product Generator
+      Recipe
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#generating-outputs" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#framework-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Generating Outputs
+      Framework Overview
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -843,44 +828,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#functionality" class="md-nav__link">
+  <a href="#functionality-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Functionality
+      Functionality Overview
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
+  <a href="#recipe" class="md-nav__link">
     <span class="md-ellipsis">
-      Usage
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#user-defined-data-product-generator" class="md-nav__link">
-    <span class="md-ellipsis">
-      User-Defined Data Product Generator
+      Recipe
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#generating-outputs" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#framework-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Generating Outputs
+      Framework Overview
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -904,7 +874,7 @@
 
 <h1 id="welcome-to-trendify">Welcome to Trendify<a class="headerlink" href="#welcome-to-trendify" title="Permanent link">&para;</a></h1>
 <p>Trendify is a python package for visualizing data by generating tagged data products to be sorted and saved to static asset files or displayed interactively.  This greatly simplify the writing of post-processors for many kinds of data.</p>
-<h2 id="functionality">Functionality<a class="headerlink" href="#functionality" title="Permanent link">&para;</a></h2>
+<h2 id="functionality-overview">Functionality Overview<a class="headerlink" href="#functionality-overview" title="Permanent link">&para;</a></h2>
 <p>The <code>trendify</code> API </p>
 <ul>
 <li>Maps a user-defined function over given directories to produce JSON serialized <a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.DataProduct">Data Products</a>.</li>
@@ -914,30 +884,55 @@
 <li><em>In Progress:</em> Generates a Grafana dashboard with panels for each data <a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.Tag">Tag</a></li>
 <li><em>Future Work:</em> Generates nested <code>include.tex</code> files for nested assets</li>
 </ul>
-<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<h3 id="user-defined-data-product-generator">User-Defined Data Product Generator<a class="headerlink" href="#user-defined-data-product-generator" title="Permanent link">&para;</a></h3>
-<p>Users provide a function to map over a list of results directories.  The function signature is:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span> <span class="nf">data_product_generator</span><span class="p">(</span><span class="n">workdir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DataProduct</span><span class="p">]</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="sd">    Define a function to </span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="sd">    - Load results from workdir</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="sd">    - Process results from workdir</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="sd">    - Return a list of data products from the given workdir results</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">inputs</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># load inputs from workdir</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">results</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># load results from workdir</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">products</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataProduct</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="c1"># Append products to list.  E.g.</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Trace2D</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Point2D</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TableEntry</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">HistogramEntry</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="o">...</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="k">return</span> <span class="n">products</span>
+<h2 id="recipe">Recipe<a class="headerlink" href="#recipe" title="Permanent link">&para;</a></h2>
+<p>Use the <a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_it_trendy"><code>make_it_trendy</code></a> to map a user-define executable over multiple batch directories to produce tagged data products and output static/interactive assets:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">trendify</span> <span class="kn">import</span> <span class="n">make_it_trendy</span><span class="p">,</span> <span class="n">ProductList</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">def</span> <span class="nf">user_defined_data_product_generator</span><span class="p">(</span><span class="n">workdir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DataProduct</span><span class="p">]</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="sd">    Define a function to be mapped over multiple batch directories</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="sd">    - Load results from workdir</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="sd">    - Process results from workdir</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="sd">    - Return a list of data products from the given workdir results</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">inputs</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># load inputs from workdir</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">results</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># load results from workdir</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">products</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataProduct</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="c1"># Append products to list.  E.g.</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Trace2D</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Point2D</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TableEntry</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">HistogramEntry</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="o">...</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    <span class="k">return</span> <span class="n">products</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="n">make_it_trendy</span><span class="p">(</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    <span class="n">data_product_generator</span><span class="o">=</span><span class="n">user_defined_data_product_generator</span><span class="p">,</span>  <span class="c1"># Callable</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    <span class="n">data_dirs</span><span class="o">=...</span><span class="p">,</span>      <span class="c1"># List[Path]    Directories over which user-provided data product generator will be mapped</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    <span class="n">products_dir</span><span class="o">=...</span><span class="p">,</span>   <span class="c1"># Path          Directory for outputting sorted data products (sorted into nested directories by tag)</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    <span class="n">assets_dir</span><span class="o">=...</span><span class="p">,</span>     <span class="c1"># Path          Directory for outputting generated CSV and image files (via matplotlib)</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    <span class="n">grafana_dir</span><span class="o">=...</span><span class="p">,</span>    <span class="c1"># Path          Directory for outputting generated Grafana dashboard and panel JSON definiion files</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>    <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>    <span class="c1"># int           Number of parallel processes for each step</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>    <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>     <span class="c1"># int           Image quality of matplotlib output</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>    <span class="n">make_tables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>       <span class="c1"># bool  Whether or not static CSV files should be generated from TableEntry products</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>    <span class="n">make_xy_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>     <span class="c1"># bool  Whether or not static JPG files should be generated from Trace2D and Point2D products</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>    <span class="n">make_histograms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>   <span class="c1"># bool  Whether or not static JPG files should be generated from HistogramEntry products</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a><span class="p">)</span>
 </code></pre></div>
-<p>The <code>data_product_generator</code> function can return a list containing instances of the following children of
+<p>Trendify sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the <a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_it_trendy">make_it_trendy</a> method.  This method is a convenient wrapper on multiple individual steps:</p>
+<ul>
+<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_products">make_products</a></li>
+<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.sort_products">sort_products</a></li>
+<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_grafana_dashboard">make_grafana_dashboard</a></li>
+<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_tables_and_figures">make_tables_and_figures</a></li>
+<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_include_files">make_include_files</a></li>
+</ul>
+<p>Each step can be mapped in parallel as part of a process pool by providing an integer argument <code>n_procs</code> greater than 1.  Parllel excecution greatly speeds up processing times for computationally expensive data product generators or for plotting large numbers data products.</p>
+<h2 id="framework-overview">Framework Overview<a class="headerlink" href="#framework-overview" title="Permanent link">&para;</a></h2>
+<p>The user specifies a function that takes in a <code>Path</code> and returns a list holding instances of the following children of
 <a class="autorefs autorefs-internal" href="reference/trendify/#trendify.DataProduct">DataProduct</a>: </p>
 <ul>
 <li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.Trace2D"><code>Trace2D</code></a></li>
@@ -960,16 +955,6 @@
 </ul>
 <p>Labels and figure formats are assignable.  Trendify will automatically collapse matplotlib legend labels
 down to a unique set.  Use unique pen label, marker label, histogram style label, or row/col pair as unique identifiers.  Make sure that the formatting specified for like-tagged <code>DataProduct</code> istances to be the same.</p>
-<h3 id="generating-outputs">Generating Outputs<a class="headerlink" href="#generating-outputs" title="Permanent link">&para;</a></h3>
-<p>Trendify sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the <a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_it_trendy">make_it_trendy</a> method.  This method is a convenient wrapper on multiple individual steps:</p>
-<ul>
-<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_products">make_products</a></li>
-<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.sort_products">sort_products</a></li>
-<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_grafana_dashboard">make_grafana_dashboard</a></li>
-<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_tables_and_figures">make_tables_and_figures</a></li>
-<li><a class="autorefs autorefs-internal" href="reference/trendify/products/#trendify.products.make_include_files">make_include_files</a></li>
-</ul>
-<p>Each step can be mapped in parallel as part of a process pool by providing an integer argument <code>n_procs</code> greater than 1.  Parllel excecution greatly speeds up processing times for computationally expensive data product generators or for plotting large numbers data products.</p>
 <!-- 
 ```python
 
