@@ -7523,7 +7523,7 @@ This path should correspond to includ dir in <code>mkdocs.yml</code> file.  (See
 
     <div class="doc doc-contents ">
 
-        <p>Maps <code>product_generator</code> over <code>dirs_in</code> to produce data product JSON files in those directories.
+        <p>Maps <code>data_product_generator</code> over <code>dirs_in</code> to produce data product JSON files in those directories.
 Sorts the generated data products into a nested file structure starting from <code>dir_products</code>.
 Nested folders are generated for tags that are Tuples.  Sorted data files are named according to the
 directory from which they were loaded.</p>
@@ -7542,7 +7542,7 @@ directory from which they were loaded.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>product_generator</code>
+                <code>data_product_generator</code>
             </td>
             <td>
                   <code><a class="autorefs autorefs-external" title="typing.Callable" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>[[<a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>], <a class="autorefs autorefs-internal" title="trendify.products.ProductList" href="#trendify.products.ProductList">ProductList</a>] | None</code>
