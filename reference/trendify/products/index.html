@@ -4270,7 +4270,6 @@ and returns a list of data products.</p>
     Args:
         processor (Callable[[Path], ProductList]): A callable that receives a working directory
             and returns a list of data products.
-
     """
     def __init__(self, processor: Callable[[Path], ProductList]):
         self._processor = processor
@@ -5365,6 +5364,59 @@ In that case, the last tag item (with an appropriate suffix) will be used for th
         <p>Defines marker for scattering to matplotlib</p>
 
 
+<p><span class="doc-section-title">Attributes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Marker.color">color</span></code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Color of line</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Marker.size">size</span></code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Line width</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Marker.alpha">alpha</span></code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Opacity from 0 to 1 (inclusive)</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Marker.zorder">zorder</span></code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Prioritization </p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Marker.label">label</span></code></b>
+              (<code><a class="autorefs autorefs-external" title="typing.Union" href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, None]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Legend label</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Marker.symbol">symbol</span></code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Matplotlib symbol string</p>
+          </div>
+        </li>
+    </ul>
+
+
 
 
 
@@ -5374,6 +5426,14 @@ In that case, the last tag item (with an appropriate suffix) will be used for th
                 <pre class="highlight"><code class="language-python">class Marker(HashableBase):
     """
     Defines marker for scattering to matplotlib
+
+    Attributes:
+        color (str): Color of line
+        size (float): Line width
+        alpha (float): Opacity from 0 to 1 (inclusive)
+        zorder (float): Prioritization 
+        label (Union[str, None]): Legend label
+        symbol (str): Matplotlib symbol string
     """
     color: str = 'k'
     size: float = 5
@@ -5585,6 +5645,51 @@ def from_pen(
         <p>Defines the pen drawing to matplotlib.</p>
 
 
+<p><span class="doc-section-title">Attributes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Pen.color">color</span></code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Color of line</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Pen.size">size</span></code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Line width</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Pen.alpha">alpha</span></code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Opacity from 0 to 1 (inclusive)</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Pen.zorder">zorder</span></code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Prioritization </p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><span title="trendify.products.Pen.label">label</span></code></b>
+              (<code><a class="autorefs autorefs-external" title="typing.Union" href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, None]</code>)
+          –
+          <div class="doc-md-description">
+            <p>Legend label</p>
+          </div>
+        </li>
+    </ul>
+
+
 
 
 
@@ -5594,6 +5699,13 @@ def from_pen(
                 <pre class="highlight"><code class="language-python">class Pen(HashableBase):
     """
     Defines the pen drawing to matplotlib.
+
+    Attributes:
+        color (str): Color of line
+        size (float): Line width
+        alpha (float): Opacity from 0 to 1 (inclusive)
+        zorder (float): Prioritization 
+        label (Union[str, None]): Legend label
     """
     color: str = 'k'
     size: float = 1
@@ -5738,6 +5850,7 @@ def from_pen(
               Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.XYData" href="#trendify.products.XYData">XYData</a></code></p>
 
 
+        <p>Defines a point to be scattered onto xy plot.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -5788,6 +5901,7 @@ Eventually style information will be used in grafana.</p>
                 <summary>Source code in <code>src/trendify/products.py</code></summary>
                 <pre class="highlight"><code class="language-python">class Point2D(XYData):
     """
+    Defines a point to be scattered onto xy plot.
 
     Attributes:
         product_type (Literal['Trace2D']): Name of class type to be used as a constructor.
@@ -6624,6 +6738,8 @@ def process_table_entries(
               Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="#trendify.products.DataProduct">DataProduct</a></code></p>
 
 
+        <p>Defines an entry to be collected into a table.</p>
+<p>Collected table entries will be printed in three forms when possible: melted, pivot (when possible), and stats (on pivot columns, when possible).</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -6679,6 +6795,10 @@ def process_table_entries(
                 <summary>Source code in <code>src/trendify/products.py</code></summary>
                 <pre class="highlight"><code class="language-python">class TableEntry(DataProduct):
     """
+    Defines an entry to be collected into a table.
+
+    Collected table entries will be printed in three forms when possible: melted, pivot (when possible), and stats (on pivot columns, when possible).
+
     Attributes:
         product_type (Literal['Trace2D']): Name of class type to be used as a constructor.
         row (float | str): Value to be binned
