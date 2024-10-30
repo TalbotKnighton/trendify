@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dependencies = [
+  "numpy",
+  "scipy",
+  "pandas",
+  "jinja2",
+  "matplotlib",
+  "flask",
+  "waitress",
+  "pydantic",
+  "numpydantic",
+]
+name = "trendify"
+version = "0.0.1"
+requires-python = ">= 3.11"
+authors = [
+  {name = "Talbot Knighton", email = "talbotknighton@gmail.org"},
+]
+maintainers = [
+  {name = "Talbot Knighton", email = "talbotknighton@gmail.org"},
+]
+description = "Tools for generating data products, storing, and interacting with them"
+readme = "README.md"
+keywords = ["Data", "Products", "Process", "Post", "Database"]
+classifiers = [
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 3 - Alpha",
+
+  # Indicate who your project is intended for
+  "Intended Audience :: Engineers",
+  "Topic :: Engineering :: Post-processing Tools",
+
+  # Pick your license as you wish (see also "license" above)
+  "License :: OSI Approved :: MIT License",
+
+  # Specify the Python versions you support here.
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+]
+
+# [project.urls]
+# Homepage = ""
+# Documentation = ""
+# Repository = ""
+# Issues = ""
+# Changelog = ""
+
+# [project.scripts]
+# trendify = "trendify.cli:serve"

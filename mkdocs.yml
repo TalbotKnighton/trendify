@@ -1,0 +1,186 @@
+site_name: Trendify
+site_url: https://talbotknighton.github.io/trendify/
+site_description: Data visualization for batch processes via data models.
+site_author: Talbot Knighton
+
+repo_url: https://github.com/TalbotKnighton/trendify
+# edit_uri: blob/master/docs/
+
+theme:
+  name: material
+  features:
+    # - header.autohide
+    - search.suggest
+    - search.highlight
+    - navigation.tabs
+    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.tracking
+    # - navigation.indexes
+    - content.tabs
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+    - content.tooltips
+    # - toc.integrate
+  color_mode: auto
+  user_color_mode_toggle: true
+  language: en
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+      primary: pink
+      accent: blue
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+      primary: pink
+      accent: blue
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - django
+
+nav:
+  - Welcome: index.md
+  - Usage: usage.md
+  - Code Reference: reference/
+
+# Add the extra section here
+extra:
+  # Add your custom configurations or variables
+  disable_ssl_certificate_validation: true
+
+extra_css:
+  - css/code_select.css
+  - css/mkdocstrings.css
+
+# exclude_docs: |
+#   *.py
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+      title: On this page
+  - attr_list
+  - def_list
+  - tables
+  - pymdownx.highlight:
+      use_pygments: false
+      pygments_lang_class: true
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - callouts
+  - mdx_gh_links:
+      user: mkdocs
+      repo: mkdocs
+  - mkdocs-click
+  #
+  - pymdownx.snippets:
+      base_path: 'docs/'
+      auto_append:
+        - includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - abbr
+  - attr_list
+  - md_in_html
+  - def_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: false
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.mark
+  - markdown_include.include:
+      base_path: docs
+
+copyright: Copyright &copy; 2024 <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>, Maintained by the <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>.
+
+hooks:
+  - docs/hooks.py
+
+plugins:
+  # - git-revision-date-localized:
+  #     enable_creation_date: true
+  - search
+  - glightbox
+  - gen-files:
+      scripts:
+      - scripts/gen_ref_pages.py
+  - section-index
+  - autorefs
+  - literate-nav:
+      nav_file: SUMMARY.md
+      implicit_index: true
+  - mkdocstrings:
+      handlers:
+        python:
+          import:
+          # https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
+          - https://docs.python.org/3/objects.inv
+          - https://matplotlib.org/objects.inv
+          - https://numpy.org/doc/stable/objects.inv
+          - https://pandas.pydata.org/docs/objects.inv
+          - https://docs.scipy.org/doc/scipy/objects.inv
+          - https://numpydantic.readthedocs.io/en/latest/objects.inv
+          - https://docs.pydantic.dev/latest/objects.inv
+          options:
+            docstring_style: google
+            docstring_section_style: table
+            members_order: alphabetical
+            show_root_heading: true
+            show_source: false
+            separate_signature: true
+            show_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            #
+            merge_init_into_class: true
+            show_if_no_docstring: false
+            # annotations_path: full
+            show_docstring_functions: true
+            heading_level: 2
+            line_length: 100
+            show_root_toc_entry: false
+            show_root_full_path: false
+            inherited_members: false
+            show_submodules: false
+            show_docstring_classes: true
+            docstring_options:
+                ignore_init_summary: false
+          paths: [src]
+  # 
+  - exclude:
+      glob:
+        - snippets/*
+  - snippets
+
+watch:
+  - src/
+  - scripts/
+  - css/
+  - docs/

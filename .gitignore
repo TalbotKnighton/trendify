@@ -1,0 +1,3 @@
+**/workdir/
+**/__pycache__/**/*
+**/*.egg*/
