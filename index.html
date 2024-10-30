@@ -30,6 +30,9 @@
     
       <link rel="stylesheet" href="assets/stylesheets/main.0253249f.min.css">
       
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
       
 
 
@@ -51,6 +54,8 @@
     
       <link rel="stylesheet" href="css/code_select.css">
     
+      <link rel="stylesheet" href="css/mkdocstrings.css">
+    
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -58,10 +63,26 @@
     
     
     
-  </head>
+   <link href="assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="assets/javascripts/glightbox.min.js"></script></head>
   
   
-    <body dir="ltr">
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="pink" data-md-color-accent="blue">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -112,6 +133,32 @@
         </div>
       </div>
     </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="pink" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="pink" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -659,11 +706,11 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/trendify/cli/" class="md-nav__link">
+      <a href="reference/trendify/command_line_interface/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    cli
+    command_line_interface
   </span>
   
 
@@ -769,6 +816,34 @@
 
 
 <h1 id="welcome-to-trendify">Welcome to Trendify<a class="headerlink" href="#welcome-to-trendify" title="Permanent link">&para;</a></h1>
+<p>Trendify is a python package for visualizing data by generating specific tagged data products to be sorted and displayed or printed as required.  This package will greatly simplify the writing of post-processors for all kinds of data.</p>
+<p>The user defines a function to generate data products.</p>
+<p>Trendify collects data products, saves them to database (JSON) files, and produces the following outputs:</p>
+<ul>
+<li>Static outputs<ul>
+<li>CSV</li>
+<li>JPG</li>
+</ul>
+</li>
+<li>Interactive outputs<ul>
+<li>Grafana dashboard with live data from server</li>
+</ul>
+</li>
+</ul>
+<p><em>Static</em> outputs are useful for inclusion in a report.  <em>Interactive</em> outputs are useful for investigating data.</p>
+<p>Example:
+    Grafana allows users to mouse-over outlier datapoints to identify interesting or problematic results</p>
+<p>The trendify API provides the following <code>DataProduct</code> child classes to the end user:</p>
+<ul>
+<li>Trace2D: A line on an xy chart</li>
+<li>Point2D: A point on an xy chart</li>
+<li>TableEntry: A cell in a table</li>
+<li>HistogramEntry: Data to be histogrammed</li>
+</ul>
+<p>Trendify sorts and collects like-tagged products for interactive display or writing to static outputs.</p>
+<p>Labels and figure formats are assignable.  Trendify will automatically collapse matplotlib legend labels
+down to a unique set.  Use unique pen label, marker label, histogram style label, or row/col pair as unique identifiers.  Make sure that the formatting specified for like-tagged <code>DataProduct</code> istances to be the same.</p>
+<p>See the <a class="autorefs autorefs-internal" href="usage/#usage">Usage</a> page for examples.</p>
 
 
 
@@ -827,11 +902,13 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["header.autohide", "content.tabs.link", "content.tabs", "navigation.tabs", "search.suggest", "search.highlight", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.tracking", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy", "content.tooltips"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["search.suggest", "search.highlight", "navigation.tabs", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.tracking", "content.tabs", "content.tabs.link", "content.code.annotation", "content.code.copy", "content.tooltips"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="assets/javascripts/bundle.83f73b43.min.js"></script>
       
     
-  </body>
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
 </html>
