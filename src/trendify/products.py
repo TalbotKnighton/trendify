@@ -1703,7 +1703,7 @@ def make_it_trendy(
         data_product_generator: Callable[[Path], ProductList] | None,
         data_dirs: List[Path],
         products_dir: Path,
-        assets_dir: Path,
+        assets_dir: Path | None = None,
         grafana_dir: Path | None = None,
         n_procs: int = 1,
         dpi: int = 500,
@@ -1749,24 +1749,26 @@ def make_it_trendy(
         data_dirs=data_dirs,
         output_dir=products_dir,
     )
-    make_grafana_dashboard(
-        sorted_products_dir=products_dir,
-        output_dir=grafana_dir,
-        n_procs=n_procs,
-    )
-    make_tables_and_figures(
-        products_dir=products_dir,
-        output_dir=assets_dir,
-        dpi=dpi,
-        n_procs=n_procs,
-        make_tables=make_tables,
-        make_xy_plots=make_xy_plots,
-        make_histograms=make_histograms,
-    )
-    make_include_files(
-        root_dir=assets_dir,
-        heading_level=2,
-    )
+    if grafana_dir is not None:
+        make_grafana_dashboard(
+            sorted_products_dir=products_dir,
+            output_dir=grafana_dir,
+            n_procs=n_procs,
+        )
+    if assets_dir is not None:
+        make_tables_and_figures(
+            products_dir=products_dir,
+            output_dir=assets_dir,
+            dpi=dpi,
+            n_procs=n_procs,
+            make_tables=make_tables,
+            make_xy_plots=make_xy_plots,
+            make_histograms=make_histograms,
+        )
+        make_include_files(
+            root_dir=assets_dir,
+            heading_level=2,
+        )
 
 
 def make_sample_data(workdir: Path, n_folders: int = 10):
