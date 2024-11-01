@@ -47,9 +47,9 @@ __all__ = [
     'sort_products',
     'make_grafana_dashboard',
     'make_tables_and_figures',
-    'make_include_files'
+    'make_include_files',
     # combined process
-    'process_batch',
+    'make_it_trendy',
 ]
 
 R = TypeVar('R')
@@ -1699,7 +1699,75 @@ def make_tables_and_figures(
             n_procs=n_procs,
         )
 
-            
+def make_it_trendy(
+        data_product_generator: Callable[[Path], ProductList] | None,
+        data_dirs: List[Path],
+        products_dir: Path,
+        assets_dir: Path,
+        grafana_dir: Path | None = None,
+        n_procs: int = 1,
+        dpi: int = 500,
+        make_tables: bool = True,
+        make_xy_plots: bool = True,
+        make_histograms: bool = True,
+    ):
+    """
+    Maps `data_product_generator` over `dirs_in` to produce data product JSON files in those directories.
+    Sorts the generated data products into a nested file structure starting from `dir_products`.
+    Nested folders are generated for tags that are Tuples.  Sorted data files are named according to the
+    directory from which they were loaded.
+
+    Args:
+        data_product_generator (Callable[[Path], ProductList] | None): A callable function that returns
+            a list of data products given a working directory.
+        data_dirs (List[Path]): Directories over which to map the `product_generator`
+        products_dir (Path): Directory to which the sorted data products will be written
+        assets_dir (Path): Directory to which tables and matplotlib histograms and plots will be written if
+            the appropriate boolean variables `make_tables`, `make_xy_plots`, `make_histograms` are true.
+        grafana_dir (Path): Directory to which generated grafana panels and dashboard will be written.
+        n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be
+            processed sequentially (easier for debugging since the full traceback will be provided).
+            If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
+            be used to load and process directories and/or tags in parallel.
+        dpi (int = 500): Resolution of output plots when using matplotlib 
+            (for `make_xy_plots==True` and/or `make_histograms==True`)
+        make_tables (bool = True): Whether or not to collect the 
+            [`TableEntry`][trendify.products.TableEntry] products and write them
+            to CSV files (`<tag>_melted.csv` with `<tag>_pivot.csv` and `<tag>_stats.csv` when possible).
+        make_xy_plots (bool = True): Whether or not to plot the [`XYData`][trendify.products.XYData] products using matplotlib
+        make_histograms (bool = True): Whether or not to generate histograms of the 
+            [`HistogramEntry`][trendify.products.HistogramEntry] products
+            using matplotlib.
+    """
+    make_products(
+        product_generator=data_product_generator,
+        dirs=data_dirs,
+        n_procs=n_procs,
+    )
+    sort_products(
+        data_dirs=data_dirs,
+        output_dir=products_dir,
+    )
+    make_grafana_dashboard(
+        sorted_products_dir=products_dir,
+        output_dir=grafana_dir,
+        n_procs=n_procs,
+    )
+    make_tables_and_figures(
+        products_dir=products_dir,
+        output_dir=assets_dir,
+        dpi=dpi,
+        n_procs=n_procs,
+        make_tables=make_tables,
+        make_xy_plots=make_xy_plots,
+        make_histograms=make_histograms,
+    )
+    make_include_files(
+        root_dir=assets_dir,
+        heading_level=2,
+    )
+
+
 def make_sample_data(workdir: Path, n_folders: int = 10):
     """
     Makes some sample data from which to generate products
@@ -1747,7 +1815,7 @@ def make_sample_data(workdir: Path, n_folders: int = 10):
     aggregate_df.index.name = 'Directory'
     aggregate_df.to_csv(aggregate_dir.joinpath('stdin.csv'))
 
-def sample_processor(workdir: Path) -> List[DataProduct]:
+def sample_processor(workdir: Path) -> ProductList:
     """
     Processes the generated sample data in given workdir returning several types of data products.
 
@@ -1793,76 +1861,6 @@ def sample_processor(workdir: Path) -> List[DataProduct]:
     
     return traces + points + table_entries
 
-
-def process_batch(
-        product_generator: Callable[[Path], DataProductCollection] | None,
-        data_dirs: List[Path],
-        products_dir: Path,
-        outputs_dir: Path,
-        grafana_dir: Path | None = None,
-        n_procs: int = 1,
-        dpi: int = 500,
-        make_tables: bool = True,
-        make_xy_plots: bool = True,
-        make_histograms: bool = True,
-    ):
-    """
-    Maps `product_generator` over `dirs_in` to produce data product JSON files in those directories.
-    Sorts the generated data products into a nested file structure starting from `dir_products`.
-    Nested folders are generated for tags that are Tuples.  Sorted data files are named according to the
-    directory from which they were loaded.
-
-    Args:
-        product_generator (Callable[[Path], ProductList] | None): A callable function that returns
-            a list of data products given a working directory.
-        data_dirs (List[Path]): Directories over which to map the `product_generator`
-        products_dir (Path): Directory to which the sorted data products will be written
-        outputs_dir (Path): Directory to which tables and matplotlib histograms and plots will be written if
-            the appropriate boolean variables `make_tables`, `make_xy_plots`, `make_histograms` are true.
-        grafana_dir (Path): Directory to which generated grafana panels and dashboard will be written.
-        n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be
-            processed sequentially (easier for debugging since the full traceback will be provided).
-            If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
-            be used to load and process directories and/or tags in parallel.
-        dpi (int = 500): Resolution of output plots when using matplotlib 
-            (for `make_xy_plots==True` and/or `make_histograms==True`)
-        make_tables (bool = True): Whether or not to collect the 
-            [`TableEntry`][trendify.products.TableEntry] products and write them
-            to CSV files (`<tag>_melted.csv` with `<tag>_pivot.csv` and `<tag>_stats.csv` when possible).
-        make_xy_plots (bool = True): Whether or not to plot the [`XYData`][trendify.products.XYData] products using matplotlib
-        make_histograms (bool = True): Whether or not to generate histograms of the 
-            [`HistogramEntry`][trendify.products.HistogramEntry] products
-            using matplotlib.
-    """
-    make_products(
-        product_generator=product_generator,
-        dirs=data_dirs,
-        n_procs=n_procs,
-    )
-    sort_products(
-        data_dirs=data_dirs,
-        output_dir=products_dir,
-    )
-    make_grafana_dashboard(
-        sorted_products_dir=products_dir,
-        output_dir=grafana_dir,
-        n_procs=n_procs,
-    )
-    make_tables_and_figures(
-        products_dir=products_dir,
-        output_dir=outputs_dir,
-        dpi=dpi,
-        n_procs=n_procs,
-        make_tables=make_tables,
-        make_xy_plots=make_xy_plots,
-        make_histograms=make_histograms,
-    )
-    make_include_files(
-        root_dir=outputs_dir,
-        heading_level=2,
-    )
-
-
 def main():
     """
     Makes sample data, processes it, and serves it for importing into Grafana
@@ -1902,19 +1900,17 @@ def main():
         root_dir=outputs_dir,
         heading_level=2,
     )
-    process_batch(
-        product_generator=sample_processor, 
-        data_dirs=process_dirs, 
-        products_dir=products_dir,
-        outputs_dir=outputs_dir, 
-        grafana_dir=grafana_dir,
-        n_procs=1,
-        dpi=300,
-        make_tables=True,
-        make_histograms=True,
-        make_xy_plots=True,
-    )
-    # make_include_files(products_dir=products_dir, products_dir_replacement_path='//localhost:8001/', heading_level=None)
-
+    # process_batch(
+    #     product_generator=sample_processor, 
+    #     data_dirs=process_dirs, 
+    #     products_dir=products_dir,
+    #     outputs_dir=outputs_dir, 
+    #     grafana_dir=grafana_dir,
+    #     n_procs=1,
+    #     dpi=300,
+    #     make_tables=True,
+    #     make_histograms=True,
+    #     make_xy_plots=True,
+    # )
 if __name__ == '__main__':
     main()

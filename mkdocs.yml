@@ -48,7 +48,7 @@ theme:
 
 nav:
   - Welcome: index.md
-  - Usage: usage.md
+  # - Usage: usage.md
   - Code Reference: reference/
 
 # Add the extra section here
