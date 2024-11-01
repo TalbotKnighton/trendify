@@ -1739,6 +1739,7 @@ def make_it_trendy(
             [`HistogramEntry`][trendify.products.HistogramEntry] products
             using matplotlib.
     """
+    data_dirs = list(data_dirs)
     make_products(
         product_generator=data_product_generator,
         dirs=data_dirs,
