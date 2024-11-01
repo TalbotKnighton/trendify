@@ -613,8 +613,8 @@ class HistogramEntry(DataProduct):
     product_type: Literal['HistogramEntry'] = 'HistogramEntry'
     value: float | str
     tags: Tags
-    style: HistogramStyle
-    format2d: Format2D
+    style: HistogramStyle = HistogramStyle()
+    format2d: Format2D = Format2D()
 
     class Config:
         """
