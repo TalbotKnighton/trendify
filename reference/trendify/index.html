@@ -4794,10 +4794,10 @@ This path should correspond to includ dir in <code>mkdocs.yml</code> file.  (See
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">input_dirs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">],</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">output_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">n_procs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">no_static_tables</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">no_static_xy_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">no_static_histograms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">dpi_static_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">dpi_static_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">no_static_tables</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">no_static_xy_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">no_static_histograms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">no_grafana_dashboard</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">no_include_files</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="p">)</span>
@@ -4841,7 +4841,7 @@ a list of data products given a working directory.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>data_dirs</code>
+                <code>input_dirs</code>
             </td>
             <td>
                   <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</code>
@@ -4857,47 +4857,14 @@ a list of data products given a working directory.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>products_dir</code>
+                <code>output_dir</code>
             </td>
             <td>
                   <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Directory to which the sorted data products will be written</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>assets_dir</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Directory to which tables and matplotlib histograms and plots will be written if
-the appropriate boolean variables <code>make_tables</code>, <code>make_xy_plots</code>, <code>make_histograms</code> are true.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>grafana_dir</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Directory to which generated grafana panels and dashboard will be written.</p>
+                <p>Directory to which the trendify products and assets will be written.</p>
               </div>
             </td>
             <td>
@@ -4925,7 +4892,7 @@ be used to load and process directories and/or tags in parallel.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>dpi</code>
+                <code>dpi_static_plots</code>
             </td>
             <td>
                   <code>int = 500</code>
@@ -4937,59 +4904,89 @@ be used to load and process directories and/or tags in parallel.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>500</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_tables</code>
+                <code>no_static_tables</code>
             </td>
             <td>
-                  <code>bool = True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether or not to collect the 
-<a class="autorefs autorefs-internal" href="API/#trendify.API.TableEntry"><code>TableEntry</code></a> products and write them
-to CSV files (<code>&lt;tag&gt;_melted.csv</code> with <code>&lt;tag&gt;_pivot.csv</code> and <code>&lt;tag&gt;_stats.csv</code> when possible).</p>
+                <p>Suppresses static assets from the <a class="autorefs autorefs-internal" href="API/#trendify.API.TableEntry"><code>TableEntry</code></a> products</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>False</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_xy_plots</code>
+                <code>no_static_xy_plots</code>
             </td>
             <td>
-                  <code>bool = True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether or not to plot the <a class="autorefs autorefs-internal" href="API/#trendify.API.XYData"><code>XYData</code></a> products using matplotlib</p>
+                <p>Suppresses static assets from the 
+<a class="autorefs autorefs-internal" href="API/#trendify.API.XYData"><code>XYData</code></a> 
+(<a class="autorefs autorefs-internal" href="API/#trendify.API.Trace2D">Trace2D</a> and <a class="autorefs autorefs-internal" href="API/#trendify.API.Point2D">Point2D</a>) products</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>False</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_histograms</code>
+                <code>no_static_histograms</code>
             </td>
             <td>
-                  <code>bool = True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether or not to generate histograms of the 
-<a class="autorefs autorefs-internal" href="API/#trendify.API.HistogramEntry"><code>HistogramEntry</code></a> products
-using matplotlib.</p>
+                <p>Suppresses static assets from the <a class="autorefs autorefs-internal" href="API/#trendify.API.HistogramEntry"><code>HistogramEntry</code></a> products</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>no_grafana_dashboard</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Suppresses generation of Grafana dashboard JSON definition file</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>no_include_files</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Suppresses generation of include files for importing static assets to markdown or LaTeX reports</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
             </td>
           </tr>
       </tbody>
