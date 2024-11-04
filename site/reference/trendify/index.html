@@ -18,7 +18,7 @@
         <link rel="prev" href="../grafana_api/transformations/transformations/">
       
       
-        <link rel="next" href="command_line_interface/">
+        <link rel="next" href="API/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -674,11 +674,11 @@
   
   
     <li class="md-nav__item">
-      <a href="command_line_interface/" class="md-nav__link">
+      <a href="API/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    command_line_interface
+    API
   </span>
   
 
@@ -695,11 +695,32 @@
   
   
     <li class="md-nav__item">
-      <a href="products/" class="md-nav__link">
+      <a href="CLI/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    products
+    CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    examples
   </span>
   
 
@@ -780,6 +801,24 @@
   
     <nav class="md-nav" aria-label="trendify">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trendify.ProductGenerator" class="md-nav__link">
+    <span class="md-ellipsis">
+      ProductGenerator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trendify.ProductList" class="md-nav__link">
+    <span class="md-ellipsis">
+      ProductList
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#trendify.DataProduct" class="md-nav__link">
@@ -1354,6 +1393,106 @@
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="trendify.ProductGenerator" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">ProductGenerator</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#trendify.ProductGenerator" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ProductGenerator</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Callable" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a></span><span class="p">[[</span><span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.ProductList" href="API/#trendify.API.ProductList">ProductList</a></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Callable method type.  Users must provide a <code>ProductGenerator</code> to map over raw data.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>path</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Workdir holding raw data (Should be one per run from a batch)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.ProductList" href="API/#trendify.API.ProductList">ProductList</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of data products to be sorted and used to produce assets</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="trendify.ProductList" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">ProductList</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#trendify.ProductList" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ProductList</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a></span><span class="p">[</span><span class="n"><span title="pydantic.SerializeAsAny">SerializeAsAny</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="pydantic.InstanceOf" href="https://docs.pydantic.dev/latest/api/functional_validators/#pydantic.functional_validators.InstanceOf">InstanceOf</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="trendify.API.DataProduct" href="API/#trendify.API.DataProduct">DataProduct</a></span><span class="p">]]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>List of serializable <a class="autorefs autorefs-internal" href="API/#trendify.API.DataProduct">DataProduct</a> or child classes thereof</p>
+    </div>
+
+</div>
+
 
 <div class="doc doc-object doc-class">
 
@@ -1392,14 +1531,14 @@
             <td>
               <div class="doc-md-description">
                 <p>Product type should be the same as the class name.
-The product type is used to search for products from a <a class="autorefs autorefs-internal" href="products/#trendify.products.DataProductCollection">DataProductCollection</a>.</p>
+The product type is used to search for products from a <a class="autorefs autorefs-internal" href="API/#trendify.API.DataProductCollection">DataProductCollection</a>.</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td><code><span title="trendify.DataProduct.tags">tags</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Tags" href="API/#trendify.API.Tags">Tags</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1495,7 +1634,7 @@ The product type is used to search for products from a <a class="autorefs autore
     <div class="doc doc-contents ">
 
         <p>Registers child subclasses to be able to parse them from JSON file using the 
-<a class="autorefs autorefs-internal" href="products/#trendify.products.DataProduct.deserialize_child_classes">deserialize_child_classes</a> method</p>
+<a class="autorefs autorefs-internal" href="API/#trendify.API.DataProduct.deserialize_child_classes">deserialize_child_classes</a> method</p>
 
     </div>
 
@@ -1686,7 +1825,7 @@ The product type is used to search for products from a <a class="autorefs autore
           <tr class="doc-section-item">
             <td><code><span title="trendify.DataProductCollection.elements">elements</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.ProductList" href="products/#trendify.products.ProductList">ProductList</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.ProductList" href="API/#trendify.API.ProductList">ProductList</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1723,7 +1862,7 @@ The product type is used to search for products from a <a class="autorefs autore
 
 
 <a href="#trendify.DataProductCollection.add_products" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">add_products</span><span class="p">(</span><span class="o">*</span><span class="n">products</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a></span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">add_products</span><span class="p">(</span><span class="o">*</span><span class="n">products</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.DataProduct" href="API/#trendify.API.DataProduct">DataProduct</a></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1746,7 +1885,7 @@ The product type is used to search for products from a <a class="autorefs autore
                 <code>products</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a> | <a class="autorefs autorefs-internal" title="trendify.products.ProductList" href="products/#trendify.products.ProductList">ProductList</a>, ...]</code>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a class="autorefs autorefs-internal" title="trendify.API.DataProduct" href="API/#trendify.API.DataProduct">DataProduct</a> | <a class="autorefs autorefs-internal" title="trendify.API.ProductList" href="API/#trendify.API.ProductList">ProductList</a>, ...]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1870,7 +2009,7 @@ Otherwise, returns None if no product JSON files were found.</p>
 
 
 <a href="#trendify.DataProductCollection.drop_products" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">drop_products</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Hashable" href="https://docs.python.org/3/library/typing.html#typing.Hashable">Hashable</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">object_type</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Type" href="https://docs.python.org/3/library/typing.html#typing.Type">Type</a></span><span class="p">[</span><span class="n"><span title="trendify.products.R">R</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Self" href="https://docs.python.org/3/library/typing.html#typing.Self">Self</a></span><span class="p">[</span><span class="n"><span title="trendify.products.R">R</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">drop_products</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Hashable" href="https://docs.python.org/3/library/typing.html#typing.Hashable">Hashable</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">object_type</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Type" href="https://docs.python.org/3/library/typing.html#typing.Type">Type</a></span><span class="p">[</span><span class="n"><span title="trendify.API.R">R</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Self" href="https://docs.python.org/3/library/typing.html#typing.Self">Self</a></span><span class="p">[</span><span class="n"><span title="trendify.API.R">R</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1894,7 +2033,7 @@ Otherwise, returns None if no product JSON files were found.</p>
                 <code>tag</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Tag" href="products/#trendify.products.Tag">Tag</a> | None</code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Tag" href="API/#trendify.API.Tag">Tag</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1936,7 +2075,7 @@ Otherwise, returns None if no product JSON files were found.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.DataProductCollection" href="API/#trendify.API.DataProductCollection">DataProductCollection</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1963,7 +2102,7 @@ Otherwise, returns None if no product JSON files were found.</p>
   </span>
 
 <a href="#trendify.DataProductCollection.from_iterable" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">from_iterable</span><span class="p">(</span><span class="o">*</span><span class="n">products</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="trendify.products.ProductList" href="products/#trendify.products.ProductList">ProductList</a></span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">from_iterable</span><span class="p">(</span><span class="o">*</span><span class="n">products</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="trendify.API.ProductList" href="API/#trendify.API.ProductList">ProductList</a></span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1987,7 +2126,7 @@ Otherwise, returns None if no product JSON files were found.</p>
                 <code>products</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a class="autorefs autorefs-internal" title="trendify.products.ProductList" href="products/#trendify.products.ProductList">ProductList</a>, ...]</code>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a class="autorefs autorefs-internal" title="trendify.API.ProductList" href="API/#trendify.API.ProductList">ProductList</a>, ...]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2036,7 +2175,7 @@ Otherwise, returns None if no product JSON files were found.</p>
 
 
 <a href="#trendify.DataProductCollection.get_products" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_products</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Hashable" href="https://docs.python.org/3/library/typing.html#typing.Hashable">Hashable</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">object_type</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Type" href="https://docs.python.org/3/library/typing.html#typing.Type">Type</a></span><span class="p">[</span><span class="n"><span title="trendify.products.R">R</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Self" href="https://docs.python.org/3/library/typing.html#typing.Self">Self</a></span><span class="p">[</span><span class="n"><span title="trendify.products.R">R</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_products</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Hashable" href="https://docs.python.org/3/library/typing.html#typing.Hashable">Hashable</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">object_type</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Type" href="https://docs.python.org/3/library/typing.html#typing.Type">Type</a></span><span class="p">[</span><span class="n"><span title="trendify.API.R">R</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Self" href="https://docs.python.org/3/library/typing.html#typing.Self">Self</a></span><span class="p">[</span><span class="n"><span title="trendify.API.R">R</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2061,7 +2200,7 @@ Both <code>tag</code> and <code>object_type</code> default to <code>None</code> 
                 <code>tag</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Tag" href="products/#trendify.products.Tag">Tag</a> | None</code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Tag" href="API/#trendify.API.Tag">Tag</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2103,7 +2242,7 @@ Both <code>tag</code> and <code>object_type</code> default to <code>None</code> 
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.DataProductCollection" href="API/#trendify.API.DataProductCollection">DataProductCollection</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2126,7 +2265,7 @@ Both <code>tag</code> and <code>object_type</code> default to <code>None</code> 
 
 
 <a href="#trendify.DataProductCollection.get_tags" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_tags</span><span class="p">(</span><span class="n">data_product_type</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Type" href="https://docs.python.org/3/library/typing.html#typing.Type">Type</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_tags</span><span class="p">(</span><span class="n">data_product_type</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Type" href="https://docs.python.org/3/library/typing.html#typing.Type">Type</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="trendify.API.DataProduct" href="API/#trendify.API.DataProduct">DataProduct</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2150,7 +2289,7 @@ Both <code>tag</code> and <code>object_type</code> default to <code>None</code> 
                 <code>data_product_type</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="typing.Type" href="https://docs.python.org/3/library/typing.html#typing.Type">Type</a>[<a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a>] | None</code>
+                  <code><a class="autorefs autorefs-external" title="typing.Type" href="https://docs.python.org/3/library/typing.html#typing.Type">Type</a>[<a class="autorefs autorefs-internal" title="trendify.API.DataProduct" href="API/#trendify.API.DataProduct">DataProduct</a>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2276,13 +2415,8 @@ sorted.</p>
 
 <a href="#trendify.DataProductCollection.process_single_tag_collection" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">process_single_tag_collection</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">dir_in</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">dir_out</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">make_tables</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">,</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">make_xy_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">,</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">make_histograms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">,</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">dpi</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">dir_in</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span> <span class="n">dir_out</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span> <span class="n">no_tables</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">,</span> <span class="n">no_xy_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">,</span> <span class="n">no_histograms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">,</span> <span class="n">dpi</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2312,7 +2446,7 @@ sorted.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>Input directory for loading assets</p>
               </div>
             </td>
             <td>
@@ -2328,7 +2462,7 @@ sorted.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>Output directory for assets</p>
               </div>
             </td>
             <td>
@@ -2337,14 +2471,14 @@ sorted.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_tables</code>
+                <code>no_tables</code>
             </td>
             <td>
                   <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>Suppresses table asset creation</p>
               </div>
             </td>
             <td>
@@ -2353,14 +2487,14 @@ sorted.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_xy_plots</code>
+                <code>no_xy_plots</code>
             </td>
             <td>
                   <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>Suppresses xy plot asset creation</p>
               </div>
             </td>
             <td>
@@ -2369,14 +2503,14 @@ sorted.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_histograms</code>
+                <code>no_histograms</code>
             </td>
             <td>
                   <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>Suppresses histogram asset creation</p>
               </div>
             </td>
             <td>
@@ -2392,7 +2526,7 @@ sorted.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>Sets resolution of asset output</p>
               </div>
             </td>
             <td>
@@ -2492,7 +2626,7 @@ nested folder structure generated according to the data tags.</p>
   </span>
 
 <a href="#trendify.DataProductCollection.union" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">union</span><span class="p">(</span><span class="o">*</span><span class="n">collections</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a></span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">union</span><span class="p">(</span><span class="o">*</span><span class="n">collections</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.DataProductCollection" href="API/#trendify.API.DataProductCollection">DataProductCollection</a></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2516,7 +2650,7 @@ nested folder structure generated according to the data tags.</p>
                 <code>collections</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a>, ...]</code>
+                  <code><a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a class="autorefs autorefs-internal" title="trendify.API.DataProductCollection" href="API/#trendify.API.DataProductCollection">DataProductCollection</a>, ...]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2580,7 +2714,7 @@ the provided <code>*collections</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.HashableBase" href="products/#trendify.products.HashableBase">HashableBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="trendify.API.HashableBase" href="API/#trendify.API.HashableBase">HashableBase</a></code></p>
 
 
         <p>Formatting data for matplotlib figure and axes</p>
@@ -2657,7 +2791,7 @@ the provided <code>*collections</code>.</p>
   </span>
 
 <a href="#trendify.Format2D.union_from_iterable" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">union_from_iterable</span><span class="p">(</span><span class="n">format2ds</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Iterable" href="https://docs.python.org/3/library/typing.html#typing.Iterable">Iterable</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></span><span class="p">])</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">union_from_iterable</span><span class="p">(</span><span class="n">format2ds</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Iterable" href="https://docs.python.org/3/library/typing.html#typing.Iterable">Iterable</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a></span><span class="p">])</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2682,7 +2816,7 @@ Requires that the label and title fields are identical for all format objects in
                 <code>format2ds</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="typing.Iterable" href="https://docs.python.org/3/library/typing.html#typing.Iterable">Iterable</a>[<a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a>]</code>
+                  <code><a class="autorefs autorefs-external" title="typing.Iterable" href="https://docs.python.org/3/library/typing.html#typing.Iterable">Iterable</a>[<a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2708,7 +2842,7 @@ Requires that the label and title fields are identical for all format objects in
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2744,7 +2878,7 @@ Requires that the label and title fields are identical for all format objects in
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="trendify.API.DataProduct" href="API/#trendify.API.DataProduct">DataProduct</a></code></p>
 
 
         <p>Use this class to specify a value to be collected into a matplotlib histogram.</p>
@@ -2785,7 +2919,7 @@ Requires that the label and title fields are identical for all format objects in
           <tr class="doc-section-item">
             <td><code><span title="trendify.HistogramEntry.tags">tags</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Tags" href="API/#trendify.API.Tags">Tags</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2796,7 +2930,7 @@ Requires that the label and title fields are identical for all format objects in
           <tr class="doc-section-item">
             <td><code><span title="trendify.HistogramEntry.style">style</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.HistogramStyle" href="products/#trendify.products.HistogramStyle">HistogramStyle</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.HistogramStyle" href="API/#trendify.API.HistogramStyle">HistogramStyle</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2807,7 +2941,7 @@ Requires that the label and title fields are identical for all format objects in
           <tr class="doc-section-item">
             <td><code><span title="trendify.HistogramEntry.format2d">format2d</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2899,7 +3033,7 @@ Requires that the label and title fields are identical for all format objects in
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.HashableBase" href="products/#trendify.products.HashableBase">HashableBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="trendify.API.HashableBase" href="API/#trendify.API.HashableBase">HashableBase</a></code></p>
 
 
         <p>Label and style data for generating histogram bars</p>
@@ -3064,7 +3198,7 @@ Requires that the label and title fields are identical for all format objects in
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.HashableBase" href="products/#trendify.products.HashableBase">HashableBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="trendify.API.HashableBase" href="API/#trendify.API.HashableBase">HashableBase</a></code></p>
 
 
         <p>Defines marker for scattering to matplotlib</p>
@@ -3262,7 +3396,7 @@ Requires that the label and title fields are identical for all format objects in
   </span>
 
 <a href="#trendify.Marker.from_pen" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">from_pen</span><span class="p">(</span><span class="n">pen</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a></span><span class="p">,</span> <span class="n">symbol</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">from_pen</span><span class="p">(</span><span class="n">pen</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.Pen" href="API/#trendify.API.Pen">Pen</a></span><span class="p">,</span> <span class="n">symbol</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3294,7 +3428,7 @@ Requires that the label and title fields are identical for all format objects in
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.HashableBase" href="products/#trendify.products.HashableBase">HashableBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="trendify.API.HashableBase" href="API/#trendify.API.HashableBase">HashableBase</a></code></p>
 
 
         <p>Defines the pen drawing to matplotlib.</p>
@@ -3468,7 +3602,7 @@ Requires that the label and title fields are identical for all format objects in
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.XYData" href="products/#trendify.products.XYData">XYData</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="trendify.API.XYData" href="API/#trendify.API.XYData">XYData</a></code></p>
 
 
         <p>Defines a point to be scattered onto xy plot.</p>
@@ -3498,7 +3632,7 @@ Requires that the label and title fields are identical for all format objects in
           <tr class="doc-section-item">
             <td><code><span title="trendify.Point2D.points">points</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-internal" title="trendify.products.Point2D" href="products/#trendify.products.Point2D">Point2D</a>]</code>
+                  <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-internal" title="trendify.API.Point2D" href="API/#trendify.API.Point2D">Point2D</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3510,7 +3644,7 @@ for <code>marker</code> and <code>format2d</code> fields to save space.</p>
           <tr class="doc-section-item">
             <td><code><span title="trendify.Point2D.marker">marker</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Marker" href="products/#trendify.products.Marker">Marker</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Marker" href="API/#trendify.API.Marker">Marker</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3523,7 +3657,7 @@ Eventually style information will be used in grafana.</p>
           <tr class="doc-section-item">
             <td><code><span title="trendify.Point2D.format2d">format2d</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3615,7 +3749,7 @@ Eventually style information will be used in grafana.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="trendify.API.DataProduct" href="API/#trendify.API.DataProduct">DataProduct</a></code></p>
 
 
         <p>Defines an entry to be collected into a table.</p>
@@ -3927,11 +4061,11 @@ row or column index pairs are repeated.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.XYData" href="products/#trendify.products.XYData">XYData</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="trendify.API.XYData" href="API/#trendify.API.XYData">XYData</a></code></p>
 
 
         <p>A collection of points comprising a trace.
-Use the <a class="autorefs autorefs-internal" href="products/#trendify.products.Trace2D.from_xy">Trace2D.from_xy</a> constructor.</p>
+Use the <a class="autorefs autorefs-internal" href="API/#trendify.API.Trace2D.from_xy">Trace2D.from_xy</a> constructor.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -3958,7 +4092,7 @@ Use the <a class="autorefs autorefs-internal" href="products/#trendify.products.
           <tr class="doc-section-item">
             <td><code><span title="trendify.Trace2D.points">points</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-internal" title="trendify.products.Point2D" href="products/#trendify.products.Point2D">Point2D</a>]</code>
+                  <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-internal" title="trendify.API.Point2D" href="API/#trendify.API.Point2D">Point2D</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3970,7 +4104,7 @@ for <code>marker</code> and <code>format2d</code> fields to save space.</p>
           <tr class="doc-section-item">
             <td><code><span title="trendify.Trace2D.pen">pen</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Pen" href="API/#trendify.API.Pen">Pen</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3983,7 +4117,7 @@ Eventually style information will be used in grafana.</p>
           <tr class="doc-section-item">
             <td><code><span title="trendify.Trace2D.format2d">format2d</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4160,17 +4294,17 @@ Eventually style information will be used in grafana.</p>
 
 <a href="#trendify.Trace2D.from_xy" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">from_xy</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">tags</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></span><span class="p">,</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">tags</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.Tags" href="API/#trendify.API.Tags">Tags</a></span><span class="p">,</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">x</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="numpydantic.NDArray" href="https://numpydantic.readthedocs.io/en/latest/api/index.html#numpydantic.NDArray">NDArray</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="numpydantic.Shape" href="https://numpydantic.readthedocs.io/en/latest/api/index.html#numpydantic.Shape">Shape</a></span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span><span class="p">],</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">y</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="numpydantic.NDArray" href="https://numpydantic.readthedocs.io/en/latest/api/index.html#numpydantic.NDArray">NDArray</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="numpydantic.Shape" href="https://numpydantic.readthedocs.io/en/latest/api/index.html#numpydantic.Shape">Shape</a></span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span><span class="p">],</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">pen</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a></span><span class="p">(),</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">format2d</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></span><span class="p">(),</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">pen</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.Pen" href="API/#trendify.API.Pen">Pen</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.Pen" href="API/#trendify.API.Pen">Pen</a></span><span class="p">(),</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">format2d</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a></span><span class="p">(),</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Creates a list of <a class="autorefs autorefs-internal" href="products/#trendify.products.Point2D">Point2D</a>s from xy data and returns a new <a class="autorefs autorefs-internal" href="products/#trendify.products.Trace2D">Trace2D</a> product.</p>
+        <p>Creates a list of <a class="autorefs autorefs-internal" href="API/#trendify.API.Point2D">Point2D</a>s from xy data and returns a new <a class="autorefs autorefs-internal" href="API/#trendify.API.Trace2D">Trace2D</a> product.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -4189,7 +4323,7 @@ Eventually style information will be used in grafana.</p>
                 <code>tags</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Tags" href="products/#trendify.products.Tags">Tags</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Tags" href="API/#trendify.API.Tags">Tags</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4237,7 +4371,7 @@ Eventually style information will be used in grafana.</p>
                 <code>pen</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Pen" href="API/#trendify.API.Pen">Pen</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4245,7 +4379,7 @@ Eventually style information will be used in grafana.</p>
               </div>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Pen" href="products/#trendify.products.Pen">Pen</a>()</code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Pen" href="API/#trendify.API.Pen">Pen</a>()</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -4253,7 +4387,7 @@ Eventually style information will be used in grafana.</p>
                 <code>format2d</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a></code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4261,7 +4395,7 @@ Eventually style information will be used in grafana.</p>
               </div>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="trendify.products.Format2D" href="products/#trendify.products.Format2D">Format2D</a>()</code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.Format2D" href="API/#trendify.API.Format2D">Format2D</a>()</code>
             </td>
           </tr>
       </tbody>
@@ -4394,7 +4528,7 @@ It still may end up being useful if my plotting method changes.  Keeping for pot
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="trendify.products.DataProduct" href="products/#trendify.products.DataProduct">DataProduct</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="trendify.API.DataProduct" href="API/#trendify.API.DataProduct">DataProduct</a></code></p>
 
 
         <p>Base class for children of DataProduct to be plotted ax xy data on a 2D plot</p>
@@ -4656,16 +4790,16 @@ This path should correspond to includ dir in <code>mkdocs.yml</code> file.  (See
 
 <a href="#trendify.make_it_trendy" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">make_it_trendy</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">data_product_generator</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Callable" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a></span><span class="p">[[</span><span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.ProductList" href="products/#trendify.products.ProductList">ProductList</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">data_dirs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">],</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">products_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">assets_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">grafana_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">n_procs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">dpi</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">make_tables</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">make_xy_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">make_histograms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">data_product_generator</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.ProductGenerator" href="API/#trendify.API.ProductGenerator">ProductGenerator</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">input_dirs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">],</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">output_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">n_procs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">dpi_static_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">no_static_tables</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">no_static_xy_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">no_static_histograms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">no_grafana_dashboard</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">no_include_files</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="p">)</span>
 </code></pre></div>
 
@@ -4693,7 +4827,7 @@ directory from which they were loaded.</p>
                 <code>data_product_generator</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="typing.Callable" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>[[<a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>], <a class="autorefs autorefs-internal" title="trendify.products.ProductList" href="products/#trendify.products.ProductList">ProductList</a>] | None</code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.ProductGenerator" href="API/#trendify.API.ProductGenerator">ProductGenerator</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4707,7 +4841,7 @@ a list of data products given a working directory.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>data_dirs</code>
+                <code>input_dirs</code>
             </td>
             <td>
                   <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</code>
@@ -4723,51 +4857,18 @@ a list of data products given a working directory.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>products_dir</code>
+                <code>output_dir</code>
             </td>
             <td>
                   <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Directory to which the sorted data products will be written</p>
+                <p>Directory to which the trendify products and assets will be written.</p>
               </div>
             </td>
             <td>
                 <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>assets_dir</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Directory to which tables and matplotlib histograms and plots will be written if
-the appropriate boolean variables <code>make_tables</code>, <code>make_xy_plots</code>, <code>make_histograms</code> are true.</p>
-              </div>
-            </td>
-            <td>
-                  <code>None</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>grafana_dir</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Directory to which generated grafana panels and dashboard will be written.</p>
-              </div>
-            </td>
-            <td>
-                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -4791,7 +4892,7 @@ be used to load and process directories and/or tags in parallel.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>dpi</code>
+                <code>dpi_static_plots</code>
             </td>
             <td>
                   <code>int = 500</code>
@@ -4808,54 +4909,84 @@ be used to load and process directories and/or tags in parallel.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_tables</code>
+                <code>no_static_tables</code>
             </td>
             <td>
-                  <code>bool = True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether or not to collect the 
-<a class="autorefs autorefs-internal" href="products/#trendify.products.TableEntry"><code>TableEntry</code></a> products and write them
-to CSV files (<code>&lt;tag&gt;_melted.csv</code> with <code>&lt;tag&gt;_pivot.csv</code> and <code>&lt;tag&gt;_stats.csv</code> when possible).</p>
+                <p>Suppresses static assets from the <a class="autorefs autorefs-internal" href="API/#trendify.API.TableEntry"><code>TableEntry</code></a> products</p>
               </div>
             </td>
             <td>
-                  <code>True</code>
+                  <code>False</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_xy_plots</code>
+                <code>no_static_xy_plots</code>
             </td>
             <td>
-                  <code>bool = True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether or not to plot the <a class="autorefs autorefs-internal" href="products/#trendify.products.XYData"><code>XYData</code></a> products using matplotlib</p>
+                <p>Suppresses static assets from the 
+<a class="autorefs autorefs-internal" href="API/#trendify.API.XYData"><code>XYData</code></a> 
+(<a class="autorefs autorefs-internal" href="API/#trendify.API.Trace2D">Trace2D</a> and <a class="autorefs autorefs-internal" href="API/#trendify.API.Point2D">Point2D</a>) products</p>
               </div>
             </td>
             <td>
-                  <code>True</code>
+                  <code>False</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_histograms</code>
+                <code>no_static_histograms</code>
             </td>
             <td>
-                  <code>bool = True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether or not to generate histograms of the 
-<a class="autorefs autorefs-internal" href="products/#trendify.products.HistogramEntry"><code>HistogramEntry</code></a> products
-using matplotlib.</p>
+                <p>Suppresses static assets from the <a class="autorefs autorefs-internal" href="API/#trendify.API.HistogramEntry"><code>HistogramEntry</code></a> products</p>
               </div>
             </td>
             <td>
-                  <code>True</code>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>no_grafana_dashboard</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Suppresses generation of Grafana dashboard JSON definition file</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>no_include_files</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Suppresses generation of include files for importing static assets to markdown or LaTeX reports</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
             </td>
           </tr>
       </tbody>
@@ -4874,7 +5005,7 @@ using matplotlib.</p>
 
 <a href="#trendify.make_products" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">make_products</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">product_generator</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Callable" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a></span><span class="p">[[</span><span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.products.DataProductCollection" href="products/#trendify.products.DataProductCollection">DataProductCollection</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">product_generator</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Callable" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a></span><span class="p">[[</span><span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="trendify.API.DataProductCollection" href="API/#trendify.API.DataProductCollection">DataProductCollection</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">dirs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">],</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">n_procs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">)</span>
@@ -4904,7 +5035,7 @@ directory from which they were loaded.</p>
                 <code>product_generator</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="typing.Callable" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>[[<a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>], <a class="autorefs autorefs-internal" title="trendify.products.ProductList" href="products/#trendify.products.ProductList">ProductList</a>] | None</code>
+                  <code><a class="autorefs autorefs-internal" title="trendify.API.ProductGenerator" href="API/#trendify.API.ProductGenerator">ProductGenerator</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4971,9 +5102,9 @@ be used to load and process directories and/or tags in parallel.</p>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">output_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">dpi</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">n_procs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">make_tables</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">make_xy_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">make_histograms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">no_tables</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">no_xy_plots</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">no_histograms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">)</span>
 </code></pre></div>
 
@@ -5065,54 +5196,54 @@ be used to load and process directories and/or tags in parallel.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_tables</code>
+                <code>no_tables</code>
             </td>
             <td>
-                  <code>bool = True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Whether or not to collect the 
-<a class="autorefs autorefs-internal" href="products/#trendify.products.TableEntry"><code>TableEntry</code></a> products and write them
+<a class="autorefs autorefs-internal" href="API/#trendify.API.TableEntry"><code>TableEntry</code></a> products and write them
 to CSV files (<code>&lt;tag&gt;_melted.csv</code> with <code>&lt;tag&gt;_pivot.csv</code> and <code>&lt;tag&gt;_stats.csv</code> when possible).</p>
               </div>
             </td>
             <td>
-                  <code>True</code>
+                  <code>False</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_xy_plots</code>
+                <code>no_xy_plots</code>
             </td>
             <td>
-                  <code>bool = True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether or not to plot the <a class="autorefs autorefs-internal" href="products/#trendify.products.XYData"><code>XYData</code></a> products using matplotlib</p>
+                <p>Whether or not to plot the <a class="autorefs autorefs-internal" href="API/#trendify.API.XYData"><code>XYData</code></a> products using matplotlib</p>
               </div>
             </td>
             <td>
-                  <code>True</code>
+                  <code>False</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>make_histograms</code>
+                <code>no_histograms</code>
             </td>
             <td>
-                  <code>bool = True</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Whether or not to generate histograms of the 
-<a class="autorefs autorefs-internal" href="products/#trendify.products.HistogramEntry"><code>HistogramEntry</code></a> products
+<a class="autorefs autorefs-internal" href="API/#trendify.API.HistogramEntry"><code>HistogramEntry</code></a> products
 using matplotlib.</p>
               </div>
             </td>
             <td>
-                  <code>True</code>
+                  <code>False</code>
             </td>
           </tr>
       </tbody>

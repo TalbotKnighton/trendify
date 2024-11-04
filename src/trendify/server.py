@@ -11,7 +11,7 @@ from flask import Flask
 from waitress import serve
 
 # Local imports
-from trendify.products import (
+from trendify.API import (
     # Collection
     DataProductCollection,
     # DataProduct types

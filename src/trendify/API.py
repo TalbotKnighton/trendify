@@ -31,6 +31,8 @@ from pydantic import BaseModel, ConfigDict, Field, InstanceOf, SerializeAsAny
 import grafana_api as gapi
 
 __all__ = [
+    'ProductList',
+    'ProductGenerator',
     # DataProducts
     'Trace2D', # XY Data
     'Point2D', # XY Data
@@ -51,6 +53,11 @@ __all__ = [
     # combined process
     'make_it_trendy',
 ]
+
+
+def _mkdir(p: Path):
+    p.mkdir(exist_ok=True, parents=True)
+    return p
 
 R = TypeVar('R')
 
@@ -363,7 +370,7 @@ class DataProduct(BaseModel):
 
     Attributes:
         product_type (Hashable): Product type should be the same as the class name.
-            The product type is used to search for products from a [DataProductCollection][trendify.products.DataProductCollection].
+            The product type is used to search for products from a [DataProductCollection][trendify.API.DataProductCollection].
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
@@ -374,7 +381,7 @@ class DataProduct(BaseModel):
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
         Registers child subclasses to be able to parse them from JSON file using the 
-        [deserialize_child_classes][trendify.products.DataProduct.deserialize_child_classes] method
+        [deserialize_child_classes][trendify.API.DataProduct.deserialize_child_classes] method
         """
         super().__init_subclass__(**kwargs)
         _data_product_subclass_registry[cls.__name__] = cls    
@@ -422,7 +429,20 @@ class DataProduct(BaseModel):
                     kwargs[key][index] = current_duck
 
 ProductList = List[SerializeAsAny[InstanceOf[DataProduct]]]
-"""List of serializable [DataProduct][trendify.products.DataProduct] or child classes thereof"""
+"""List of serializable [DataProduct][trendify.API.DataProduct] or child classes thereof"""
+
+
+ProductGenerator = Callable[[Path], ProductList]
+"""
+Callable method type.  Users must provide a `ProductGenerator` to map over raw data.
+
+Args:
+    path (Path): Workdir holding raw data (Should be one per run from a batch)
+
+Returns:
+    (ProductList): List of data products to be sorted and used to produce assets
+"""
+
 
 class XYData(DataProduct):
     """
@@ -432,7 +452,7 @@ class XYData(DataProduct):
 class Trace2D(XYData):
     """
     A collection of points comprising a trace.
-    Use the [Trace2D.from_xy][trendify.products.Trace2D.from_xy] constructor.
+    Use the [Trace2D.from_xy][trendify.API.Trace2D.from_xy] constructor.
 
     Attributes:
         product_type (Literal['Trace2D']): Name of class type to be used as a constructor.
@@ -507,7 +527,7 @@ class Trace2D(XYData):
             format2d: Format2D = Format2D(),
         ):
         """
-        Creates a list of [Point2D][trendify.products.Point2D]s from xy data and returns a new [Trace2D][trendify.products.Trace2D] product.
+        Creates a list of [Point2D][trendify.API.Point2D]s from xy data and returns a new [Trace2D][trendify.API.Trace2D] product.
 
         Args:
             tags (Tags): Hashable tags used to sort data products
@@ -940,9 +960,9 @@ class DataProductCollection(BaseModel):
             cls,
             dir_in: Path,
             dir_out: Path,
-            make_tables: bool,
-            make_xy_plots: bool,
-            make_histograms: bool,
+            no_tables: bool,
+            no_xy_plots: bool,
+            no_histograms: bool,
             dpi: int,
         ):
         """
@@ -951,12 +971,12 @@ class DataProductCollection(BaseModel):
         sorted.
 
         Args:
-            dir_in (Path):
-            dir_out (Path):
-            make_tables (bool):
-            make_xy_plots (bool):
-            make_histograms (bool):
-            dpi (int):
+            dir_in (Path):  Input directory for loading assets
+            dir_out (Path):  Output directory for assets
+            no_tables (bool):  Suppresses table asset creation
+            no_xy_plots (bool):  Suppresses xy plot asset creation
+            no_histograms (bool):  Suppresses histogram asset creation
+            dpi (int):  Sets resolution of asset output
         """
 
         collection = cls.collect_from_all_jsons(dir_in)
@@ -965,7 +985,7 @@ class DataProductCollection(BaseModel):
 
             [tag] = collection.get_tags()
 
-            if make_tables:
+            if not no_tables:
                 
                 table_entries: List[TableEntry] = collection.get_products(tag=tag, object_type=TableEntry).elements
 
@@ -978,7 +998,7 @@ class DataProductCollection(BaseModel):
                     )
                     print(f'\nFinished tables for {tag = }\n')
 
-            if make_xy_plots:
+            if not no_xy_plots:
                 
                 traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
                 points: List[Point2D] = collection.get_products(tag=tag, object_type=Point2D).elements
@@ -994,7 +1014,7 @@ class DataProductCollection(BaseModel):
                     )
                     print(f'\nFinished xy plot for {tag = }\n')
             
-            if make_histograms:
+            if not no_histograms:
                 histogram_entries: List[HistogramEntry] = collection.get_products(tag=tag, object_type=HistogramEntry).elements
 
                 if histogram_entries:
@@ -1115,10 +1135,10 @@ class DataProductGenerator:
     A wrapper for saving the data products generated by a user defined function
 
     Args:
-        processor (Callable[[Path], ProductList]): A callable that receives a working directory
+        processor (ProductGenerator): A callable that receives a working directory
             and returns a list of data products.
     """
-    def __init__(self, processor: Callable[[Path], ProductList]):
+    def __init__(self, processor: ProductGenerator):
         self._processor = processor
     
     def process_and_save(self, workdir: Path):
@@ -1352,7 +1372,7 @@ class TableBuilder:
 
 class Histogrammer:
     """
-    Class for loading data products and histogramming the [`HistogramEntry`][trendify.products.HistogramEntry]s
+    Class for loading data products and histogramming the [`HistogramEntry`][trendify.API.HistogramEntry]s
 
     Args:
         in_dirs (List[Path]): Directories from which the data products are to be loaded.
@@ -1408,7 +1428,7 @@ class Histogrammer:
 
         Args:
             tag (Hashable): Tag used to filter the loaded data products
-            histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendify.products.HistogramEntry]s
+            histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendify.API.HistogramEntry]s
             dir_out (Path): Directory to which the generated histogram will be stored
             dpi (int): resolution of plot
         """
@@ -1577,7 +1597,7 @@ def make_products(
     directory from which they were loaded.
 
     Args:
-        product_generator (Callable[[Path], ProductList] | None): A callable function that returns
+        product_generator (ProductGenerator | None): A callable function that returns
             a list of data products given a working directory.
         dirs (List[Path]): Directories over which to map the `product_generator`
         n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be
@@ -1654,9 +1674,9 @@ def make_tables_and_figures(
         output_dir: Path,
         dpi: int = 500,
         n_procs: int = 1,
-        make_tables: bool = True,
-        make_xy_plots: bool = True,
-        make_histograms: bool = True,
+        no_tables: bool = False,
+        no_xy_plots: bool = False,
+        no_histograms: bool = False,
     ):
     """
     Makes CSV tables and creates plots (using matplotlib).
@@ -1673,43 +1693,38 @@ def make_tables_and_figures(
             be used to load and process directories and/or tags in parallel.
         dpi (int = 500): Resolution of output plots when using matplotlib 
             (for `make_xy_plots==True` and/or `make_histograms==True`)
-        make_tables (bool = True): Whether or not to collect the 
-            [`TableEntry`][trendify.products.TableEntry] products and write them
+        no_tables (bool): Whether or not to collect the 
+            [`TableEntry`][trendify.API.TableEntry] products and write them
             to CSV files (`<tag>_melted.csv` with `<tag>_pivot.csv` and `<tag>_stats.csv` when possible).
-        make_xy_plots (bool = True): Whether or not to plot the [`XYData`][trendify.products.XYData] products using matplotlib
-        make_histograms (bool = True): Whether or not to generate histograms of the 
-            [`HistogramEntry`][trendify.products.HistogramEntry] products
+        no_xy_plots (bool): Whether or not to plot the [`XYData`][trendify.API.XYData] products using matplotlib
+        no_histograms (bool): Whether or not to generate histograms of the 
+            [`HistogramEntry`][trendify.API.HistogramEntry] products
             using matplotlib.
     """
-    if make_tables or make_xy_plots or make_histograms:
+    if not (no_tables and no_xy_plots and no_histograms):
         product_dirs = list(products_dir.glob('**/*/'))
-        out_dirs = [output_dir]*len(product_dirs)
-        table_makes = [make_tables]*len(product_dirs)
-        xy_plot_makes = [make_xy_plots]*len(product_dirs)
-        histogram_makes = [make_histograms]*len(product_dirs)
-        dpis = [dpi]*len(product_dirs)
         map_callable(
             DataProductCollection.process_single_tag_collection,
             product_dirs,
-            out_dirs,
-            table_makes,
-            xy_plot_makes,
-            histogram_makes,
-            dpis,
+            [output_dir]*len(product_dirs),
+            [no_tables]*len(product_dirs),
+            [no_xy_plots]*len(product_dirs),
+            [no_histograms]*len(product_dirs),
+            [dpi]*len(product_dirs),
             n_procs=n_procs,
         )
 
 def make_it_trendy(
-        data_product_generator: Callable[[Path], ProductList] | None,
-        data_dirs: List[Path],
-        products_dir: Path,
-        assets_dir: Path | None = None,
-        grafana_dir: Path | None = None,
+        data_product_generator: ProductGenerator | None,
+        input_dirs: List[Path],
+        output_dir: Path,
         n_procs: int = 1,
-        dpi: int = 500,
-        make_tables: bool = True,
-        make_xy_plots: bool = True,
-        make_histograms: bool = True,
+        dpi_static_plots: int = 500,
+        no_static_tables: bool = False,
+        no_static_xy_plots: bool = False,
+        no_static_histograms: bool = False,
+        no_grafana_dashboard: bool = False,
+        no_include_files: bool = False,
     ):
     """
     Maps `data_product_generator` over `dirs_in` to produce data product JSON files in those directories.
@@ -1718,202 +1733,69 @@ def make_it_trendy(
     directory from which they were loaded.
 
     Args:
-        data_product_generator (Callable[[Path], ProductList] | None): A callable function that returns
+        data_product_generator (ProductGenerator | None): A callable function that returns
             a list of data products given a working directory.
-        data_dirs (List[Path]): Directories over which to map the `product_generator`
-        products_dir (Path): Directory to which the sorted data products will be written
-        assets_dir (Path): Directory to which tables and matplotlib histograms and plots will be written if
-            the appropriate boolean variables `make_tables`, `make_xy_plots`, `make_histograms` are true.
-        grafana_dir (Path): Directory to which generated grafana panels and dashboard will be written.
+        input_dirs (List[Path]): Directories over which to map the `product_generator`
+        output_dir (Path): Directory to which the trendify products and assets will be written.
         n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be
             processed sequentially (easier for debugging since the full traceback will be provided).
             If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
             be used to load and process directories and/or tags in parallel.
-        dpi (int = 500): Resolution of output plots when using matplotlib 
+        dpi_static_plots (int = 500): Resolution of output plots when using matplotlib 
             (for `make_xy_plots==True` and/or `make_histograms==True`)
-        make_tables (bool = True): Whether or not to collect the 
-            [`TableEntry`][trendify.products.TableEntry] products and write them
-            to CSV files (`<tag>_melted.csv` with `<tag>_pivot.csv` and `<tag>_stats.csv` when possible).
-        make_xy_plots (bool = True): Whether or not to plot the [`XYData`][trendify.products.XYData] products using matplotlib
-        make_histograms (bool = True): Whether or not to generate histograms of the 
-            [`HistogramEntry`][trendify.products.HistogramEntry] products
-            using matplotlib.
+        no_static_tables (bool): Suppresses static assets from the [`TableEntry`][trendify.API.TableEntry] products
+        no_static_xy_plots (bool): Suppresses static assets from the 
+            [`XYData`][trendify.API.XYData] 
+            ([Trace2D][trendify.API.Trace2D] and [Point2D][trendify.API.Point2D]) products
+        no_static_histograms (bool): Suppresses static assets from the [`HistogramEntry`][trendify.API.HistogramEntry] products
+        no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
+        no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
     """
-    data_dirs = list(data_dirs)
+    input_dirs = list(input_dirs)
+    output_dir = Path(output_dir)
+
     make_products(
         product_generator=data_product_generator,
-        dirs=data_dirs,
+        dirs=input_dirs,
         n_procs=n_procs,
     )
+
+    products_dir = _mkdir(output_dir.joinpath('products'))
     sort_products(
-        data_dirs=data_dirs,
+        data_dirs=input_dirs,
         output_dir=products_dir,
     )
-    if grafana_dir is not None:
-        make_grafana_dashboard(
-            sorted_products_dir=products_dir,
-            output_dir=grafana_dir,
-            n_procs=n_procs,
-        )
-    if assets_dir is not None:
-        make_tables_and_figures(
-            products_dir=products_dir,
-            output_dir=assets_dir,
-            dpi=dpi,
-            n_procs=n_procs,
-            make_tables=make_tables,
-            make_xy_plots=make_xy_plots,
-            make_histograms=make_histograms,
-        )
-        make_include_files(
-            root_dir=assets_dir,
-            heading_level=2,
-        )
 
-
-def make_sample_data(workdir: Path, n_folders: int = 10):
-    """
-    Makes some sample data from which to generate products
-
-    Args:
-        workdir (Path): Directory in which the sample data is to be generated
-        n_folders (int): Number of sample data files to generate (in separate subfolders).
-    """
-    models_dir = workdir.joinpath('models')
-    models_dir.mkdir(parents=True, exist_ok=True)
-
-    for n in range(n_folders):
-        subdir = models_dir.joinpath(str(n))
-        subdir.mkdir(exist_ok=True, parents=True)
-
-        n_samples = np.random.randint(low=40, high=50)
-        t = np.linspace(0, 1, n_samples)
-        periods = np.random.uniform(low=0.9, high=1.1, size=5)
-        amplitudes = np.random.uniform(low=0.9, high=1.1, size=5)
+    no_static_assets = (no_static_tables and no_static_histograms and no_static_xy_plots)
+    no_interactive_assets = (no_grafana_dashboard)
+    no_assets = no_static_assets and no_interactive_assets
+    
+    if not no_assets:
+        assets_dir = output_dir.joinpath('assets')
+        if not no_interactive_assets:
+            interactive_assets_dir = _mkdir(assets_dir.joinpath('interactive'))
+            if not no_grafana_dashboard:
+                grafana_dir = _mkdir(interactive_assets_dir.joinpath('grafana'))
+                make_grafana_dashboard(
+                    sorted_products_dir=products_dir,
+                    output_dir=grafana_dir,
+                    n_procs=n_procs,
+                )
         
-        n_inputs = {'n_samples': n_samples}
-        p_inputs = {f'p{n}': p for n, p in enumerate(periods)}
-        a_inputs = {f'a{n}': a for n, a in enumerate(amplitudes)}
-        inputs = {}
-        inputs.update(n_inputs)
-        inputs.update(p_inputs)
-        inputs.update(a_inputs)
-        pd.Series(inputs).to_csv(subdir.joinpath('stdin.csv'), header=False)
+        if not no_static_assets:
+            static_assets_dir = _mkdir(assets_dir.joinpath('static'))
+            make_tables_and_figures(
+                products_dir=products_dir,
+                output_dir=static_assets_dir,
+                dpi=dpi_static_plots,
+                n_procs=n_procs,
+                no_tables=no_static_tables,
+                no_xy_plots=no_static_xy_plots,
+                no_histograms=no_static_histograms,
+            )
 
-        d = [t] + [a*np.sin(t*(2*np.pi/p)) for p, a in zip(periods, amplitudes)]
-        df = pd.DataFrame(np.array(d).transpose(), columns=['a', 'c0', 'c1', 'c2', 'c3', 'c4'])
-        df.to_csv(subdir.joinpath('results.csv'), index=False)
-
-    csv_files = list(models_dir.glob('**/stdin.csv'))
-    csv_files.sort()
-    input_series = []
-    for csv in csv_files:
-        series: pd.Series = pd.read_csv(csv, index_col=0, header=None).squeeze() 
-        series.name = int(csv.parent.stem)
-        input_series.append(series)
-    
-    aggregate_dir = workdir.joinpath('aggregate')
-    aggregate_dir.mkdir(parents=True, exist_ok=True)
-    aggregate_df = pd.concat(input_series, axis=1).transpose()
-    aggregate_df.index.name = 'Directory'
-    aggregate_df.to_csv(aggregate_dir.joinpath('stdin.csv'))
-
-def sample_processor(workdir: Path) -> ProductList:
-    """
-    Processes the generated sample data in given workdir returning several types of data products.
-
-    Args:
-        workdir (Path): Directory containing sample data.
-    """
-    df = pd.read_csv(workdir.joinpath('results.csv'))
-    df = df.set_index('a', drop=True)
-    traces = [
-        Trace2D.from_xy(
-            x=df.index,
-            y=df[col].values,
-            tags=['trace_plots'],
-            pen=Pen(label=f'{col} {int(workdir.name)}'),
-            format2d=Format2D(title_legend='Column'),
-        )
-        for col in df.columns
-    ]
-    points = [
-        Point2D(
-            x=workdir.name,
-            y=len(trace.y),
-            marker=Marker(
-                size=10,
-                label=trace.pen.label,
-            ),
-            format2d=Format2D(title_fig='N Points'),
-            tags=['scatter_plots'],
-        )
-        for trace
-        in traces
-    ]
-    table_entries = [
-        TableEntry(
-            row=workdir.name,
-            col=name,
-            value=len(series),
-            tags=['tables'],
-            unit=None,
-        )
-        for name, series in df.items()
-    ]
-    
-    return traces + points + table_entries
-
-def main():
-    """
-    Makes sample data, processes it, and serves it for importing into Grafana
-    """
-    here = Path(__file__).parent
-    workdir = here.joinpath('workdir')
-
-    make_sample_data(workdir=workdir, n_folders=100)
-
-    process_dirs = list(workdir.joinpath('models').glob('*/'))
-    products_dir = workdir.joinpath('products')
-    outputs_dir = workdir.joinpath('outputs')
-    grafana_dir = workdir.joinpath('grafana')
-    n_procs = 1
-    
-    make_products(
-        product_generator=sample_processor,
-        dirs=process_dirs,
-        n_procs=n_procs,
-    )
-    sort_products(
-        data_dirs=process_dirs,
-        output_dir=products_dir,
-    )
-    make_grafana_dashboard(
-        sorted_products_dir=products_dir,
-        output_dir=grafana_dir,
-        n_procs=n_procs,
-    )
-    make_tables_and_figures(
-        products_dir=products_dir,
-        output_dir=outputs_dir,
-        dpi=500,
-        n_procs=n_procs,
-    )
-    make_include_files(
-        root_dir=outputs_dir,
-        heading_level=2,
-    )
-    # process_batch(
-    #     product_generator=sample_processor, 
-    #     data_dirs=process_dirs, 
-    #     products_dir=products_dir,
-    #     outputs_dir=outputs_dir, 
-    #     grafana_dir=grafana_dir,
-    #     n_procs=1,
-    #     dpi=300,
-    #     make_tables=True,
-    #     make_histograms=True,
-    #     make_xy_plots=True,
-    # )
-if __name__ == '__main__':
-    main()
+            if not no_include_files:
+                make_include_files(
+                    root_dir=static_assets_dir,
+                    heading_level=2,
+                )

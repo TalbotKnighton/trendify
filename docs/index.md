@@ -1,38 +1,47 @@
-# Welcome to Trendify
+## Welcome to Trendify
 
-Trendify is a python package for visualizing data by generating tagged data products to be sorted and saved to static asset files or displayed interactively.  This greatly simplify the writing of post-processors for many kinds of data.
+### Overview
 
-## Functionality Overview
+Trendify is a python package for visualizing data by generating tagged data products to be sorted and saved to static asset files or displayed interactively.  This greatly simplify the writing of post-processors for many kinds of data.  The following flow chart shows what the package does:
 
-The `trendify` API 
+``` mermaid
+graph TD
+  A[Raw Data + Product Generator] --> CCC[Tagged Data Products];
+  CCC --> CC[Assets];
+  CC -.-> D[Static Assets];
+  D -.-> |Pandas| E[CSV];
+  D -.-> |Matplotlib| F[JPG];
+  D -.-> G[Etc.];
+  CC -.-> H[Interactive Displays];
+  H -.-> |Grafana API| I[Grafana Dashboard];
+  H -.-> |LitFam API| J[LitFam Dashboard];
+  H -.-> K[Etc.];
+```
 
-- Maps a user-defined function over given directories to produce JSON serialized [Data Products][trendify.products.DataProduct].
-- Sorts [Data Products][trendify.products.DataProduct] according to user-specified [Tags][trendify.products.Tags]
-- Writes collected products to CSV files or static images (via [matplotlib][matplotlib] backend)
-- Generates nested `include.md` files for importing generated assets into markdown reports (or MkDocs web page)
-- _In Progress:_ Generates a Grafana dashboard with panels for each data [Tag][trendify.products.Tag]
-- _Future Work:_ Generates nested `include.tex` files for nested assets
+### Vocabulary
 
-## Recipe
+| Term | Meaning |
+| ---- | ------- |
+| Raw Data | Data from some batch process or individual runs (with results from each run stored in separate subdirectories) |
+| [Data Product Generator][trendify.API.DataProductGenerator] | A [Callable][typing.Callable] to be mapped over raw data directories.  Given the [Path][pathlib.Path] to a working directory, the method returns a [ProductList][trendify.API.ProductList] (i.e. a list of instances of [DataProduct][trendify.API.DataProduct] instances): [`Trace2D`][trendify.API.Trace2D], [`Point2D`][trendify.API.Point2D], [`TableEntry`][trendify.API.TableEntry], [`HistogramEntry`][trendify.API.HistogramEntry], etc. |
+| [Data Product][trendify.API.DataProduct] | Trendify-defined [tagged][trendify.API.Tag] products to be sorted and displayed in static or interactive assets |
+| Asset | An asset to be used in a report (such as static CSV or JPG files) or interacted with (such as a Grafana dashboard) |
 
-Use the [`make_it_trendy`][trendify.products.make_it_trendy] to map a user-define executable over multiple batch directories to produce tagged data products and output static/interactive assets:
+
+### Recipe
+
+Define a [Data Product Generator][trendify.API.DataProductGenerator] method as follows (see class definitions for [`Trace2D`][trendify.API.Trace2D], [`Point2D`][trendify.API.Point2D], [`TableEntry`][trendify.API.TableEntry], [`HistogramEntry`][trendify.API.HistogramEntry], etc. for more argument details as well as other examples in these docs):
 
 ```python
 from pathlib import Path
 from trendify import make_it_trendy, ProductList
 
-def user_defined_data_product_generator(workdir: Path) -> List[DataProduct]
-    """
-    Define a function to be mapped over multiple batch directories
-    - Load results from workdir
-    - Process results from workdir
-    - Return a list of data products from the given workdir results
-    """
+def user_defined_data_product_generator(workdir: Path) -> List[DataProduct]:
     inputs = ... # load inputs from workdir
     results = ... # load results from workdir
     products: List[DataProduct] = []
 
-    # Append products to list.  E.g.
+    # Append products to list (see details in usage examples)
     products.append(Trace2D(...))
     products.append(Point2D(...))
     products.append(TableEntry(...))
@@ -40,51 +49,98 @@ def user_defined_data_product_generator(workdir: Path) -> List[DataProduct]
     ...
 
     return products
-
-make_it_trendy(
-    data_product_generator=user_defined_data_product_generator,  # Callable
-    data_dirs=...,      # List[Path]    Directories over which user-provided data product generator will be mapped
-    products_dir=...,   # Path          Directory for outputting sorted data products (sorted into nested directories by tag)
-    assets_dir=...,     # Path          Directory for outputting generated CSV and image files (via matplotlib)
-    grafana_dir=...,    # Path          Directory for outputting generated Grafana dashboard and panel JSON definiion files
-    n_procs=n_procs,    # int           Number of parallel processes for each step
-    dpi: int = 500,     # int           Image quality of matplotlib output
-    make_tables: bool = True,       # bool  Whether or not static CSV files should be generated from TableEntry products
-    make_xy_plots: bool = True,     # bool  Whether or not static JPG files should be generated from Trace2D and Point2D products
-    make_histograms: bool = True,   # bool  Whether or not static JPG files should be generated from HistogramEntry products
-)
 ```
 
-Trendify sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the [make_it_trendy][trendify.products.make_it_trendy] method.  This method is a convenient wrapper on multiple individual steps:
+Run the folling command in a terminal (with trendify installed to the active python environment) command line interface (CLI) to 
 
-- [make_products][trendify.products.make_products]
-- [sort_products][trendify.products.sort_products]
-- [make_grafana_dashboard][trendify.products.make_grafana_dashboard]
-- [make_tables_and_figures][trendify.products.make_tables_and_figures]
-- [make_include_files][trendify.products.make_include_files]
+- [make data products][trendify.API.make_products]
+- [sort data products][trendify.API.sort_products]
+- [make static assets][trendify.API.make_tables_and_figures]
+- [make static asset include files][trendify.API.make_include_files]
+- [make interactive Grafana dashboard][trendify.API.make_grafana_dashboard]
+
+``` sh
+workdir=/local/or/global/path/to/workdir
+generator=/local/or/global/path/to/file.py:user_defined_data_product_generator
+trendify -m $generator -i $workdir/**/*/ -o $workdir/trendify_out/ -n 10
+```
+
+!!! note "Use Parallelization"
+
+    Use `--n-procs` > 1 to parallelize the above steps.  Use `--n-procs 1` for debugging your product generator (better error Traceback).
+
+### Example
+
+#### Running the Example
+
+Run the following example to demonstrate the `trendify` package.  The example uses the following methods:
+
+- [make_example_data][trendify.examples.make_example_data]
+- [example_data_product_generator][trendify.examples.example_data_product_generator]
+
+After pip installing `trendify`, open an terminal and run the following shell commands as an example.
+
+``` sh
+workdir=./workdir
+generator=trendify.examples:example_data_product_generator
+trendify_make_sample_data -wd $workdir -n 10  
+trendify -m $generator -i $workdir/models/*/ -o $workdir/trendify_output/ -n 5
+```
+
+#### Viewing the Results
+
+`trendify` outputs 
+
+- static CSV and JPG files in the `$workdir/trendify_output/static_assets/` directory.
+- a JSON file defining a Grafana dashboard using the Infinity Data Source to display the given data.
+
+!!! note "To Do"
+
+    Add more documentation for how to start Grafana, serve the data, and view the data.
+
+### Functionality
+
+#### Overview
+
+The `trendify` package 
+
+- Maps a user-defined function over given directories to produce JSON serialized [Data Products][trendify.API.DataProduct].
+- Sorts [Data Products][trendify.API.DataProduct] according to user-specified [Tags][trendify.API.Tags]
+- Writes collected products to CSV files or static images (via [matplotlib][matplotlib] backend)
+- Generates nested `include.md` files for importing generated assets into markdown reports (or MkDocs web page)
+- _In Progress:_ Generates a Grafana dashboard with panels for each data [Tag][trendify.API.Tag]
+- _Future Work:_ Generates nested `include.tex` files for nested assets
+
+Trendify sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the [make_it_trendy][trendify.API.make_it_trendy] method.  This method is a convenient wrapper on multiple individual steps:
+
+- [make_products][trendify.API.make_products]
+- [sort_products][trendify.API.sort_products]
+- [make_grafana_dashboard][trendify.API.make_grafana_dashboard]
+- [make_tables_and_figures][trendify.API.make_tables_and_figures]
+- [make_include_files][trendify.API.make_include_files]
 
 Each step can be mapped in parallel as part of a process pool by providing an integer argument `n_procs` greater than 1.  Parllel excecution greatly speeds up processing times for computationally expensive data product generators or for plotting large numbers data products.
 
 
-## Framework Overview
+#### API
 
 The user specifies a function that takes in a `Path` and returns a list holding instances of the following children of
 [DataProduct][trendify.DataProduct]: 
 
-- [`Trace2D`][trendify.products.Trace2D]
-- [`Point2D`][trendify.products.Point2D]
-- [`TableEntry`][trendify.products.TableEntry]
-- [`HistogramEntry`][trendify.products.HistogramEntry]
+- [`Trace2D`][trendify.API.Trace2D]
+- [`Point2D`][trendify.API.Point2D]
+- [`TableEntry`][trendify.API.TableEntry]
+- [`HistogramEntry`][trendify.API.HistogramEntry]
 
 All [Data Products][trendify.DataProduct] inherit type checking and JSON serialization from PyDantic [BaseModel][pydantic.BaseModel].  
 
-[XYData][trendify.products.XYData] product inputs include:
+[XYData][trendify.API.XYData] product inputs include:
 
-- [Tags][trendify.products.Tags] used to sort and collect the products
-- [Pen][trendify.products.Pen] defines the line style and legend label for [`Trace2D`][trendify.products.Trace2D]
-- [Marker][trendify.products.Marker] defines the symbol style and legend label for [`Point2D`][trendify.products.Point2D]
+- [Tags][trendify.API.Tags] used to sort and collect the products
+- [Pen][trendify.API.Pen] defines the line style and legend label for [`Trace2D`][trendify.API.Trace2D]
+- [Marker][trendify.API.Marker] defines the symbol style and legend label for [`Point2D`][trendify.API.Point2D]
 
-[`TableEntry`][trendify.products.TableEntry] inputs include 
+[`TableEntry`][trendify.API.TableEntry] inputs include 
 
 - `row` and `column` used to generate a pivot table if possible (so long as the `row`,`col` index pair is not repeated in a collected set)
 - `value`
@@ -93,80 +149,50 @@ All [Data Products][trendify.DataProduct] inherit type checking and JSON seriali
 Labels and figure formats are assignable.  Trendify will automatically collapse matplotlib legend labels
 down to a unique set.  Use unique pen label, marker label, histogram style label, or row/col pair as unique identifiers.  Make sure that the formatting specified for like-tagged `DataProduct` istances to be the same.
 
-<!-- 
-```python
+#### CLI
 
-def main(
-        data_product_generator: Callable[[Path], ProductList],
-        process_dirs: List[Path],
-        products_dir: Path,
-        assets_dir: Path,
-        grafana_dir: Path,
-        n_procs: int = 1,
-    ):
-    """
-    Maps user-specified data product generator over given directories.
-    Excercises all trendify functionality
+The trendify command line interface allows a user-defined data product generator method to be mapped over raw data.
 
-    Args:
-        data_product_generator (Callable[[Path], ProductList]): Some callable that returns a list of data products
-        process_dirs (List[Path]): Directories over which to map the `data_product_generator`
-        products_dir (Path): Directory in which to output the sorted data products (sorted by tags into nested directories)
-        assets_dir (Path): Directory into which to write the report assets such as CSV and JPG files
-        grafana_dir (Path): Directory into which to write generated Grafana dashboard and panel definitions (via JSON files)
-        n_procs (int): Number of parallel processes to use for each step.
-            Parallel processing provides a huge speed up if the data process generator is computationally expensive.
-    
-    Returns:
-        (ProductList): List of data products of various types
-    """    
-    make_products(
-        product_generator=data_product_generator,
-        dirs=process_dirs,
-        n_procs=n_procs,
-    )
-    sort_products(
-        data_dirs=process_dirs,
-        output_dir=products_dir,
-    )
-    make_grafana_dashboard(
-        sorted_products_dir=products_dir,
-        output_dir=grafana_dir,
-        n_procs=n_procs,
-    )
-    make_tables_and_figures(
-        products_dir=products_dir,
-        output_dir=assets_dir,
-        dpi=500,
-        n_procs=n_procs,
-    )
-    make_include_files(
-        root_dir=assets_dir,
-        heading_level=2,
-    )
-``` -->
+##### Data Product Generator Method Specification
 
-<!-- 
+The method can be input in any of the following formats:
 
-Trendify collects data products, saves them to database (JSON) files, and produces the following outputs:
+- `/global/path/to/module.py`
+- `/global/path/to/module.py:method_name`
+- `/global/path/to/module.py:ClassName.method_name`
+- `./local/path/to/module.py`
+- `./local/path/to/module.py:method_name`
+- `./local/path/to/module.py:ClassName.method_name`
+- `package.module`
+- `package.module:method`
+- `package.module:ClassName.method`
 
-- Static outputs
-    - CSV
-    - JPG
-- Interactive outputs
-    - Grafana dashboard with live data from server
+##### Raw Input Directories Method Specification
 
-_Static_ outputs are useful for inclusion in a report.  _Interactive_ outputs are useful for investigating data.
+The input data directories over which the product generator will be mapped can be entered using standard bash globs
 
-Example:
-    Grafana allows users to mouse-over outlier datapoints to identify interesting or problematic results
+- `**` expands to any file path
+- `*` expands to any characters
+- Etc.
 
-The trendify API provides the following `DataProduct` child classes to the end user:
+Make sure not to include directories with no results since the generator method will produce an error.
 
-- Trace2D: A line on an xy chart
-- Point2D: A point on an xy chart
-- TableEntry: A cell in a table
-- HistogramEntry: Data to be histogrammed
+!!! note "Planned Feature"
+
+    Future behavior may bypass failed directory loads to continue processing all available data
+
+!!! note "Note"
+
+    If the user globs a specific file, the parent directory of that file will be used as the working directory.
+
+!!! note "Directory Structure"
+
+    The current version requires each results set to be contained in its own sub-directory.
 
 
-See the [Usage][usage] page for examples. -->
+## Future Work
+
+- S3 bucket interface to push database files to storage
+- Server to provide data to Grafana dashboard over network (pathfinder working on local computer)
+- User authentication
+- Smarter Grafana dashboards (auto populate input/output selector buttons for scatter plots, etc.)
