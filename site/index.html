@@ -1256,16 +1256,16 @@
 <td>An asset to be used in a report (such as static CSV or JPG files) or interacted with (such as a Grafana dashboard)</td>
 </tr>
 <tr>
-<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProductGenerator">Data Product Generator</a></td>
-<td>A <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a> to be mapped over raw data directories.  Given the <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a> to a working directory, the method returns a <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.ProductList">ProductList</a> (i.e. a list of instances of <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProduct">DataProduct</a> instances): <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Trace2D"><code>Trace2D</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Point2D"><code>Point2D</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.TableEntry"><code>TableEntry</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.HistogramEntry"><code>HistogramEntry</code></a>, etc.</td>
-</tr>
-<tr>
 <td>CLI</td>
 <td>Command line interface: <code>trendify</code> script installed with package used to run the framework</td>
 </tr>
 <tr>
 <td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProduct">DataProduct</a></td>
 <td>Base class for <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Tag">tagged</a> products to be sorted and displayed in static or interactive assets.</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProductGenerator">DataProductGenerator</a></td>
+<td>A <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a> to be mapped over raw data directories.  Given the <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a> to a working directory, the method returns a <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.ProductList">ProductList</a> (i.e. a list of instances of <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProduct">DataProduct</a> instances): <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Trace2D"><code>Trace2D</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Point2D"><code>Point2D</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.TableEntry"><code>TableEntry</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.HistogramEntry"><code>HistogramEntry</code></a>, etc.</td>
 </tr>
 <tr>
 <td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.HistogramEntry">HistogramEntry</a></td>

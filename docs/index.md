@@ -37,9 +37,9 @@ The following is a table of important trendify objects / vocabulary sorted alpha
 | ---- | ------- |
 | API | Application programming interface: Definition of valid objects for processing withing `trendify` framework |
 | Asset | An asset to be used in a report (such as static CSV or JPG files) or interacted with (such as a Grafana dashboard) |
-| [Data Product Generator][trendify.API.DataProductGenerator] | A [Callable][typing.Callable] to be mapped over raw data directories.  Given the [Path][pathlib.Path] to a working directory, the method returns a [ProductList][trendify.API.ProductList] (i.e. a list of instances of [DataProduct][trendify.API.DataProduct] instances): [`Trace2D`][trendify.API.Trace2D], [`Point2D`][trendify.API.Point2D], [`TableEntry`][trendify.API.TableEntry], [`HistogramEntry`][trendify.API.HistogramEntry], etc. |
 | CLI | Command line interface: `trendify` script installed with package used to run the framework |
 | [DataProduct][trendify.API.DataProduct] | Base class for [tagged][trendify.API.Tag] products to be sorted and displayed in static or interactive assets.|
+| [DataProductGenerator][trendify.API.DataProductGenerator] | A [Callable][typing.Callable] to be mapped over raw data directories.  Given the [Path][pathlib.Path] to a working directory, the method returns a [ProductList][trendify.API.ProductList] (i.e. a list of instances of [DataProduct][trendify.API.DataProduct] instances): [`Trace2D`][trendify.API.Trace2D], [`Point2D`][trendify.API.Point2D], [`TableEntry`][trendify.API.TableEntry], [`HistogramEntry`][trendify.API.HistogramEntry], etc. |
 | [HistogramEntry][trendify.API.HistogramEntry] | Tagged, labeled data point to be counted and histogrammed |
 | [Point2D][trendify.API.Point2D] | Tagged, labeled [XYData][trendify.API.XYData] defining a point to be scattered on xy graph |
 | [Product List][trendify.API.ProductList] | List of [DataProduct][trendify.API.TableEntry] instances |
