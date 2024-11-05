@@ -426,6 +426,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Viewing the Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Static Assets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interactive-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interactive Assets
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -1028,6 +1052,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Viewing the Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Static Assets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interactive-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interactive Assets
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -1136,20 +1184,31 @@
   <h1>Welcome</h1>
 
 <h2 id="welcome-to-trendify">Welcome to Trendify<a class="headerlink" href="#welcome-to-trendify" title="Permanent link">&para;</a></h2>
+<p>Welcome to the <code>trendify</code> python package.  Trendify makes it easy to apply a user-defined processing function to raw input data and immediately generate static and interactive assets such as tables, graphs, etc.  This functionality is all run from a simple one-liner command line interface (CLI) which greatly simplifies post-processing for all kinds of batch processes.</p>
 <h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
-<p>Trendify is a python package for visualizing data by generating tagged data products to be sorted and saved to static asset files or displayed interactively.  This greatly simplify the writing of post-processors for many kinds of data.  The following flow chart shows what the package does:</p>
+<p>The following flow chart shows what the package does.  See the vocabulary section below for clarification of terms in the diagram and other sections for how to run the framework.</p>
 <pre class="mermaid"><code>graph TD
-  A[Raw Data + Product Generator] --&gt; CCC[Tagged Data Products];
-  CCC --&gt; CC[Assets];
+  subgraph "User Inputs"  
+   A[(Raw Data Dirs)];
+   AA[Product Generator];
+   AAA[Output Dir];
+   AAAA[Number of Parallel Processes]
+  end
+  A --&gt; B{CLI or Script};
+  AA --&gt; B;
+  AAA --&gt; B;
+  AAAA --&gt; B;
+  B --&gt; |Map generator over raw data dirs| CCC[(Tagged Data Products)];
+  CCC --&gt; |Sort and process products| CC[(Assets)];
+  CC -.-&gt; H[Interactive Displays];
+  H -.-&gt; |Grafana API| I[Grafana Dashboard];
+  H -.-&gt; K[Etc.];
   CC -.-&gt; D[Static Assets];
   D -.-&gt; |Pandas| E[CSV];
   D -.-&gt; |Matplotlib| F[JPG];
-  D -.-&gt; G[Etc.];
-  CC -.-&gt; H[Interactive Displays];
-  H -.-&gt; |Grafana API| I[Grafana Dashboard];
-  H -.-&gt; |LitFam API| J[LitFam Dashboard];
-  H -.-&gt; K[Etc.];</code></pre>
+  D -.-&gt; G[Etc.];</code></pre>
 <h3 id="vocabulary">Vocabulary<a class="headerlink" href="#vocabulary" title="Permanent link">&para;</a></h3>
+<p>The following is a table of important trendify objects / vocabulary sorted alphabetically:</p>
 <table>
 <thead>
 <tr>
@@ -1159,41 +1218,104 @@
 </thead>
 <tbody>
 <tr>
-<td>Raw Data</td>
-<td>Data from some batch process or individual runs (with results from each run stored in separate subdirectories)</td>
+<td>API</td>
+<td>Application programming interface: Definition of valid objects for processing withing <code>trendify</code> framework</td>
+</tr>
+<tr>
+<td>Asset</td>
+<td>An asset to be used in a report (such as static CSV or JPG files) or interacted with (such as a Grafana dashboard)</td>
 </tr>
 <tr>
 <td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProductGenerator">Data Product Generator</a></td>
 <td>A <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a> to be mapped over raw data directories.  Given the <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a> to a working directory, the method returns a <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.ProductList">ProductList</a> (i.e. a list of instances of <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProduct">DataProduct</a> instances): <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Trace2D"><code>Trace2D</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Point2D"><code>Point2D</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.TableEntry"><code>TableEntry</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.HistogramEntry"><code>HistogramEntry</code></a>, etc.</td>
 </tr>
 <tr>
-<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProduct">Data Product</a></td>
-<td>Trendify-defined <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Tag">tagged</a> products to be sorted and displayed in static or interactive assets</td>
+<td>CLI</td>
+<td>Command line interface: <code>trendify</code> script installed with package used to run the framework</td>
 </tr>
 <tr>
-<td>Asset</td>
-<td>An asset to be used in a report (such as static CSV or JPG files) or interacted with (such as a Grafana dashboard)</td>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProduct">DataProduct</a></td>
+<td>Base class for <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Tag">tagged</a> products to be sorted and displayed in static or interactive assets.</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.HistogramEntry">HistogramEntry</a></td>
+<td>Tagged, labeled data point to be counted and histogrammed</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Point2D">Point2D</a></td>
+<td>Tagged, labeled <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.XYData">XYData</a> defining a point to be scattered on xy graph</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.ProductList">Product List</a></td>
+<td>List of <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.TableEntry">DataProduct</a> instances</td>
+</tr>
+<tr>
+<td>Raw Data</td>
+<td>Data from some batch process or individual runs (with results from each run stored in separate subdirectories)</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.TableEntry">TableEntry</a></td>
+<td>Tagged data point to be collected into a table, pivoted, and statistically analyzed</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Tag">Tag</a></td>
+<td>Hashable tag used for sorting and collection of <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProduct">DataProduct</a> instances</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Trace2D">Trace2D</a></td>
+<td>Tagged, labeled <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.XYData">XYData</a> defining a line to be plotted on xy graph</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.XYData">XYData</a></td>
+<td>Base class for products to be plotted on an xy graph</td>
 </tr>
 </tbody>
 </table>
 <h3 id="recipe">Recipe<a class="headerlink" href="#recipe" title="Permanent link">&para;</a></h3>
-<p>Define a <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProductGenerator">Data Product Generator</a> method as follows (see class definitions for <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Trace2D"><code>Trace2D</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Point2D"><code>Point2D</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.TableEntry"><code>TableEntry</code></a>, <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.HistogramEntry"><code>HistogramEntry</code></a>, etc. for more argument details as well as other examples in these docs):</p>
+<p>Define a <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.DataProductGenerator">Data Product Generator</a> to ingest data and return a list of <code>trendify</code> data products.  Valid products are listed in the vocabulary table above and reproduced in the smaller table here.  See the code reference for class constructor inputs.  The <code>trendify</code> framework will map this method over a set of results directories, save and sort the returned products, and produce assets.  Each product will need to have a list of <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Tag">tags</a> assigned (the list can be length 1).  You can also provide labels to be used for generating a legend.</p>
+<table>
+<thead>
+<tr>
+<th>Valid Data Products</th>
+<th>Resulting Asseet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.HistogramEntry">HistogramEntry</a></td>
+<td>Tagged, labeled data point to be counted and histogrammed</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Point2D">Point2D</a></td>
+<td>Tagged, labeled <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.XYData">XYData</a> defining a point to be scattered on xy graph</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.TableEntry">TableEntry</a></td>
+<td>Tagged data point to be collected into a table, pivoted, and statistically analyzed</td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.Trace2D">Trace2D</a></td>
+<td>Tagged, labeled <a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.XYData">XYData</a> defining a line to be plotted on xy graph</td>
+</tr>
+</tbody>
+</table>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">trendify</span> <span class="kn">import</span> <span class="n">make_it_trendy</span><span class="p">,</span> <span class="n">ProductList</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span> <span class="nn">trendify</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">def</span> <span class="nf">user_defined_data_product_generator</span><span class="p">(</span><span class="n">workdir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DataProduct</span><span class="p">]:</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">def</span> <span class="nf">user_defined_data_product_generator</span><span class="p">(</span><span class="n">workdir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">trendify</span><span class="o">.</span><span class="n">ProductList</span><span class="p">:</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">inputs</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># load inputs from workdir</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">results</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># load results from workdir</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">products</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataProduct</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">products</span><span class="p">:</span> <span class="n">trendify</span><span class="o">.</span><span class="n">ProductList</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># create an empty list</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="c1"># Append products to list (see details in usage examples)</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Trace2D</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Point2D</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TableEntry</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">HistogramEntry</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="c1"># Append products to list</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trendify</span><span class="o">.</span><span class="n">Trace2D</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>  <span class="c1"># see inputs in code reference</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trendify</span><span class="o">.</span><span class="n">Point2D</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>  <span class="c1"># see inputs in code reference</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trendify</span><span class="o">.</span><span class="n">TableEntry</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>  <span class="c1"># see inputs in code reference</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trendify</span><span class="o">.</span><span class="n">HistogramEntry</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>  <span class="c1"># see inputs in code reference</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="o">...</span>
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="k">return</span> <span class="n">products</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="c1"># Return the list of valid data products</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="k">return</span> <span class="n">products</span>
 </code></pre></div>
 <p>Run the folling command in a terminal (with trendify installed to the active python environment) command line interface (CLI) to </p>
 <ul>
@@ -1212,6 +1334,7 @@
 <p>Use <code>--n-procs</code> &gt; 1 to parallelize the above steps.  Use <code>--n-procs 1</code> for debugging your product generator (better error Traceback).</p>
 </div>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<p>An example is provided with the <code>trendify</code> package to demonstrate functionality.  The example commands below genereate sample data and run a pre-defined post-processor to produce and sort products as well as generating assets.</p>
 <h4 id="running-the-example">Running the Example<a class="headerlink" href="#running-the-example" title="Permanent link">&para;</a></h4>
 <p>Run the following example to demonstrate the <code>trendify</code> package.  The example uses the following methods:</p>
 <ul>
@@ -1225,11 +1348,14 @@
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>trendify<span class="w"> </span>-m<span class="w"> </span><span class="nv">$generator</span><span class="w"> </span>-i<span class="w"> </span><span class="nv">$workdir</span>/models/*/<span class="w"> </span>-o<span class="w"> </span><span class="nv">$workdir</span>/trendify_output/<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span>
 </code></pre></div>
 <h4 id="viewing-the-results">Viewing the Results<a class="headerlink" href="#viewing-the-results" title="Permanent link">&para;</a></h4>
-<p><code>trendify</code> outputs </p>
+<h5 id="static-assets">Static Assets<a class="headerlink" href="#static-assets" title="Permanent link">&para;</a></h5>
+<p><code>trendify</code> outputs the following static assets that you can view and open in your file browser.</p>
 <ul>
 <li>static CSV and JPG files in the <code>$workdir/trendify_output/static_assets/</code> directory.</li>
 <li>a JSON file defining a Grafana dashboard using the Infinity Data Source to display the given data.</li>
 </ul>
+<h5 id="interactive-assets">Interactive Assets<a class="headerlink" href="#interactive-assets" title="Permanent link">&para;</a></h5>
+<p><code>trendify</code> produces a JSON file to define an interactive Grafana dashboard that loads and displays the generated data.  This functionality has been demonstrated, but is still very much in the  early stages and being defined.  Benefits include the ability to mouse-over data points and see tracked metadata (such as which run produced a given data point).</p>
 <div class="admonition note">
 <p class="admonition-title">To Do</p>
 <p>Add more documentation for how to start Grafana, serve the data, and view the data.</p>
@@ -1280,6 +1406,43 @@
 down to a unique set.  Use unique pen label, marker label, histogram style label, or row/col pair as unique identifiers.  Make sure that the formatting specified for like-tagged <code>DataProduct</code> istances to be the same.</p>
 <h4 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h4>
 <p>The trendify command line interface allows a user-defined data product generator method to be mapped over raw data.</p>
+<p>The command line interface takes in the following arguments:</p>
+<table>
+<thead>
+<tr>
+<th>Short Form Flag</th>
+<th>Long Form Flag</th>
+<th>Input Type</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-i</code></td>
+<td><code>--input-directories</code></td>
+<td><code>glob</code> or <code>list[str]</code></td>
+<td>Specifies directories over which the data product generator <code>method</code> will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons <code>glob.glob</code> method.  The parent directory of a file will be used instead of any actual file paths passed into this argument</td>
+</tr>
+<tr>
+<td><code>-m</code></td>
+<td><code>--method</code></td>
+<td><code>str</code></td>
+<td>Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See below for details.</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td><code>--n-procs</code></td>
+<td><code>int</code></td>
+<td>Sets the number of parallel processes to use in each trendify step.  Use <code>-n 1</code> for full Traceback during debugging and <code>-n 10</code> or some integer greater than 1 for parallelization speedup on larger data sets</td>
+</tr>
+<tr>
+<td><code>-o</code></td>
+<td><code>--output_directory</code></td>
+<td><code>str</code></td>
+<td>Specifies the path to which <code>trendify</code> will output sorted products and assets.</td>
+</tr>
+</tbody>
+</table>
 <h5 id="data-product-generator-method-specification">Data Product Generator Method Specification<a class="headerlink" href="#data-product-generator-method-specification" title="Permanent link">&para;</a></h5>
 <p>The method can be input in any of the following formats:</p>
 <ul>

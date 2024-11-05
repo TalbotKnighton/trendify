@@ -262,3 +262,7 @@ def trendify():
         no_include_files=args.no_include_files,
     )
 
+def serve():
+    """
+    """
+

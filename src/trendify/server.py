@@ -36,7 +36,7 @@ valid_types_names_list = [t.__name__ for t in valid_product_types]
 # App
 app = Flask(__name__)
 
-DATABASE_ROOT = Path(__file__).parent
+DATABASE_ROOT = Path('/Users/talbotknighton/Documents/trendify/workdir/trendify_output/products/')
 
 @app.route('/data_products/server-status/')
 def get_status():
@@ -94,7 +94,7 @@ def get_data_products(
         case XYData.__name__:
             filter_type = XYData
         case Trace2D.__name__:
-            filter_type = Trace2D,
+            filter_type = Trace2D
         case Point2D.__name__:
             filter_type = Point2D
         case TableEntry.__name__:
