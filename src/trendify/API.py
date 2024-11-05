@@ -187,6 +187,7 @@ class SingleAxisFigure(BaseModel):
         self.ax.set_ylabel(format2d.label_y)
         self.ax.set_xlim(format2d.lim_x_min, format2d.lim_x_max)
         self.ax.set_ylim(format2d.lim_y_min, format2d.lim_y_max)
+        self.fig.tight_layout(rect=[0, 0.03, 1, 0.95])
         return self
     
     def savefig(self, path: Path, dpi: int = 500):
@@ -1751,7 +1752,7 @@ def make_it_trendy(
         no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
         no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
     """
-    input_dirs = list(input_dirs)
+    input_dirs = [Path(p) if not Path(p).exists() else Path(p).parent for p in list(input_dirs)]
     output_dir = Path(output_dir)
 
     make_products(
