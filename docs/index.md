@@ -35,7 +35,7 @@ The following is a table of important trendify objects / vocabulary sorted alpha
 
 | Term | Meaning |
 | ---- | ------- |
-| API | Application programming interface: Definition of valid objects for processing withing `trendify` framework |
+| API | Application programming interface: Definition of valid objects for processing within `trendify` framework |
 | Asset | An asset to be used in a report (such as static CSV or JPG files) or interacted with (such as a Grafana dashboard) |
 | CLI | Command line interface: `trendify` script installed with package used to run the framework |
 | [DataProduct][trendify.API.DataProduct] | Base class for [tagged][trendify.API.Tag] products to be sorted and displayed in static or interactive assets.|
