@@ -1,6 +1,6 @@
 ## Welcome to Trendify
 
-Welcome to the `trendify` python package.  Trendify makes it easy to apply a user-defined processing function to raw input data and immediately generate static and interactive assets such as tables, graphs, etc.  This functionality is all run from a simple one-liner command line interface (CLI) which greatly simplifies post-processing for all kinds of batch processes.
+Welcome to the `trendify` python package.  Trendify makes it easy to apply a user-defined processing function to raw input data and immediately generate static and interactive assets such as tables, graphs, etc.  This functionality is all run from a simple one-liner [command line interface (CLI)][cli] which greatly simplifies post-processing for all kinds of batch processes.
 
 ### Overview
 
@@ -80,7 +80,7 @@ def user_defined_data_product_generator(workdir: Path) -> trendify.ProductList:
     return products
 ```
 
-Run the folling command in a terminal (with trendify installed to the active python environment) command line interface (CLI) to 
+Run the folling command in a terminal (with trendify installed to the active python environment) [command line interface (CLI)][cli] to 
 
 - [make data products][trendify.API.make_products]
 - [sort data products][trendify.API.sort_products]
@@ -190,16 +190,19 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 
 The trendify command line interface allows a user-defined data product generator method to be mapped over raw data.
 
+##### Command Line Arguments
+
 The command line interface takes in the following arguments:
 
 | Short Form Flag | Long Form Flag | Input Type | Usage |
 | -- | ------------------------- | ----- | ---------- |
-| `-i` | `--input-directories` | `glob` or `list[str]` | Specifies directories over which the data product generator `method` will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons `glob.glob` method.  The parent directory of a file will be used instead of any actual file paths passed into this argument |
-| `-m` | `--method` | `str` | Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See below for details.
+| `-h` | `--help` |  | Causes help info to be printed to the Linux terminal |
+| `-i` | `--input-directories` | `glob` or `list[str]` | Specifies directories over which the data product generator `method` will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons `glob.glob` method. See [details][details-input-directories] below.|
+| `-m` | `--method` | `str` | Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See [details][details-method] below.
 | `-n` | `--n-procs` | `int` | Sets the number of parallel processes to use in each trendify step.  Use `-n 1` for full Traceback during debugging and `-n 10` or some integer greater than 1 for parallelization speedup on larger data sets |
-| `-o` | `--output_directory` | `str` | Specifies the path to which `trendify` will output sorted products and assets. |
+| `-o` | `--output-directory` | `str` | Specifies the path to which `trendify` will output sorted products and assets. |
 
-##### Data Product Generator Method Specification
+###### Details: --method
 
 The method can be input in any of the following formats:
 
@@ -213,7 +216,7 @@ The method can be input in any of the following formats:
 - `package.module:method`
 - `package.module:ClassName.method`
 
-##### Raw Input Directories Method Specification
+###### Details: --input-directories
 
 The input data directories over which the product generator will be mapped can be entered using standard bash globs
 
@@ -223,18 +226,15 @@ The input data directories over which the product generator will be mapped can b
 
 Make sure not to include directories with no results since the generator method will produce an error.
 
+Globbed results files are replaced with the containing directory (that is, a glob result of `./some/path/results.csv` will result in `./some/path/` being be passed to the product generator method).
+
 !!! note "Planned Feature"
 
     Future behavior may bypass failed directory loads to continue processing all available data
 
-!!! note "Note"
-
-    If the user globs a specific file, the parent directory of that file will be used as the working directory.
-
 !!! note "Directory Structure"
 
-    The current version requires each results set to be contained in its own sub-directory.
-
+    The current version requires each results set to be contained in its own sub-directory.  There are no restrictions on the locations of the input data directories.
 
 ## Future Work
 

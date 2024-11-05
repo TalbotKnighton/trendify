@@ -496,20 +496,35 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#data-product-generator-method-specification" class="md-nav__link">
+  <a href="#command-line-arguments" class="md-nav__link">
     <span class="md-ellipsis">
-      Data Product Generator Method Specification
+      Command Line Arguments
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command Line Arguments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#details-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Details: --method
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#raw-input-directories-method-specification" class="md-nav__link">
+  <a href="#details-input-directories" class="md-nav__link">
     <span class="md-ellipsis">
-      Raw Input Directories Method Specification
+      Details: --input-directories
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1122,20 +1137,35 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#data-product-generator-method-specification" class="md-nav__link">
+  <a href="#command-line-arguments" class="md-nav__link">
     <span class="md-ellipsis">
-      Data Product Generator Method Specification
+      Command Line Arguments
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command Line Arguments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#details-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Details: --method
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#raw-input-directories-method-specification" class="md-nav__link">
+  <a href="#details-input-directories" class="md-nav__link">
     <span class="md-ellipsis">
-      Raw Input Directories Method Specification
+      Details: --input-directories
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1184,7 +1214,7 @@
   <h1>Welcome</h1>
 
 <h2 id="welcome-to-trendify">Welcome to Trendify<a class="headerlink" href="#welcome-to-trendify" title="Permanent link">&para;</a></h2>
-<p>Welcome to the <code>trendify</code> python package.  Trendify makes it easy to apply a user-defined processing function to raw input data and immediately generate static and interactive assets such as tables, graphs, etc.  This functionality is all run from a simple one-liner command line interface (CLI) which greatly simplifies post-processing for all kinds of batch processes.</p>
+<p>Welcome to the <code>trendify</code> python package.  Trendify makes it easy to apply a user-defined processing function to raw input data and immediately generate static and interactive assets such as tables, graphs, etc.  This functionality is all run from a simple one-liner <a class="autorefs autorefs-internal" href="#cli">command line interface (CLI)</a> which greatly simplifies post-processing for all kinds of batch processes.</p>
 <h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
 <p>The following flow chart shows what the package does.  See the vocabulary section below for clarification of terms in the diagram and other sections for how to run the framework.</p>
 <pre class="mermaid"><code>graph TD
@@ -1317,7 +1347,7 @@
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="c1"># Return the list of valid data products</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="k">return</span> <span class="n">products</span>
 </code></pre></div>
-<p>Run the folling command in a terminal (with trendify installed to the active python environment) command line interface (CLI) to </p>
+<p>Run the folling command in a terminal (with trendify installed to the active python environment) <a class="autorefs autorefs-internal" href="#cli">command line interface (CLI)</a> to </p>
 <ul>
 <li><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.make_products">make data products</a></li>
 <li><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.sort_products">sort data products</a></li>
@@ -1406,6 +1436,7 @@
 down to a unique set.  Use unique pen label, marker label, histogram style label, or row/col pair as unique identifiers.  Make sure that the formatting specified for like-tagged <code>DataProduct</code> istances to be the same.</p>
 <h4 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h4>
 <p>The trendify command line interface allows a user-defined data product generator method to be mapped over raw data.</p>
+<h5 id="command-line-arguments">Command Line Arguments<a class="headerlink" href="#command-line-arguments" title="Permanent link">&para;</a></h5>
 <p>The command line interface takes in the following arguments:</p>
 <table>
 <thead>
@@ -1418,16 +1449,22 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 </thead>
 <tbody>
 <tr>
+<td><code>-h</code></td>
+<td><code>--help</code></td>
+<td></td>
+<td>Causes help info to be printed to the Linux terminal</td>
+</tr>
+<tr>
 <td><code>-i</code></td>
 <td><code>--input-directories</code></td>
 <td><code>glob</code> or <code>list[str]</code></td>
-<td>Specifies directories over which the data product generator <code>method</code> will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons <code>glob.glob</code> method.  The parent directory of a file will be used instead of any actual file paths passed into this argument</td>
+<td>Specifies directories over which the data product generator <code>method</code> will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons <code>glob.glob</code> method. See <a class="autorefs autorefs-internal" href="#details-input-directories">details</a> below.</td>
 </tr>
 <tr>
 <td><code>-m</code></td>
 <td><code>--method</code></td>
 <td><code>str</code></td>
-<td>Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See below for details.</td>
+<td>Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See <a class="autorefs autorefs-internal" href="#details-method">details</a> below.</td>
 </tr>
 <tr>
 <td><code>-n</code></td>
@@ -1437,13 +1474,13 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 </tr>
 <tr>
 <td><code>-o</code></td>
-<td><code>--output_directory</code></td>
+<td><code>--output-directory</code></td>
 <td><code>str</code></td>
 <td>Specifies the path to which <code>trendify</code> will output sorted products and assets.</td>
 </tr>
 </tbody>
 </table>
-<h5 id="data-product-generator-method-specification">Data Product Generator Method Specification<a class="headerlink" href="#data-product-generator-method-specification" title="Permanent link">&para;</a></h5>
+<h6 id="details-method">Details: --method<a class="headerlink" href="#details-method" title="Permanent link">&para;</a></h6>
 <p>The method can be input in any of the following formats:</p>
 <ul>
 <li><code>/global/path/to/module.py</code></li>
@@ -1456,7 +1493,7 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 <li><code>package.module:method</code></li>
 <li><code>package.module:ClassName.method</code></li>
 </ul>
-<h5 id="raw-input-directories-method-specification">Raw Input Directories Method Specification<a class="headerlink" href="#raw-input-directories-method-specification" title="Permanent link">&para;</a></h5>
+<h6 id="details-input-directories">Details: --input-directories<a class="headerlink" href="#details-input-directories" title="Permanent link">&para;</a></h6>
 <p>The input data directories over which the product generator will be mapped can be entered using standard bash globs</p>
 <ul>
 <li><code>**</code> expands to any file path</li>
@@ -1464,17 +1501,14 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 <li>Etc.</li>
 </ul>
 <p>Make sure not to include directories with no results since the generator method will produce an error.</p>
+<p>Globbed results files are replaced with the containing directory (that is, a glob result of <code>./some/path/results.csv</code> will result in <code>./some/path/</code> being be passed to the product generator method).</p>
 <div class="admonition note">
 <p class="admonition-title">Planned Feature</p>
 <p>Future behavior may bypass failed directory loads to continue processing all available data</p>
 </div>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If the user globs a specific file, the parent directory of that file will be used as the working directory.</p>
-</div>
-<div class="admonition note">
 <p class="admonition-title">Directory Structure</p>
-<p>The current version requires each results set to be contained in its own sub-directory.</p>
+<p>The current version requires each results set to be contained in its own sub-directory.  There are no restrictions on the locations of the input data directories.</p>
 </div>
 <h2 id="future-work">Future Work<a class="headerlink" href="#future-work" title="Permanent link">&para;</a></h2>
 <ul>
