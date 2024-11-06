@@ -163,13 +163,13 @@ class _Args:
             return [
                 Path(p).parent.resolve() if Path(p).is_file() else Path(p).resolve()
                 for p 
-                in glob(self.i)
+                in glob(self.i, root_dir=os.getcwd(), recursive=True)
             ]
         else:
             assert isinstance(self.i, Iterable) and not isinstance(self.i, str)
             paths = []
             for i in self.i:
-                for p in glob(i):
+                for p in glob(i, root_dir=os.getcwd(), recursive=True):
                     paths.append(Path(p).parent.resolve() if Path(p).is_file() else Path(p).resolve())
             return paths
     
