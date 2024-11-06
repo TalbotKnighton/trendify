@@ -17,7 +17,7 @@ from concurrent.futures import ProcessPoolExecutor
 from itertools import chain
 from pathlib import Path
 import matplotlib.pyplot as plt
-from typing import Union, Hashable, List, Iterable, Any, Literal, Callable, Tuple, Type, Optional, TypeVar, Generator
+from typing import Union, Hashable, List, Iterable, Any, Literal, Callable, Tuple, Type, Optional, TypeVar
 from typing import Self
 import warnings
 
@@ -1752,7 +1752,7 @@ def make_it_trendy(
         no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
         no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
     """
-    input_dirs = [Path(p) if not Path(p).exists() else Path(p).parent for p in list(input_dirs)]
+    input_dirs = [Path(p) if not Path(p).is_file() else Path(p).parent for p in list(input_dirs)]
     output_dir = Path(output_dir)
 
     make_products(
