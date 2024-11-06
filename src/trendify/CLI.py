@@ -159,18 +159,19 @@ class _Args:
     
     @property
     def input_dirs(self) -> List[Path]:
-        if isinstance(self.i, Iterable) and not isinstance(self.i, str):
-            return [
-                Path(p).parent.resolve() if Path(p).is_file() else Path(p).resolve()
-                for p 
-                in self.i
-            ]
-        else:
+        if isinstance(self.i, str):
             return [
                 Path(p).parent.resolve() if Path(p).is_file() else Path(p).resolve()
                 for p 
                 in glob(self.i)
             ]
+        else:
+            assert isinstance(self.i, Iterable) and not isinstance(self.i, str)
+            paths = []
+            for i in self.i:
+                for p in glob(i):
+                    paths.append(Path(p).parent.resolve() if Path(p).is_file() else Path(p).resolve())
+            return paths
     
     @property
     def output_dir(self) -> Path:
