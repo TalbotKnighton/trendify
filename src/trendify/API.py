@@ -1154,8 +1154,9 @@ class DataProductGenerator:
         
         print(f'Processing {workdir = } with {self._processor = }')
         collection = DataProductCollection.from_iterable(self._processor(workdir))
-        workdir.mkdir(exist_ok=True, parents=True)
-        workdir.joinpath(DATA_PRODUCTS_FNAME).write_text(collection.model_dump_json())
+        if collection.elements:
+            workdir.mkdir(exist_ok=True, parents=True)
+            workdir.joinpath(DATA_PRODUCTS_FNAME).write_text(collection.model_dump_json())
 
 class XYDataPlotter:
     """
@@ -1752,7 +1753,7 @@ def make_it_trendy(
         no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
         no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
     """
-    input_dirs = [Path(p) if not Path(p).is_file() else Path(p).parent for p in list(input_dirs)]
+    input_dirs = [Path(p) if Path(p).is_file() else Path(p).parent for p in list(input_dirs)]
     output_dir = Path(output_dir)
 
     make_products(
