@@ -1753,7 +1753,7 @@ def make_it_trendy(
         no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
         no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
     """
-    input_dirs = [Path(p) if Path(p).is_file() else Path(p).parent for p in list(input_dirs)]
+    input_dirs = [Path(p).parent if Path(p).is_file() else Path(p) for p in list(input_dirs)]
     output_dir = Path(output_dir)
 
     make_products(
