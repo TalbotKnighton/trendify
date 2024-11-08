@@ -17,11 +17,13 @@ from concurrent.futures import ProcessPoolExecutor
 from itertools import chain
 from pathlib import Path
 import matplotlib.pyplot as plt
+import time
 from typing import Union, Hashable, List, Iterable, Any, Literal, Callable, Tuple, Type, Optional, TypeVar
 from typing import Self
 import warnings
 
 # Common imports
+from filelock import FileLock
 import numpy as np
 import pandas as pd
 from numpydantic import NDArray, Shape
@@ -444,6 +446,20 @@ Returns:
     (ProductList): List of data products to be sorted and used to produce assets
 """
 
+def reserve_index(save_dir: Path, dir_in: Path):
+    assert save_dir.is_dir()
+    with FileLock(save_dir.joinpath('reserving_index.lock')):
+        index_map = save_dir.joinpath('index_map.csv')
+        if index_map.exists():
+            list2d = index_map.read_text().strip().split('\n')
+            next_index = int(list2d[-1].split(',')[0])+1
+            list2d.append(f'{next_index},{dir_in}')
+            index_map.write_text('\n'.join(list2d))
+        else:
+            index_map.write_text(f'0,{dir_in}')
+            next_index = 1
+    return next_index
+
 
 class XYData(DataProduct):
     """
@@ -706,31 +722,6 @@ class TableEntry(DataProduct):
         """
         return cls.pivot_table(melted=pd.read_csv(path))
 
-
-# class TagSets(BaseModel):
-#     """
-#     DEPRICATED
-
-#     Data class containing the sets of tags for each type. 
-#     """
-#     XYData: set
-#     TableEntry: set
-#     HistogramEntry: set
-#     # Trace2D: set
-#     # Point2D: set
-
-#     @classmethod
-#     def from_list(cls, list_of_tag_sets: List[TagSets]):
-#         """
-#         Unions the tags from a list of `TagSets` objects
-#         """
-#         tag_sets = cls(XYData=set(), TableEntry=set(), HistogramEntry=set())
-#         for t in list_of_tag_sets:
-#             tag_sets.XYData = tag_sets.XYData.union(t.XYData)
-#             tag_sets.TableEntry = tag_sets.TableEntry.union(t.TableEntry)
-#             tag_sets.HistogramEntry = tag_sets.HistogramEntry.union(t.HistogramEntry)
-#         return tag_sets
-
 UQL_TableEntry = r'''
 parse-json
 | project "elements"
@@ -761,6 +752,7 @@ class DataProductCollection(BaseModel):
     Attributes:
         elements (ProductList): A list of data products.
     """
+    derived_from: Path | None = None
     elements: ProductList | None = None
 
     def __init__(self, **kwargs: Any):
@@ -942,19 +934,24 @@ class DataProductCollection(BaseModel):
         dirs_in = list(dirs_in)
         dirs_in.sort()
         len_dirs = len(dirs_in)
-        for n, d in enumerate(dirs_in):
-            print(f'Collecting tagged data from dir {n}/{len_dirs}', end=f'\r')
-            collection = DataProductCollection.model_validate_json(
-                d.joinpath(DATA_PRODUCTS_FNAME).read_text()
-            )
-            tags = collection.get_tags()
-            for tag in tags:
-                sub_collection = collection.get_products(tag=tag)
-                save_to = dir_out.joinpath(*atleast_1d(tag))
-                save_to.mkdir(parents=True, exist_ok=True)
-                save_to.joinpath(d.name).with_suffix('.json').write_text(sub_collection.model_dump_json(
-                    indent=4
-                ))
+        for n, dir_in in enumerate(dirs_in):
+            print(f'Sorting tagged data from dir {n}/{len_dirs}', end=f'\r')
+            cls.sort_by_tags_single_directory(dir_in=dir_in, dir_out=dir_out)
+
+    
+    @classmethod
+    def sort_by_tags_single_directory(cls, dir_in: Path, dir_out: Path):
+        print(f'Sorting results from {dir_in = }')
+        collection = DataProductCollection.model_validate_json(dir_in.joinpath(DATA_PRODUCTS_FNAME).read_text())
+        collection.derived_from = dir_in
+        tags = collection.get_tags()
+        for tag in tags:
+            sub_collection = collection.get_products(tag=tag)
+            save_dir = dir_out.joinpath(*atleast_1d(tag))
+            save_dir.mkdir(parents=True, exist_ok=True)
+            next_index = reserve_index(save_dir=save_dir, dir_in=dir_in)
+            file = save_dir.joinpath(str(next_index)).with_suffix('.json')
+            file.write_text(sub_collection.model_dump_json())
 
     @classmethod
     def process_single_tag_collection(
@@ -1071,7 +1068,7 @@ class DataProductCollection(BaseModel):
                         ],
                         type='table',
                     )
-                    panel_dir.joinpath(underscore_tag + '_table_panel.json').write_text(panel.model_dump_json(indent=4))
+                    panel_dir.joinpath(underscore_tag + '_table_panel.json').write_text(panel.model_dump_json())
                     print(f'\nFinished tables for {tag = }\n')
 
                 traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
@@ -1104,7 +1101,7 @@ class DataProductCollection(BaseModel):
                         ],
                         type='xychart',
                     )
-                    panel_dir.joinpath(underscore_tag + '_xy_panel.json').write_text(panel.model_dump_json(indent=4))
+                    panel_dir.joinpath(underscore_tag + '_xy_panel.json').write_text(panel.model_dump_json())
                     print(f'\nFinished xy plot for {tag = }\n')
             
                 # histogram_entries: List[HistogramEntry] = collection.get_products(tag=tag, object_type=HistogramEntry).elements
@@ -1129,7 +1126,6 @@ class DataProductCollection(BaseModel):
                 #     )
                 #     panel.model_dump_json(dir_out.joinpath(underscore_tag + '_xy_panel.json'), indent=4)
                 #     print(f'\nFinished histogram for {tag = }\n')
-
 
 class DataProductGenerator:
     """
@@ -1270,7 +1266,6 @@ class XYDataPlotter:
         print(f'Saving to {save_path = }')
         saf.savefig(path=save_path, dpi=dpi)
         del saf
-
 
 class TableBuilder:
     """
@@ -1623,6 +1618,7 @@ def make_products(
 def sort_products(
         data_dirs: List[Path],
         output_dir: Path,
+        n_procs: int = 1,
     ):
     """
     Loads the tagged data products from `data_dirs` and sorts them (by tag) into a nested folder structure rooted at `output_dir`.
@@ -1636,10 +1632,16 @@ def sort_products(
     print('\n\n\nSorting data by tags')
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    DataProductCollection.sort_by_tags(
-        dirs_in=sorted_data_dirs,
-        dir_out=output_dir,
+    map_callable(
+        DataProductCollection.sort_by_tags_single_directory,
+        sorted_data_dirs,
+        [output_dir]*len(sorted_data_dirs),
+        n_procs=n_procs,
     )
+    # DataProductCollection.sort_by_tags(
+    #     dirs_in=sorted_data_dirs,
+    #     dir_out=output_dir,
+    # )
     print('\nFinished sorting by tags')
 
 def make_grafana_dashboard(
@@ -1763,10 +1765,16 @@ def make_it_trendy(
     )
 
     products_dir = _mkdir(output_dir.joinpath('products'))
+
+    # Sort products
+    start = time.time()
     sort_products(
         data_dirs=input_dirs,
         output_dir=products_dir,
+        n_procs=n_procs,
     )
+    end = time.time()
+    print(f'Time to sort = {end - start}')
 
     no_static_assets = (no_static_tables and no_static_histograms and no_static_xy_plots)
     no_interactive_assets = (no_grafana_dashboard)
