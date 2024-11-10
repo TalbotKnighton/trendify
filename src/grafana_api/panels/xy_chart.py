@@ -212,7 +212,7 @@ class Target(BaseModel):
     source: str = 'url'
     type: str = 'json'
     uql: str = "parse-json\n| project \"elements\"\n| extend \"label\"=\"pen.label\"\n| extend \"label1\"=substring(\"label\",0,2)\n| extend \"label2\"=substring(\"label\",3)\n| mv-expand \"points\"\n| extend \"x\"=\"points.x\", \"y\"=\"points.y\"\n#| project \"label1\", \"label2\", \"x\", \"y\", \"color\"=mul(\"label2\", 0.1)\n#| project \"label1\", \"x\", \"y\"\n| project \"label\", \"x\", \"y\", \"metadata\"\n\n\n"
-    url: str = "http://localhost:8000/data_products/workdir.products/trace_plots/Trace2D"
+    url: str # = "http://localhost:8000/data_products/workdir.products/trace_plots/Trace2D"
     url_options: URLOptions = URLOptions()
 class Panel(BaseModel):
     """
@@ -223,7 +223,7 @@ class Panel(BaseModel):
     id: int = 1
     options: Options = Options()
     pluginVersion: str = '11.2.2'
-    targets: list[Target] = [Target()]
+    targets: list[Target]# = [Target()]
     title: str = "Example XY Chart for Trace2D Data"
     transformations: list[Transformation] = []
     type: str = 'xychart'

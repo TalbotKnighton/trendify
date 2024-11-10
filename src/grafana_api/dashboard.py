@@ -37,7 +37,7 @@ class Dashboard(BaseModel):
     graphTooltip: int = 0
     id: int = 1
     links: list = []
-    panels: list[Panel] = [Panel()]
+    panels: list[Panel]# = [Panel()]
     refresh: str = ""
     schemaVersion: int = 39
     tags: list = []

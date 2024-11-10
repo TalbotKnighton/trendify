@@ -53,5 +53,6 @@ classifiers = [
 # Changelog = ""
 
 [project.scripts]
-trendify_make_sample_data = "trendify.CLI:make_sample_data"
+trendify_make_sample_data = "trendify.examples:make_sample_data"
 trendify = "trendify.CLI:trendify"
+# trendify_server = "trendify.CLI:serve"

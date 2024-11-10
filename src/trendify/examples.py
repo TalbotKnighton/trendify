@@ -56,11 +56,11 @@ def make_example_data(workdir: Path, n_folders: int = 10):
         series.name = int(csv.parent.stem)
         input_series.append(series)
     
-    aggregate_dir = workdir.joinpath('aggregate')
-    aggregate_dir.mkdir(parents=True, exist_ok=True)
-    aggregate_df = pd.concat(input_series, axis=1).transpose()
-    aggregate_df.index.name = 'Directory'
-    aggregate_df.to_csv(aggregate_dir.joinpath('stdin.csv'))
+    # aggregate_dir = workdir.joinpath('aggregate')
+    # aggregate_dir.mkdir(parents=True, exist_ok=True)
+    # aggregate_df = pd.concat(input_series, axis=1).transpose()
+    # aggregate_df.index.name = 'Directory'
+    # aggregate_df.to_csv(aggregate_dir.joinpath('stdin.csv'))
 
 def example_data_product_generator(workdir: Path) -> trendify.ProductList:
     """
@@ -108,6 +108,34 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
     
     return traces + points + table_entries
 
+def make_sample_data():
+    """
+    Generates sample data to run the trendify code on
+    """
+    from trendify.examples import make_example_data
+    import argparse
+    parser = argparse.ArgumentParser(
+        prog='make_sample_data_for_trendify',
+    )
+    parser.add_argument(
+        '-wd',
+        '--working-directory',
+        required=True,
+        help='Directory to be created and filled with sample data from a batch run',
+    )
+    parser.add_argument(
+        '-n', 
+        '--number-of-data-sets',
+        type=int,
+        default=5,
+        help='Number of sample data sets to generate',
+    )
+    args = parser.parse_args()
+    make_example_data(
+        workdir=Path(args.working_directory),
+        n_folders=args.number_of_data_sets,
+    )
+
 def _main():
     """
     Makes sample data, processes it, and serves it for importing into Grafana
@@ -125,7 +153,7 @@ def _main():
     
     trendify.make_products(
         product_generator=example_data_product_generator,
-        dirs=process_dirs,
+        data_dirs=process_dirs,
         n_procs=n_procs,
     )
     trendify.sort_products(
@@ -133,7 +161,7 @@ def _main():
         output_dir=products_dir,
     )
     trendify.make_grafana_dashboard(
-        sorted_products_dir=products_dir,
+        products_dir=products_dir,
         output_dir=grafana_dir,
         n_procs=n_procs,
     )

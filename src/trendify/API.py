@@ -14,6 +14,7 @@ from __future__ import annotations
 
 # Standard imports
 from concurrent.futures import ProcessPoolExecutor
+from enum import StrEnum, auto
 from itertools import chain
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -35,6 +36,7 @@ import grafana_api as gapi
 __all__ = [
     'ProductList',
     'ProductGenerator',
+    'ProductType',
     # DataProducts
     'Trace2D', # XY Data
     'Point2D', # XY Data
@@ -56,6 +58,25 @@ __all__ = [
     'make_it_trendy',
 ]
 
+
+class ProductType(StrEnum):
+    """
+    Defines all product types.  Used to type-cast URL info in server to validate.
+
+    Attributes:
+        DataProduct (str): class name
+        XYData (str): class name
+        Trace2D (str): class name
+        Point2D (str): class name
+        TableEntry (str): class name
+        HistogramEntry (str): class name
+    """
+    DataProduct = auto()
+    XYData = auto()
+    Trace2D = auto()
+    Point2D = auto()
+    TableEntry = auto()
+    HistogramEntry = auto()
 
 def _mkdir(p: Path):
     p.mkdir(exist_ok=True, parents=True)
@@ -905,7 +926,7 @@ class DataProductCollection(BaseModel):
         if not recursive:
             jsons: List[Path] = list(flatten(chain(list(d.glob('*.json')) for d in dirs)))
         else:
-            jsons: List[Path] = list(flatten(chain(list(d.glob('**/*.json')) for d in dirs)))
+            jsons: List[Path] = list(flatten(chain(list(d.glob(f'**/*.json')) for d in dirs)))
         if jsons:
             return cls.union(
                 *tuple(
@@ -1031,6 +1052,7 @@ class DataProductCollection(BaseModel):
             cls,
             dir_in: Path,
             panel_dir: Path,
+            server_path: str,
         ):
         """
         Processes collection of elements corresponding to a single tag.
@@ -1046,11 +1068,7 @@ class DataProductCollection(BaseModel):
         panel_dir.mkdir(parents=True, exist_ok=True)
 
         if collection is not None:
-            server_path = 'http://localhost:8000/data_products/workdir.products/'  # [ ] this should not be hard coded
-
             for tag in collection.get_tags():
-                
-
                 dot_tag = '.'.join([str(t) for t in tag]) if should_be_flattened(tag) else tag
                 underscore_tag = '_'.join([str(t) for t in tag]) if should_be_flattened(tag) else tag
 
@@ -1059,6 +1077,7 @@ class DataProductCollection(BaseModel):
                 if table_entries:
                     print(f'\n\nMaking tables for {tag = }\n')
                     panel = gapi.Panel(
+                        title=str(tag).capitalize() if isinstance(tag, str) else ' '.join([str(t).title() for t in tag]),
                         targets=[
                             gapi.Target(
                                 datasource=gapi.DataSource(),
@@ -1584,7 +1603,7 @@ def get_sorted_dirs(dirs: List[Path]):
 
 def make_products(
         product_generator: Callable[[Path], DataProductCollection] | None,
-        dirs: List[Path],
+        data_dirs: List[Path],
         n_procs: int = 1,
     ):
     """
@@ -1602,7 +1621,7 @@ def make_products(
             If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
             be used to load and process directories and/or tags in parallel.
     """
-    sorted_dirs = get_sorted_dirs(dirs=dirs)
+    sorted_dirs = get_sorted_dirs(dirs=data_dirs)
 
     if product_generator is None:
         print('No data product generator provided')
@@ -1645,8 +1664,11 @@ def sort_products(
     print('\nFinished sorting by tags')
 
 def make_grafana_dashboard(
-        sorted_products_dir: Path,
+        products_dir: Path,
         output_dir: Path,
+        protocol: str,
+        host: str,
+        port: int,
         n_procs: int = 1,
     ):
     """
@@ -1657,15 +1679,16 @@ def make_grafana_dashboard(
         output_dir (Path): Root directory into which Grafana dashboard and panal definitions will be written
         n_procs (int): Number of parallel tasks used for processing data product tags
     """
-    print(f'\n\n\nGenerating Grafana Dashboard JSON Spec in {output_dir} based on products in {sorted_products_dir}')
+    print(f'\n\n\nGenerating Grafana Dashboard JSON Spec in {output_dir} based on products in {products_dir}')
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    product_dirs = list(sorted_products_dir.glob('**/*/'))
+    product_dirs = list(products_dir.glob('**/*/'))
     panel_dir = output_dir.joinpath('panels')
     map_callable(
         DataProductCollection.make_grafana_panels,
         product_dirs,
         [panel_dir] * len(product_dirs),
+        [f'{protocol}://{host}:{port}'] * len(product_dirs),
         n_procs=n_procs,
     )
     panels = [gapi.Panel.model_validate_json(p.read_text()) for p in panel_dir.glob('*.json')]
@@ -1729,6 +1752,9 @@ def make_it_trendy(
         no_static_histograms: bool = False,
         no_grafana_dashboard: bool = False,
         no_include_files: bool = False,
+        protocol: str = 'http',
+        server: str = 'localhost',
+        port: int = 8000,
     ):
     """
     Maps `data_product_generator` over `dirs_in` to produce data product JSON files in those directories.
@@ -1760,7 +1786,7 @@ def make_it_trendy(
 
     make_products(
         product_generator=data_product_generator,
-        dirs=input_dirs,
+        data_dirs=input_dirs,
         n_procs=n_procs,
     )
 
@@ -1787,9 +1813,12 @@ def make_it_trendy(
             if not no_grafana_dashboard:
                 grafana_dir = _mkdir(interactive_assets_dir.joinpath('grafana'))
                 make_grafana_dashboard(
-                    sorted_products_dir=products_dir,
+                    products_dir=products_dir,
                     output_dir=grafana_dir,
                     n_procs=n_procs,
+                    protocol=protocol,
+                    server=server,
+                    port=port,
                 )
         
         if not no_static_assets:
