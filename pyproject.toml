@@ -4,18 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 dependencies = [
-  "numpy",
-  "scipy",
-  "pandas",
-  "jinja2",
-  "matplotlib",
   "flask",
-  "waitress",
+  "jinja2",
+  "pandas",
   "pydantic",
+  "matplotlib",
+  "numpy",
   "numpydantic",
+  "scipy",
+  "supervisor",
+  "waitress",
 ]
 name = "trendify"
-version = "0.1.1"
+version = "1.0.0"
 requires-python = ">= 3.11"
 authors = [
   {name = "Talbot Knighton", email = "talbotknighton@gmail.org"},

@@ -24,7 +24,7 @@ from typing import Self
 import warnings
 
 # Common imports
-from filelock import FileLock
+from filelock import FileLock, SoftFileLock
 import numpy as np
 import pandas as pd
 from numpydantic import NDArray, Shape
@@ -466,20 +466,21 @@ Args:
 Returns:
     (ProductList): List of data products to be sorted and used to produce assets
 """
-
 def reserve_index(save_dir: Path, dir_in: Path):
     assert save_dir.is_dir()
-    with FileLock(save_dir.joinpath('reserving_index.lock')):
+    lock_file = save_dir.joinpath('reserving_index.lock')
+    with FileLock(lock_file):
         index_map = save_dir.joinpath('index_map.csv')
         if index_map.exists():
             list2d = index_map.read_text().strip().split('\n')
             next_index = int(list2d[-1].split(',')[0])+1
             list2d.append(f'{next_index},{dir_in}')
             index_map.write_text('\n'.join(list2d))
+            return next_index
         else:
             index_map.write_text(f'0,{dir_in}')
             next_index = 1
-    return next_index
+            return next_index
 
 
 class XYData(DataProduct):
@@ -1615,7 +1616,7 @@ def make_products(
     Args:
         product_generator (ProductGenerator | None): A callable function that returns
             a list of data products given a working directory.
-        dirs (List[Path]): Directories over which to map the `product_generator`
+        data_dirs (List[Path]): Directories over which to map the `product_generator`
         n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be
             processed sequentially (easier for debugging since the full traceback will be provided).
             If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
@@ -1675,9 +1676,12 @@ def make_grafana_dashboard(
     Makes a JSON file to import to Grafana for displaying tagged data tables, histograms and XY plots.
 
     Args:
-        sorted_products_dir (Path): Root directory into which products have been sorted by tag
+        products_dir (Path): Root directory into which products have been sorted by tag
         output_dir (Path): Root directory into which Grafana dashboard and panal definitions will be written
         n_procs (int): Number of parallel tasks used for processing data product tags
+        protocol (str): Communication protocol for data server
+        host (str): Sever address for providing data to interactive dashboard
+        n_procs (int): Number of parallel processes
     """
     print(f'\n\n\nGenerating Grafana Dashboard JSON Spec in {output_dir} based on products in {products_dir}')
     output_dir.mkdir(parents=True, exist_ok=True)

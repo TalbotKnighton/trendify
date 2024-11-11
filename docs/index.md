@@ -9,17 +9,17 @@ The following flow chart shows what the package does.  See the vocabulary sectio
 ``` mermaid
 graph TD
   subgraph "User Inputs"  
-   A[(Raw Data Dirs)];
+   A[(Input Directories)]@{ shape: lin-cyl };
    AA[Product Generator];
-   AAA[Output Dir];
-   AAAA[Number of Parallel Processes]
+   AAA[Output Directory];
+   AAAA[Number of Processes]
   end
-  A --> B{CLI or Script};
+  A --> B[CLI or Script]@{ shape: diamond};
   AA --> B;
   AAA --> B;
   AAAA --> B;
-  B --> |Map generator over raw data dirs| CCC[(Tagged Data Products)];
-  CCC --> |Sort and process products| CC[(Assets)];
+  B --> |Map generator over raw data dirs| CCC[(Tagged Data Products)]@{shape: lin-cyl};
+  CCC --> |Sort and process products| CC[(Assets)]@{shape: lin-cyl};
   CC -.-> H[Interactive Displays];
   H -.-> |Grafana API| I[Grafana Dashboard];
   H -.-> K[Etc.];
@@ -88,10 +88,12 @@ Run the folling command in a terminal (with trendify installed to the active pyt
 - [make static asset include files][trendify.API.make_include_files]
 - [make interactive Grafana dashboard][trendify.API.make_grafana_dashboard]
 
-``` sh
-workdir=/local/or/global/path/to/workdir
-generator=/local/or/global/path/to/file.py:user_defined_data_product_generator
-trendify -m $generator -i $workdir/**/*/ -o $workdir/trendify_out/ -n 10
+``` bash
+workdir=./workdir
+inputs=$workdir/data_directories/*/
+output=$workdir/output/
+generator=trendify.examples:example_data_product_generator
+trendify make all -g $generator -i $inputs -o $output -n 10 --port 800
 ```
 
 !!! note "Use Parallelization"
@@ -115,7 +117,7 @@ After pip installing `trendify`, open an terminal and run the following shell co
 workdir=./workdir
 generator=trendify.examples:example_data_product_generator
 trendify_make_sample_data -wd $workdir -n 10  
-trendify -m $generator -i $workdir/models/*/ -o $workdir/trendify_output/ -n 5
+trendify make all -g $generator -i $workdir/models/*/ -o $workdir/trendify_output/ -n 10 --port 8000
 ```
 
 #### Viewing the Results
@@ -188,21 +190,43 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 
 #### CLI
 
-The trendify command line interface allows a user-defined data product generator method to be mapped over raw data.
+The `trendify` command line interface (CLI) allows a user-defined data product generator method to be mapped over raw data.
 
 ##### Command Line Arguments
 
-The command line interface takes in the following arguments:
+The `trendify` command line program takes the following sub-commands that run the various steps of the `trendify` framework.
+
+| Command                   | Action                                                |
+| products-make             | Makes products or assets                              |
+| products-sort             | Sorts data products by tags                           |
+| products-serve            | Serves data products to URL endpoint on localhost     |
+| assets-make-static        | Makes static assets                                   |
+| assets-make-interactive   | Makes interactive assets                              |
+
+The `trendify` program also takes the following `make` commands which runs runs the product
+`make`, `sort`, and `serve` commands as well as generating a JSON file to define a Grafana dashboard.
+
+| Command                   | Action                                                                                    |
+| make static               | Makes static assets (CSV and JPG files).                                                  |
+| make grafana              | Makes interactive grafana dashboard JSON file.  Serves generated products on local host.  |
+| make all                  | Makes both static and interactive assets.  Serves generated products on the local host.   |
+
+To get a complete list of the input arguments to these commands run them with the  `-h` flag to get a list of available arguments.
+
+The make commands take some of the following arguments.
 
 | Short Form Flag | Long Form Flag | Input Type | Usage |
-| -- | ------------------------- | ----- | ---------- |
-| `-h` | `--help` |  | Causes help info to be printed to the Linux terminal |
-| `-i` | `--input-directories` | `glob` or `list[str]` | Specifies directories over which the data product generator `method` will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons `glob.glob` method. See [details][details-input-directories] below.|
-| `-m` | `--method` | `str` | Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See [details][details-method] below.
-| `-n` | `--n-procs` | `int` | Sets the number of parallel processes to use in each trendify step.  Use `-n 1` for full Traceback during debugging and `-n 10` or some integer greater than 1 for parallelization speedup on larger data sets |
-| `-o` | `--output-directory` | `str` | Specifies the path to which `trendify` will output sorted products and assets. |
+| ---- | -------------------------- | ----- | ---------- |
+| `-h` | `--help`                   |       | Causes help info to be printed to the Linux terminal |
+| `-g` | `--product-generator`      | `str` | Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See [details][-product-generator] below. |
+| `-i` | `--input-directories`      | `glob` or `list[str]` | Specifies directories over which the data product generator `method` will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons `glob.glob` method. See [details][-input-directories] below.|
+| `-n` | `--n-procs`                | `int` | Sets the number of parallel processes to use in each trendify step.  Use `-n 1` for full Traceback during debugging and `-n 10` or some integer greater than 1 for parallelization speedup on larger data sets |
+| `-o` | `--output-directory`       | `str` | Specifies the path to which `trendify` will output sorted products and assets. |
+|      | `--protocol`               | `str` | Defaults to 'http'  |
+|      | `--host`                   | `str` | Defaults to 'localhost' |
+|      | `--port`                   | `int` | Port to serve the products to.  Defaults to `8000` |
 
-###### Details: --method
+###### --product-generator
 
 The method can be input in any of the following formats:
 
@@ -216,7 +240,7 @@ The method can be input in any of the following formats:
 - `package.module:method`
 - `package.module:ClassName.method`
 
-###### Details: --input-directories
+###### --input-directories
 
 The input data directories over which the product generator will be mapped can be entered using standard bash globs
 

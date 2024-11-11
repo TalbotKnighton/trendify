@@ -107,7 +107,7 @@ class UserMethod:
     """
     Defines arguments parsed from command line
     """
-    _NAME = 'product_generator'
+    _NAME = 'product-generator'
 
     @classmethod
     def get_from_namespace(cls, namespace: argparse.Namespace) -> API.ProductGenerator:
@@ -254,38 +254,67 @@ def trendify():
     )
     actions = parser.add_subparsers(title='Sub Commands', dest='command', metavar='')
 
-    # Make Products
-    make_products = actions.add_parser('products-make', help='Makes products or assets')
-    InputDirectories.add_argument(make_products)
-    UserMethod.add_argument(make_products)
-    NProcs.add_argument(make_products)
-    # Sort Products
-    sort_products = actions.add_parser('products-sort', help='Sorts data products by tags')
-    InputDirectories.add_argument(sort_products)
-    sort_products_trendify_directory = TrendifyDirectory('o', 'output-directory')
-    sort_products_trendify_directory.add_argument(sort_products)
-    NProcs.add_argument(sort_products)
-    # Serve Products
-    serve_products = actions.add_parser('products-serve', help='Serves data products to URL endpoint on localhost')
-    serve_products.add_argument('trendify_output_directory')
-    serve_products.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
-    serve_products.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
+    output_dir = TrendifyDirectory('o', 'output-directory')
+    ''' Products '''
+    ### Products Make ###
+    products_make = actions.add_parser('products-make', help='Makes products or assets')
+    InputDirectories.add_argument(products_make)
+    UserMethod.add_argument(products_make)
+    NProcs.add_argument(products_make)
+    ### Products Sort ###
+    products_sort = actions.add_parser('products-sort', help='Sorts data products by tags')
+    InputDirectories.add_argument(products_sort)
+    output_dir.add_argument(products_sort)
+    NProcs.add_argument(products_sort)
+    ### Products Serve ###
+    products_serve = actions.add_parser('products-serve', help='Serves data products to URL endpoint on localhost')
+    products_serve.add_argument('trendify_output_directory')
+    products_serve.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
+    products_serve.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
     
-    ##### Make Assets
-    ### Make Assets Static
-    make_static_assets = actions.add_parser('assets-make-static', help='Makes static assets')
-    make_static_assets.add_argument('trendify_output_directory')
-    NProcs.add_argument(make_static_assets)
-    ### Make Assets Interactive
-    make_interactive_assets = actions.add_parser('assets-make-interactive', help='Makes interactive assets')
-    interactive_asset_types = make_interactive_assets.add_subparsers(title='Interactive Asset Type', dest='interactive_asset_type')
-    ## Make Assets Interactive Grafana
-    make_interactive_assets_grafana = interactive_asset_types.add_parser('grafana', help='Makes Grafana dashboard')
-    make_interactive_assets_grafana.add_argument('trendify_output_directory')
-    make_interactive_assets_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
-    make_interactive_assets_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
-    make_interactive_assets_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
-    NProcs.add_argument(make_interactive_assets_grafana)
+    ''' Assets '''
+    ### Assets Make Static
+    assets_make_static = actions.add_parser('assets-make-static', help='Makes static assets')
+    assets_make_static.add_argument('trendify_output_directory')
+    NProcs.add_argument(assets_make_static)
+    ### Assets Make Interactive
+    assets_make_interactive = actions.add_parser('assets-make-interactive', help='Makes interactive assets')
+    interactive_asset_types = assets_make_interactive.add_subparsers(title='Interactive Asset Type', dest='interactive_asset_type')
+    ## Assets Make Interactive Grafana
+    assets_make_interactive_grafana = interactive_asset_types.add_parser('grafana', help='Makes Grafana dashboard')
+    assets_make_interactive_grafana.add_argument('trendify_output_directory')
+    assets_make_interactive_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
+    assets_make_interactive_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
+    assets_make_interactive_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
+    NProcs.add_argument(assets_make_interactive_grafana)
+
+    ''' Make '''
+    make = actions.add_parser('make', help='Generates products and assets.  Run with -h flag for info on subcommands.')
+    make_actions = make.add_subparsers(title='Targets', dest='target', metavar='')
+    # Static
+    make_static = make_actions.add_parser('static', help='Generates static assets after running products make and sort')
+    InputDirectories.add_argument(make_static)
+    UserMethod.add_argument(make_static)
+    NProcs.add_argument(make_static)
+    output_dir.add_argument(make_static)
+    # Interactive Grafana
+    make_grafana = make_actions.add_parser('grafana', help='Generates Grafana dashboard after running products make and sort')
+    InputDirectories.add_argument(make_grafana)
+    UserMethod.add_argument(make_grafana)
+    NProcs.add_argument(make_grafana)
+    output_dir.add_argument(make_grafana)
+    make_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
+    make_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
+    make_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
+    # All
+    make_grafana = make_actions.add_parser('all', help='Generates all assets after running products make and sort')
+    InputDirectories.add_argument(make_grafana)
+    UserMethod.add_argument(make_grafana)
+    NProcs.add_argument(make_grafana)
+    output_dir.add_argument(make_grafana)
+    make_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
+    make_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
+    make_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
 
     # Test
     args = parser.parse_args()
@@ -299,7 +328,7 @@ def trendify():
         case 'products-sort':
             API.sort_products(
                 data_dirs=InputDirectories.get_from_namespace(args),
-                output_dir=sort_products_trendify_directory.get_from_namespace(args).products_dir,
+                output_dir=output_dir.get_from_namespace(args).products_dir,
                 n_procs=NProcs.get_from_namespace(args),
             )
         case 'products-serve':
@@ -329,6 +358,48 @@ def trendify():
                     )
                 case _:
                     raise NotImplementedError
+        case 'make':
+            um = UserMethod.get_from_namespace(args)
+            ip = InputDirectories.get_from_namespace(args)
+            np = NProcs.get_from_namespace(args)
+            td = output_dir.get_from_namespace(args)
+            match args.target:
+                case 'static':
+                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np)
+                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np)
+                    API.make_tables_and_figures(products_dir=td.products_dir, output_dir=td.static_assets_dir, n_procs=np)
+                case 'grafana':
+                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np)
+                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np)
+                    protocol: str = args.protocol
+                    h: str = args.host
+                    p: int = args.port
+                    API.make_grafana_dashboard(
+                        products_dir=td.products_dir,
+                        output_dir=td.grafana_dir,
+                        protocol=protocol,
+                        host=h,
+                        port=p,
+                        n_procs=np,
+                    )
+                    TrendifyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
+                case 'all':
+                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np)
+                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np)
+                    protocol: str = args.protocol
+                    h: str = args.host
+                    p: int = args.port
+                    API.make_grafana_dashboard(
+                        products_dir=td.products_dir,
+                        output_dir=td.grafana_dir,
+                        protocol=protocol,
+                        host=h,
+                        port=p,
+                        n_procs=np,
+                    )
+                    API.make_tables_and_figures(products_dir=td.products_dir, output_dir=td.static_assets_dir, n_procs=np)
+                    TrendifyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
+                    
 
     # args = _Args.from_args(args)
     # make_it_trendy(

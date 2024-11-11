@@ -506,18 +506,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#details-method" class="md-nav__link">
+  <a href="#-product-generator" class="md-nav__link">
     <span class="md-ellipsis">
-      Details: --method
+      --product-generator
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#details-input-directories" class="md-nav__link">
+  <a href="#-input-directories" class="md-nav__link">
     <span class="md-ellipsis">
-      Details: --input-directories
+      --input-directories
     </span>
   </a>
   
@@ -949,6 +949,48 @@
   
   
     <li class="md-nav__item">
+      <a href="reference/trendify/local_server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    local_server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/trendify/postresql_test/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    postresql_test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="reference/trendify/server/" class="md-nav__link">
         
   
@@ -1147,18 +1189,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#details-method" class="md-nav__link">
+  <a href="#-product-generator" class="md-nav__link">
     <span class="md-ellipsis">
-      Details: --method
+      --product-generator
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#details-input-directories" class="md-nav__link">
+  <a href="#-input-directories" class="md-nav__link">
     <span class="md-ellipsis">
-      Details: --input-directories
+      --input-directories
     </span>
   </a>
   
@@ -1219,17 +1261,17 @@
 <p>The following flow chart shows what the package does.  See the vocabulary section below for clarification of terms in the diagram and other sections for how to run the framework.</p>
 <pre class="mermaid"><code>graph TD
   subgraph "User Inputs"  
-   A[(Raw Data Dirs)];
+   A[(Input Directories)]@{ shape: lin-cyl };
    AA[Product Generator];
-   AAA[Output Dir];
-   AAAA[Number of Parallel Processes]
+   AAA[Output Directory];
+   AAAA[Number of Processes]
   end
-  A --&gt; B{CLI or Script};
+  A --&gt; B[CLI or Script]@{ shape: diamond};
   AA --&gt; B;
   AAA --&gt; B;
   AAAA --&gt; B;
-  B --&gt; |Map generator over raw data dirs| CCC[(Tagged Data Products)];
-  CCC --&gt; |Sort and process products| CC[(Assets)];
+  B --&gt; |Map generator over raw data dirs| CCC[(Tagged Data Products)]@{shape: lin-cyl};
+  CCC --&gt; |Sort and process products| CC[(Assets)]@{shape: lin-cyl};
   CC -.-&gt; H[Interactive Displays];
   H -.-&gt; |Grafana API| I[Grafana Dashboard];
   H -.-&gt; K[Etc.];
@@ -1355,9 +1397,11 @@
 <li><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.make_include_files">make static asset include files</a></li>
 <li><a class="autorefs autorefs-internal" href="reference/trendify/API/#trendify.API.make_grafana_dashboard">make interactive Grafana dashboard</a></li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">workdir</span><span class="o">=</span>/local/or/global/path/to/workdir
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">generator</span><span class="o">=</span>/local/or/global/path/to/file.py:user_defined_data_product_generator
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>trendify<span class="w"> </span>-m<span class="w"> </span><span class="nv">$generator</span><span class="w"> </span>-i<span class="w"> </span><span class="nv">$workdir</span>/**/*/<span class="w"> </span>-o<span class="w"> </span><span class="nv">$workdir</span>/trendify_out/<span class="w"> </span>-n<span class="w"> </span><span class="m">10</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">workdir</span><span class="o">=</span>./workdir
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">inputs</span><span class="o">=</span><span class="nv">$workdir</span>/data_directories/*/
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nv">output</span><span class="o">=</span><span class="nv">$workdir</span>/output/
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nv">generator</span><span class="o">=</span>trendify.examples:example_data_product_generator
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>trendify<span class="w"> </span>make<span class="w"> </span>all<span class="w"> </span>-g<span class="w"> </span><span class="nv">$generator</span><span class="w"> </span>-i<span class="w"> </span><span class="nv">$inputs</span><span class="w"> </span>-o<span class="w"> </span><span class="nv">$output</span><span class="w"> </span>-n<span class="w"> </span><span class="m">10</span><span class="w"> </span>--port<span class="w"> </span><span class="m">800</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Use Parallelization</p>
@@ -1375,7 +1419,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">workdir</span><span class="o">=</span>./workdir
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">generator</span><span class="o">=</span>trendify.examples:example_data_product_generator
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>trendify_make_sample_data<span class="w"> </span>-wd<span class="w"> </span><span class="nv">$workdir</span><span class="w"> </span>-n<span class="w"> </span><span class="m">10</span><span class="w">  </span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>trendify<span class="w"> </span>-m<span class="w"> </span><span class="nv">$generator</span><span class="w"> </span>-i<span class="w"> </span><span class="nv">$workdir</span>/models/*/<span class="w"> </span>-o<span class="w"> </span><span class="nv">$workdir</span>/trendify_output/<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>trendify<span class="w"> </span>make<span class="w"> </span>all<span class="w"> </span>-g<span class="w"> </span><span class="nv">$generator</span><span class="w"> </span>-i<span class="w"> </span><span class="nv">$workdir</span>/models/*/<span class="w"> </span>-o<span class="w"> </span><span class="nv">$workdir</span>/trendify_output/<span class="w"> </span>-n<span class="w"> </span><span class="m">10</span><span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
 </code></pre></div>
 <h4 id="viewing-the-results">Viewing the Results<a class="headerlink" href="#viewing-the-results" title="Permanent link">&para;</a></h4>
 <h5 id="static-assets">Static Assets<a class="headerlink" href="#static-assets" title="Permanent link">&para;</a></h5>
@@ -1435,9 +1479,23 @@
 <p>Labels and figure formats are assignable.  Trendify will automatically collapse matplotlib legend labels
 down to a unique set.  Use unique pen label, marker label, histogram style label, or row/col pair as unique identifiers.  Make sure that the formatting specified for like-tagged <code>DataProduct</code> istances to be the same.</p>
 <h4 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h4>
-<p>The trendify command line interface allows a user-defined data product generator method to be mapped over raw data.</p>
+<p>The <code>trendify</code> command line interface (CLI) allows a user-defined data product generator method to be mapped over raw data.</p>
 <h5 id="command-line-arguments">Command Line Arguments<a class="headerlink" href="#command-line-arguments" title="Permanent link">&para;</a></h5>
-<p>The command line interface takes in the following arguments:</p>
+<p>The <code>trendify</code> command line program takes the following sub-commands that run the various steps of the <code>trendify</code> framework.</p>
+<p>| Command                   | Action                                                |
+| products-make             | Makes products or assets                              |
+| products-sort             | Sorts data products by tags                           |
+| products-serve            | Serves data products to URL endpoint on localhost     |
+| assets-make-static        | Makes static assets                                   |
+| assets-make-interactive   | Makes interactive assets                              |</p>
+<p>The <code>trendify</code> program also takes the following <code>make</code> commands which runs runs the product
+<code>make</code>, <code>sort</code>, and <code>serve</code> commands as well as generating a JSON file to define a Grafana dashboard.</p>
+<p>| Command                   | Action                                                                                    |
+| make static               | Makes static assets (CSV and JPG files).                                                  |
+| make grafana              | Makes interactive grafana dashboard JSON file.  Serves generated products on local host.  |
+| make all                  | Makes both static and interactive assets.  Serves generated products on the local host.   |</p>
+<p>To get a complete list of the input arguments to these commands run them with the  <code>-h</code> flag to get a list of available arguments.</p>
+<p>The make commands take some of the following arguments.</p>
 <table>
 <thead>
 <tr>
@@ -1455,16 +1513,16 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 <td>Causes help info to be printed to the Linux terminal</td>
 </tr>
 <tr>
+<td><code>-g</code></td>
+<td><code>--product-generator</code></td>
+<td><code>str</code></td>
+<td>Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See <a class="autorefs autorefs-internal" href="#-product-generator">details</a> below.</td>
+</tr>
+<tr>
 <td><code>-i</code></td>
 <td><code>--input-directories</code></td>
 <td><code>glob</code> or <code>list[str]</code></td>
-<td>Specifies directories over which the data product generator <code>method</code> will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons <code>glob.glob</code> method. See <a class="autorefs autorefs-internal" href="#details-input-directories">details</a> below.</td>
-</tr>
-<tr>
-<td><code>-m</code></td>
-<td><code>--method</code></td>
-<td><code>str</code></td>
-<td>Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See <a class="autorefs autorefs-internal" href="#details-method">details</a> below.</td>
+<td>Specifies directories over which the data product generator <code>method</code> will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons <code>glob.glob</code> method. See <a class="autorefs autorefs-internal" href="#-input-directories">details</a> below.</td>
 </tr>
 <tr>
 <td><code>-n</code></td>
@@ -1478,9 +1536,27 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 <td><code>str</code></td>
 <td>Specifies the path to which <code>trendify</code> will output sorted products and assets.</td>
 </tr>
+<tr>
+<td></td>
+<td><code>--protocol</code></td>
+<td><code>str</code></td>
+<td>Defaults to 'http'</td>
+</tr>
+<tr>
+<td></td>
+<td><code>--host</code></td>
+<td><code>str</code></td>
+<td>Defaults to 'localhost'</td>
+</tr>
+<tr>
+<td></td>
+<td><code>--port</code></td>
+<td><code>int</code></td>
+<td>Port to serve the products to.  Defaults to <code>8000</code></td>
+</tr>
 </tbody>
 </table>
-<h6 id="details-method">Details: --method<a class="headerlink" href="#details-method" title="Permanent link">&para;</a></h6>
+<h6 id="-product-generator">--product-generator<a class="headerlink" href="#-product-generator" title="Permanent link">&para;</a></h6>
 <p>The method can be input in any of the following formats:</p>
 <ul>
 <li><code>/global/path/to/module.py</code></li>
@@ -1493,7 +1569,7 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 <li><code>package.module:method</code></li>
 <li><code>package.module:ClassName.method</code></li>
 </ul>
-<h6 id="details-input-directories">Details: --input-directories<a class="headerlink" href="#details-input-directories" title="Permanent link">&para;</a></h6>
+<h6 id="-input-directories">--input-directories<a class="headerlink" href="#-input-directories" title="Permanent link">&para;</a></h6>
 <p>The input data directories over which the product generator will be mapped can be entered using standard bash globs</p>
 <ul>
 <li><code>**</code> expands to any file path</li>

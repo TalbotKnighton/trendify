@@ -106,7 +106,7 @@ class ProductGetter:
 @dataclass
 class TrendifyProductServerLocal:
     app: Flask
-    # product_getter: ProductGetter
+    product_getter: ProductGetter
 
     @classmethod
     def get_new(cls, products_dir: Path, name: str):
@@ -122,10 +122,19 @@ class TrendifyProductServerLocal:
         
         return cls(
             app=app,
-            # product_getter=product_getter,
+            product_getter=product_getter,
         )
 
     def run(self, host: str = '0.0.0.0', port: int = 8000):
+        # self.product_getter.trendy_dir.write_text(
+        #     f'''
+        #     [program:myapp]
+        #     command=waitress-serve --port=8080 myapp:app
+        #     directory=/path/to/your/app
+        #     autostart=true
+        #     autorestart=true
+        #     '''
+        # )
         print(f'Starting Server on http://{host}:{port}')
         serve(self.app, host=host, port=port)
 
