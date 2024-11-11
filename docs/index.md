@@ -197,6 +197,7 @@ The `trendify` command line interface (CLI) allows a user-defined data product g
 The `trendify` command line program takes the following sub-commands that run the various steps of the `trendify` framework.
 
 | Command                   | Action                                                |
+| - | - |
 | products-make             | Makes products or assets                              |
 | products-sort             | Sorts data products by tags                           |
 | products-serve            | Serves data products to URL endpoint on localhost     |
@@ -207,6 +208,7 @@ The `trendify` program also takes the following `make` commands which runs runs 
 `make`, `sort`, and `serve` commands as well as generating a JSON file to define a Grafana dashboard.
 
 | Command                   | Action                                                                                    |
+| - | - |
 | make static               | Makes static assets (CSV and JPG files).                                                  |
 | make grafana              | Makes interactive grafana dashboard JSON file.  Serves generated products on local host.  |
 | make all                  | Makes both static and interactive assets.  Serves generated products on the local host.   |

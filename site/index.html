@@ -1482,18 +1482,60 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 <p>The <code>trendify</code> command line interface (CLI) allows a user-defined data product generator method to be mapped over raw data.</p>
 <h5 id="command-line-arguments">Command Line Arguments<a class="headerlink" href="#command-line-arguments" title="Permanent link">&para;</a></h5>
 <p>The <code>trendify</code> command line program takes the following sub-commands that run the various steps of the <code>trendify</code> framework.</p>
-<p>| Command                   | Action                                                |
-| products-make             | Makes products or assets                              |
-| products-sort             | Sorts data products by tags                           |
-| products-serve            | Serves data products to URL endpoint on localhost     |
-| assets-make-static        | Makes static assets                                   |
-| assets-make-interactive   | Makes interactive assets                              |</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>products-make</td>
+<td>Makes products or assets</td>
+</tr>
+<tr>
+<td>products-sort</td>
+<td>Sorts data products by tags</td>
+</tr>
+<tr>
+<td>products-serve</td>
+<td>Serves data products to URL endpoint on localhost</td>
+</tr>
+<tr>
+<td>assets-make-static</td>
+<td>Makes static assets</td>
+</tr>
+<tr>
+<td>assets-make-interactive</td>
+<td>Makes interactive assets</td>
+</tr>
+</tbody>
+</table>
 <p>The <code>trendify</code> program also takes the following <code>make</code> commands which runs runs the product
 <code>make</code>, <code>sort</code>, and <code>serve</code> commands as well as generating a JSON file to define a Grafana dashboard.</p>
-<p>| Command                   | Action                                                                                    |
-| make static               | Makes static assets (CSV and JPG files).                                                  |
-| make grafana              | Makes interactive grafana dashboard JSON file.  Serves generated products on local host.  |
-| make all                  | Makes both static and interactive assets.  Serves generated products on the local host.   |</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>make static</td>
+<td>Makes static assets (CSV and JPG files).</td>
+</tr>
+<tr>
+<td>make grafana</td>
+<td>Makes interactive grafana dashboard JSON file.  Serves generated products on local host.</td>
+</tr>
+<tr>
+<td>make all</td>
+<td>Makes both static and interactive assets.  Serves generated products on the local host.</td>
+</tr>
+</tbody>
+</table>
 <p>To get a complete list of the input arguments to these commands run them with the  <code>-h</code> flag to get a list of available arguments.</p>
 <p>The make commands take some of the following arguments.</p>
 <table>
