@@ -689,10 +689,10 @@ class TableEntry(DataProduct):
 
     Attributes:
         product_type (Literal['Trace2D']): Name of class type to be used as a constructor.
-        row (float | str): Value to be binned
-        col (float | str): Hashable tags used to sort data products
-        value (float | str): Style of histogram display
-        unit (str | None): Format to apply to single axis figure
+        row (float | str): Row Label
+        col (float | str): Column Label
+        value (float | str): Value
+        unit (str | None): Units for value
     """
     product_type: Literal['TableEntry'] = 'TableEntry'
     row: float | str
