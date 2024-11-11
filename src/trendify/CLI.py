@@ -267,9 +267,9 @@ def trendify():
     output_dir.add_argument(products_sort)
     NProcs.add_argument(products_sort)
     ### Products Serve ###
-    products_serve = actions.add_parser('products-serve', help='Serves data products to URL endpoint on localhost')
+    products_serve = actions.add_parser('products-serve', help='Serves data products to URL endpoint at 0.0.0.0')
     products_serve.add_argument('trendify_output_directory')
-    products_serve.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
+    products_serve.add_argument('--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
     products_serve.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
     
     ''' Assets '''
@@ -284,7 +284,7 @@ def trendify():
     assets_make_interactive_grafana = interactive_asset_types.add_parser('grafana', help='Makes Grafana dashboard')
     assets_make_interactive_grafana.add_argument('trendify_output_directory')
     assets_make_interactive_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
-    assets_make_interactive_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
+    assets_make_interactive_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
     assets_make_interactive_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
     NProcs.add_argument(assets_make_interactive_grafana)
 
@@ -304,7 +304,7 @@ def trendify():
     NProcs.add_argument(make_grafana)
     output_dir.add_argument(make_grafana)
     make_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
-    make_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
+    make_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
     make_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
     # All
     make_grafana = make_actions.add_parser('all', help='Generates all assets after running products make and sort')
@@ -313,7 +313,7 @@ def trendify():
     NProcs.add_argument(make_grafana)
     output_dir.add_argument(make_grafana)
     make_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
-    make_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='localhost')
+    make_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
     make_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
 
     # Test
@@ -422,7 +422,7 @@ def trendify():
 #     parser = argparse.ArgumentParser(prog='Serve data to local Grafana instance')
 #     parser.add_argument('-d', '--directory', type=Path, help='Path to trendify output directory', required=True)
 #     parser.add_argument('-p', '--port', type=int, help='What port to serve the data on', default=8000)
-#     parser.add_argument('-h', '--host', type=str, help='What addres to serve the data to', default='localhost')
+#     parser.add_argument('-h', '--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
 #     args = parser.parse_args()
 #     trendy_dir = Path(args.directory).resolve()
 #     port = int(args.port)

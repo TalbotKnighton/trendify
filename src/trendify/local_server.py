@@ -61,7 +61,7 @@ class ProductGetter:
             (Type): Type of product to return
 
         Example: "URL"
-            Serve on port `8000` and the URL `localhost:8000/tag/Trace2D` 
+            Serve on port `8000` and the URL `0.0.0.0:8000/tag/Trace2D` 
             where `tag` can be in the format `a.b.c...` for multiple components.
 
         Example: "Grafana parsing command"

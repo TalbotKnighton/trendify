@@ -1757,7 +1757,7 @@ def make_it_trendy(
         no_grafana_dashboard: bool = False,
         no_include_files: bool = False,
         protocol: str = 'http',
-        server: str = 'localhost',
+        server: str = '0.0.0.0',
         port: int = 8000,
     ):
     """
