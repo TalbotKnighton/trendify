@@ -200,7 +200,7 @@ The `trendify` command line program takes the following sub-commands that run th
 | - | - |
 | products-make             | Makes products or assets                              |
 | products-sort             | Sorts data products by tags                           |
-| products-serve            | Serves data products to URL endpoint on localhost     |
+| products-serve            | Serves data products to URL endpoint                  |
 | assets-make-static        | Makes static assets                                   |
 | assets-make-interactive   | Makes interactive assets                              |
 
@@ -225,7 +225,7 @@ The make commands take some of the following arguments.
 | `-n` | `--n-procs`                | `int` | Sets the number of parallel processes to use in each trendify step.  Use `-n 1` for full Traceback during debugging and `-n 10` or some integer greater than 1 for parallelization speedup on larger data sets |
 | `-o` | `--output-directory`       | `str` | Specifies the path to which `trendify` will output sorted products and assets. |
 |      | `--protocol`               | `str` | Defaults to 'http'  |
-|      | `--host`                   | `str` | Defaults to 'localhost' |
+|      | `--host`                   | `str` | Defaults to '0.0.0.0' |
 |      | `--port`                   | `int` | Port to serve the products to.  Defaults to `8000` |
 
 ###### --product-generator
