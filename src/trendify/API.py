@@ -689,6 +689,7 @@ class TableEntry(DataProduct):
 
     Attributes:
         product_type (Literal['Trace2D']): Name of class type to be used as a constructor.
+        tags (Tags): Tags for collecting table entry
         row (float | str): Row Label
         col (float | str): Column Label
         value (float | str): Value
