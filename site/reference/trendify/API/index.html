@@ -1463,6 +1463,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#trendify.API.get_and_reserve_next_index" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_and_reserve_next_index
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#trendify.API.get_sorted_dirs" class="md-nav__link">
     <span class="md-ellipsis">
       get_sorted_dirs
@@ -2452,6 +2461,15 @@
   <a href="#trendify.API.flatten" class="md-nav__link">
     <span class="md-ellipsis">
       flatten
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trendify.API.get_and_reserve_next_index" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_and_reserve_next_index
     </span>
   </a>
   
@@ -7461,6 +7479,73 @@ It still may end up being useful if my plotting method changes.  Keeping for pot
               <div class="doc-md-description">
                 <p>Flattned iterable</p>
               </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="trendify.API.get_and_reserve_next_index" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_and_reserve_next_index</span>
+
+
+<a href="#trendify.API.get_and_reserve_next_index" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_and_reserve_next_index</span><span class="p">(</span><span class="n">save_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span> <span class="n">dir_in</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Reserves next available file index during trendify sorting phase.
+Saves data to index map file.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>save_dir</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Directory for which the next available file index is needed</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dir_in</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Directory from which data is being pulled for sorting</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
             </td>
           </tr>
       </tbody>

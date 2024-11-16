@@ -466,21 +466,25 @@ Args:
 Returns:
     (ProductList): List of data products to be sorted and used to produce assets
 """
-def reserve_index(save_dir: Path, dir_in: Path):
+
+def get_and_reserve_next_index(save_dir: Path, dir_in: Path):
+    """
+    Reserves next available file index during trendify sorting phase.
+    Saves data to index map file.
+
+    Args:
+        save_dir (Path): Directory for which the next available file index is needed
+        dir_in (Path): Directory from which data is being pulled for sorting
+    """
     assert save_dir.is_dir()
     lock_file = save_dir.joinpath('reserving_index.lock')
     with FileLock(lock_file):
         index_map = save_dir.joinpath('index_map.csv')
-        if index_map.exists():
-            list2d = index_map.read_text().strip().split('\n')
-            next_index = int(list2d[-1].split(',')[0])+1
-            list2d.append(f'{next_index},{dir_in}')
-            index_map.write_text('\n'.join(list2d))
-            return next_index
-        else:
-            index_map.write_text(f'0,{dir_in}')
-            next_index = 1
-            return next_index
+        index_list = index_map.read_text().strip().split('\n') if index_map.exists() else []
+        next_index = int(index_list[-1].split(',')[0])+1 if index_list else 0
+        index_list.append(f'{next_index},{dir_in}')
+        index_map.write_text('\n'.join(index_list))
+    return next_index
 
 
 class XYData(DataProduct):
@@ -972,7 +976,7 @@ class DataProductCollection(BaseModel):
             sub_collection = collection.get_products(tag=tag)
             save_dir = dir_out.joinpath(*atleast_1d(tag))
             save_dir.mkdir(parents=True, exist_ok=True)
-            next_index = reserve_index(save_dir=save_dir, dir_in=dir_in)
+            next_index = get_and_reserve_next_index(save_dir=save_dir, dir_in=dir_in)
             file = save_dir.joinpath(str(next_index)).with_suffix('.json')
             file.write_text(sub_collection.model_dump_json())
 
