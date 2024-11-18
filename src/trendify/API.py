@@ -14,12 +14,13 @@ from __future__ import annotations
 
 # Standard imports
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass
 from enum import StrEnum, auto
 from itertools import chain
 from pathlib import Path
 import matplotlib.pyplot as plt
 import time
-from typing import Union, List, Iterable, Any, Callable, Tuple, Type, Optional, TypeVar
+from typing import Union, List, Iterable, Any, Callable, Tuple, Type, Optional, TypeVar, Hashable
 from typing import Self
 import warnings
 
@@ -28,7 +29,7 @@ from filelock import FileLock
 import numpy as np
 import pandas as pd
 from numpydantic import NDArray, Shape
-from pydantic import BaseModel, ConfigDict, InstanceOf, SerializeAsAny
+from pydantic import BaseModel, ConfigDict, InstanceOf, SerializeAsAny, computed_field, model_validator
 
 # Local imports
 import grafana_api as gapi
@@ -83,7 +84,7 @@ def _mkdir(p: Path):
 
 R = TypeVar('R')
 
-Tag = Union[Tuple[str, ...], str]
+Tag = Union[Tuple[Hashable, ...], Hashable]
 """
 Determines what types can be used to define a tag
 """
@@ -157,8 +158,6 @@ def squeeze(obj: Union[Iterable, Any]):
         return obj[0]
     else:
         return obj
-
-from pydantic.dataclasses import dataclass
 
 @dataclass
 class SingleAxisFigure:
@@ -387,8 +386,6 @@ class Marker(HashableBase):
         }
 
 _data_product_subclass_registry: dict[str, DataProduct] = {}
-
-from pydantic import BaseModel, PrivateAttr, computed_field, model_validator, Field
 
 class DataProduct(BaseModel):
     """
