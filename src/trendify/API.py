@@ -58,7 +58,6 @@ __all__ = [
     'make_it_trendy',
 ]
 
-
 class ProductType(StrEnum):
     """
     Defines all product types.  Used to type-cast URL info in server to validate.
@@ -252,12 +251,8 @@ class Format2D(HashableBase):
     lim_x_max: float | str | None = None
     lim_y_min: float | str | None = None
     lim_y_max: float | str | None = None
-
-    class Config:
-        """
-        Forbids extra arguments
-        """
-        extra = "forbid"  
+    
+    model_config = ConfigDict(extra='forbid')
 
     @classmethod
     def union_from_iterable(cls, format2ds: Iterable[Format2D]):
@@ -315,12 +310,8 @@ class Pen(HashableBase):
     alpha: float = 1
     zorder: float = 0
     label: Union[str, None] = None
-
-    class Config:
-        """
-        Forbids extra attributes
-        """
-        extra = "forbid"  
+    
+    model_config = ConfigDict(extra='forbid')
 
     def as_scatter_plot_kwargs(self):
         """
@@ -364,11 +355,7 @@ class Marker(HashableBase):
         """
         return cls(symbol=symbol, **pen.model_dump())
 
-    class Config:
-        """
-        Forbids extra attributes
-        """
-        extra = "forbid"  
+    model_config = ConfigDict(extra='forbid')
 
     def as_scatter_plot_kwargs(self):
         """
@@ -385,8 +372,9 @@ class Marker(HashableBase):
             'marker': self.symbol,
         }
 
-_data_product_subclass_registry = {}
+_data_product_subclass_registry: dict[str, DataProduct] = {}
 
+from pydantic import BaseModel, PrivateAttr, computed_field, model_validator
 
 class DataProduct(BaseModel):
     """
@@ -398,9 +386,35 @@ class DataProduct(BaseModel):
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
-    product_type: Hashable
     tags: Tags
     metadata: dict[str, str] = {}
+
+    @model_validator(mode='before')
+    @classmethod
+    def _remove_computed_fields(cls, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Removes computed fields before passing data to constructor.
+
+        Args:
+            data (dict[str, Any]): Raw data to be validated before passing to pydantic class constructor.
+
+        Returns:
+            (dict[str, Any]): Sanitized data to be passed to class constructor.
+        """
+        for f in cls.model_computed_fields:
+            data.pop(f, None)
+        return data
+
+    @computed_field
+    @property
+    def product_type(self) -> Hashable:
+        """
+        Returns:
+            (Hashable): Product type should be the same as the class name.
+                The product type is used to search for products from a 
+                [DataProductCollection][trendify.API.DataProductCollection].
+        """
+        return type(self).__name__
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
@@ -410,11 +424,7 @@ class DataProduct(BaseModel):
         super().__init_subclass__(**kwargs)
         _data_product_subclass_registry[cls.__name__] = cls    
     
-    class Config:
-        """
-        Disallows additional attributes
-        """
-        extra = "allow"  
+    model_config = ConfigDict(extra='allow')
     
     def append_to_list(self, l: List):
         """
@@ -442,19 +452,14 @@ class DataProduct(BaseModel):
         elements = kwargs.get(key, None)
         if elements:
             for index in range(len(kwargs[key])):
-                current_duck = kwargs[key][index]
-                if isinstance(current_duck, dict):
-                    item_duck_type = current_duck[type_key]
-                    for _, subclass in _data_product_subclass_registry.items():
-                        registery_duck_type = subclass.__fields__[type_key].default
-                        if item_duck_type == registery_duck_type:
-                            current_duck = subclass(**current_duck) 
-                            break
-                    kwargs[key][index] = current_duck
+                duck_info = kwargs[key][index]
+                if isinstance(duck_info, dict):
+                    product_type = duck_info.pop(type_key)
+                    duck_type = _data_product_subclass_registry[product_type]
+                    kwargs[key][index] = duck_type(**duck_info)
 
 ProductList = List[SerializeAsAny[InstanceOf[DataProduct]]]
 """List of serializable [DataProduct][trendify.API.DataProduct] or child classes thereof"""
-
 
 ProductGenerator = Callable[[Path], ProductList]
 """
@@ -486,8 +491,16 @@ def get_and_reserve_next_index(save_dir: Path, dir_in: Path):
         index_map.write_text('\n'.join(index_list))
     return next_index
 
+class PlottableData2D(DataProduct):
+    """
+    Base class for children of DataProduct to be plotted ax xy data on a 2D plot
 
-class XYData(DataProduct):
+    Attributes:
+        format2d (Format2D): Format to apply to plot
+    """
+    format2d: Format2D | None = None
+
+class XYData(PlottableData2D):
     """
     Base class for children of DataProduct to be plotted ax xy data on a 2D plot
     """
@@ -498,26 +511,16 @@ class Trace2D(XYData):
     Use the [Trace2D.from_xy][trendify.API.Trace2D.from_xy] constructor.
 
     Attributes:
-        product_type (Literal['Trace2D']): Name of class type to be used as a constructor.
         points (List[Point2D]): List of points.  Usually the points would have null values 
             for `marker` and `format2d` fields to save space.
         pen (Pen): Style and label information for drawing to matplotlib axes.
             Only the label information is used in Grafana.
             Eventually style information will be used in grafana.
-        format2d (Format2D): Formatting information for matplotlib figure.
     """
-    product_type: Literal['Trace2D'] = 'Trace2D'
     points: List[Point2D]
-    # x: NDArray[Shape["*"], float]
-    # y: NDArray[Shape["*"], float]
     pen: Pen = Pen()
-    format2d: Format2D = Format2D()
 
-    class Config:
-        """
-        Forbids extra attributes
-        """
-        extra = "forbid"  
+    model_config = ConfigDict(extra='forbid')
     
     @property
     def x(self):
@@ -577,7 +580,7 @@ class Trace2D(XYData):
             x (NDArray[Shape["*"], float]): x values
             y (NDArray[Shape["*"], float]): y values
             pen (Pen): Style and label for trace
-            format2d (Format2D): format to apply to matplotlib
+            format2d (Format2D): Format to apply to plot
         """
         return cls(
             tags = tags,
@@ -610,25 +613,17 @@ class Point2D(XYData):
     Defines a point to be scattered onto xy plot.
 
     Attributes:
-        product_type (Literal['Trace2D']): Name of class type to be used as a constructor.
-        points (List[Point2D]): List of points.  Usually the points would have null values 
-            for `marker` and `format2d` fields to save space.
-        marker (Marker): Style and label information for scattering points to matplotlib axes.
+        x (float | str): X value for the point.
+        y (float | str): Y value for the point.
+        marker (Marker | None): Style and label information for scattering points to matplotlib axes.
             Only the label information is used in Grafana.
             Eventually style information will be used in grafana.
-        format2d (Format2D): Formatting information for matplotlib figure.
     """
-    product_type: Literal['Point2D'] = 'Point2D'
     x: float | str
     y: float | str
     marker: Marker | None = Marker()
-    format2d: Format2D | None = Format2D()
-
-    class Config:
-        """
-        Forbids extra attributes
-        """
-        extra = "forbid"
+    
+    model_config = ConfigDict(extra='forbid')
 
 class HistogramStyle(HashableBase):
     """
@@ -662,28 +657,20 @@ class HistogramStyle(HashableBase):
             'histtype': self.histtype
         }
 
-class HistogramEntry(DataProduct):
+class HistogramEntry(PlottableData2D):
     """
     Use this class to specify a value to be collected into a matplotlib histogram.
 
     Attributes:
-        product_type (Literal['Trace2D']): Name of class type to be used as a constructor.
         value (float | str): Value to be binned
         tags (Tags): Hashable tags used to sort data products
         style (HistogramStyle): Style of histogram display
-        format2d (Format2D): Format to apply to single axis figure
     """
-    product_type: Literal['HistogramEntry'] = 'HistogramEntry'
     value: float | str
     tags: Tags
     style: HistogramStyle = HistogramStyle()
-    format2d: Format2D = Format2D()
 
-    class Config:
-        """
-        Forbids extra attributes
-        """
-        extra = "forbid"
+    model_config = ConfigDict(extra='forbid')
 
 class TableEntry(DataProduct):
     """
@@ -692,21 +679,17 @@ class TableEntry(DataProduct):
     Collected table entries will be printed in three forms when possible: melted, pivot (when possible), and stats (on pivot columns, when possible).
 
     Attributes:
-        product_type (Literal['Trace2D']): Name of class type to be used as a constructor.
-        tags (Tags): Tags for collecting table entry
         row (float | str): Row Label
         col (float | str): Column Label
         value (float | str): Value
         unit (str | None): Units for value
     """
-    product_type: Literal['TableEntry'] = 'TableEntry'
     row: float | str
     col: float | str
     value: float | str | bool
     unit: str | None
-
-    class Config:
-        extra = "forbid"
+    
+    model_config = ConfigDict(extra='forbid')
 
     def get_entry_dict(self):
         """
@@ -769,6 +752,8 @@ parse-json
 | extend "x"="points.x", "y"="points.y"
 | project "label", "x", "y", "metadata"
 '''#.replace('\n', r'\n').replace('"', r'\"') + '"'
+
+### Asset producers
 
 class DataProductCollection(BaseModel):
     """
@@ -1474,6 +1459,7 @@ class Histogrammer:
         saf.savefig(save_path, dpi=dpi)
         del saf
 
+### Runners
 
 def make_include_files(
         root_dir: Path,
@@ -1606,7 +1592,6 @@ def get_sorted_dirs(dirs: List[Path]):
         dirs.sort()
     return dirs
     
-
 def make_products(
         product_generator: Callable[[Path], DataProductCollection] | None,
         data_dirs: List[Path],
