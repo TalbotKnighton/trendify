@@ -8,9 +8,9 @@ div.doc-contents:not(.first) {
 a.external::after,
 a.autorefs-external::after {
     /* https://primer.style/octicons/arrow-up-right-24 */
-    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.25 15.5a.75.75 0 00.75-.75v-9a.75.75 0 00-.75-.75h-9a.75.75 0 000 1.5h7.19L6.22 16.72a.75.75 0 101.06 1.06L17.5 7.56v7.19c0 .414.336.75.75.75z"></path></svg>');
-    -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.25 15.5a.75.75 0 00.75-.75v-9a.75.75 0 00-.75-.75h-9a.75.75 0 000 1.5h7.19L6.22 16.72a.75.75 0 101.06 1.06L17.5 7.56v7.19c0 .414.336.75.75.75z"></path></svg>');
-    content: ' ';
+    /* mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.25 15.5a.75.75 0 00.75-.75v-9a.75.75 0 00-.75-.75h-9a.75.75 0 000 1.5h7.19L6.22 16.72a.75.75 0 101.06 1.06L17.5 7.56v7.19c0 .414.336.75.75.75z"></path></svg>');
+    -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.25 15.5a.75.75 0 00.75-.75v-9a.75.75 0 00-.75-.75h-9a.75.75 0 000 1.5h7.19L6.22 16.72a.75.75 0 101.06 1.06L17.5 7.56v7.19c0 .414.336.75.75.75z"></path></svg>'); */
+    /* content: ' '; */
 
     display: inline-block;
     vertical-align: middle;
@@ -72,11 +72,6 @@ content: "M";
     font-weight: bold;
 }
 
-.doc-label { border-radius: 15px; padding: 2px 8px; font-weight: bold; }
-.doc-label-special { background-color: #3330E4; color: white; }
-.doc-label-private { background-color: #F637EC; color: white; }
-.doc-label-property { background-color: #FBB454; color: black; }
-.doc-label-read-only { background-color: #FAEA48; color: black; }
 
 [data-md-color-scheme="default"] {
     --doc-symbol-parameter-fg-color: #df50af;

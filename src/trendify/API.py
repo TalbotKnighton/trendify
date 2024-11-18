@@ -19,16 +19,16 @@ from itertools import chain
 from pathlib import Path
 import matplotlib.pyplot as plt
 import time
-from typing import Union, Hashable, List, Iterable, Any, Literal, Callable, Tuple, Type, Optional, TypeVar
+from typing import Union, List, Iterable, Any, Callable, Tuple, Type, Optional, TypeVar
 from typing import Self
 import warnings
 
 # Common imports
-from filelock import FileLock, SoftFileLock
+from filelock import FileLock
 import numpy as np
 import pandas as pd
 from numpydantic import NDArray, Shape
-from pydantic import BaseModel, ConfigDict, Field, InstanceOf, SerializeAsAny
+from pydantic import BaseModel, ConfigDict, InstanceOf, SerializeAsAny
 
 # Local imports
 import grafana_api as gapi
@@ -83,7 +83,7 @@ def _mkdir(p: Path):
 
 R = TypeVar('R')
 
-Tag = Union[Tuple[Hashable, ...], Hashable]
+Tag = Union[Tuple[str, ...], str]
 """
 Determines what types can be used to define a tag
 """
@@ -158,27 +158,30 @@ def squeeze(obj: Union[Iterable, Any]):
     else:
         return obj
 
-class SingleAxisFigure(BaseModel):
+from pydantic.dataclasses import dataclass
+
+@dataclass
+class SingleAxisFigure:
     """
     Data class storing a matlab figure and axis.  The stored tag data in this class is so-far unused.
 
     Attributes:
         ax (plt.Axes): Matplotlib axis to which data will be plotted
         fig (plt.Figure): Matplotlib figure.
-        tag (Hashable): Figure tag.  Not yet used.
+        tag (Tag): Figure tag.  Not yet used.
     """
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    tag: Hashable
+    tag: Tag
     fig: plt.Figure
     ax: plt.Axes
 
     @classmethod
-    def new(cls, tag: Hashable):
+    def new(cls, tag: Tag):
         """
         Creates new figure and axis.  Returns new instance of this class.
 
         Args:
-            tag (Hashable): tag (not yet used)
+            tag (Tag): tag (not yet used)
         
         Returns:
             (Type[Self]): New single axis figure
@@ -241,12 +244,23 @@ class HashableBase(BaseModel):
 class Format2D(HashableBase):
     """
     Formatting data for matplotlib figure and axes
+
+    Attributes:
+        title_fig (Optional[str]): Sets [figure title][matplotlib.figure.Figure.suptitle]
+        title_legend (Optional[str]): Sets [legend title][matplotlib.legend.Legend.set_title]
+        title_ax (Optional[str]): Sets [axis title][matplotlib.axes.Axes.set_title]
+        label_x (Optional[str]): Sets [x-axis label][matplotlib.axes.Axes.set_xlabel]
+        label_y (Optional[str]): Sets [y-axis label][matplotlib.axes.Axes.set_ylabel]
+        lim_x_min (float | str | None): Sets [x-axis lower bound][matplotlib.axes.Axes.set_xlim]
+        lim_x_max (float | str | None): Sets [x-axis upper bound][matplotlib.axes.Axes.set_xlim]
+        lim_y_min (float | str | None): Sets [y-axis lower bound][matplotlib.axes.Axes.set_ylim]
+        lim_y_max (float | str | None): Sets [y-axis upper bound][matplotlib.axes.Axes.set_ylim]
     """
-    title_fig: Optional[str] = None
-    title_legend: Optional[str] = None
-    title_ax: Optional[str] = None
-    label_x: Optional[str] = None
-    label_y: Optional[str] = None
+    title_fig: Optional[str] | None = None
+    title_legend: Optional[str] | None = None
+    title_ax: Optional[str] | None = None
+    label_x: Optional[str] | None = None
+    label_y: Optional[str] | None = None
     lim_x_min: float | str | None = None
     lim_x_max: float | str | None = None
     lim_y_min: float | str | None = None
@@ -374,14 +388,14 @@ class Marker(HashableBase):
 
 _data_product_subclass_registry: dict[str, DataProduct] = {}
 
-from pydantic import BaseModel, PrivateAttr, computed_field, model_validator
+from pydantic import BaseModel, PrivateAttr, computed_field, model_validator, Field
 
 class DataProduct(BaseModel):
     """
     Base class for data products to be generated and handled.
 
     Attributes:
-        product_type (Hashable): Product type should be the same as the class name.
+        product_type (str): Product type should be the same as the class name.
             The product type is used to search for products from a [DataProductCollection][trendify.API.DataProductCollection].
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
@@ -407,10 +421,10 @@ class DataProduct(BaseModel):
 
     @computed_field
     @property
-    def product_type(self) -> Hashable:
+    def product_type(self) -> str:
         """
         Returns:
-            (Hashable): Product type should be the same as the class name.
+            (str): Product type should be the same as the class name.
                 The product type is used to search for products from a 
                 [DataProductCollection][trendify.API.DataProductCollection].
         """
@@ -496,7 +510,7 @@ class PlottableData2D(DataProduct):
     Base class for children of DataProduct to be plotted ax xy data on a 2D plot
 
     Attributes:
-        format2d (Format2D): Format to apply to plot
+        format2d (Format2D|None): Format to apply to plot
     """
     format2d: Format2D | None = None
 
@@ -517,13 +531,13 @@ class Trace2D(XYData):
             Only the label information is used in Grafana.
             Eventually style information will be used in grafana.
     """
-    points: List[Point2D]
-    pen: Pen = Pen()
-
     model_config = ConfigDict(extra='forbid')
     
+    points: List[Point2D]
+    pen: Pen = Pen()
+    
     @property
-    def x(self):
+    def x(self) -> NDArray[Shape["*"], float]:
         """
         Returns an array of x values from `self.points`
 
@@ -533,7 +547,7 @@ class Trace2D(XYData):
         return np.array([p.x for p in self.points])
 
     @property
-    def y(self):
+    def y(self) -> NDArray[Shape["*"], float]:
         """
         Returns an array of y values from `self.points`
 
@@ -576,7 +590,7 @@ class Trace2D(XYData):
         Creates a list of [Point2D][trendify.API.Point2D]s from xy data and returns a new [Trace2D][trendify.API.Trace2D] product.
 
         Args:
-            tags (Tags): Hashable tags used to sort data products
+            tags (Tags): Tags used to sort data products
             x (NDArray[Shape["*"], float]): x values
             y (NDArray[Shape["*"], float]): y values
             pen (Pen): Style and label for trace
@@ -663,7 +677,7 @@ class HistogramEntry(PlottableData2D):
 
     Attributes:
         value (float | str): Value to be binned
-        tags (Tags): Hashable tags used to sort data products
+        tags (Tags): Tags used to sort data products
         style (HistogramStyle): Style of histogram display
     """
     value: float | str
@@ -834,7 +848,7 @@ class DataProductCollection(BaseModel):
     #     )
     #     return tags
     
-    def drop_products(self, tag: Hashable | None = None, object_type: Type[R] | None = None) -> Self[R]:
+    def drop_products(self, tag: Tag | None = None, object_type: Type[R] | None = None) -> Self[R]:
         """
         Removes products matching `tag` and/or `object_type` from collection elements.
 
@@ -858,7 +872,7 @@ class DataProductCollection(BaseModel):
             case _:
                 raise ValueError('Something is wrong with match statement')
     
-    def get_products(self, tag: Hashable | None = None, object_type: Type[R] | None = None) -> Self[R]:
+    def get_products(self, tag: Tag | None = None, object_type: Type[R] | None = None) -> Self[R]:
         """
         Returns a new collection containing products matching `tag` and/or `object_type`.
         Both `tag` and `object_type` default to `None` which matches all products.
@@ -1185,7 +1199,7 @@ class XYDataPlotter:
 
     def plot(
             self,  
-            tag: Hashable, 
+            tag: Tag, 
         ):
         """
         - Collects data from json files in stored `self.in_dirs`, 
@@ -1195,7 +1209,7 @@ class XYDataPlotter:
         - closes matplotlib figure
 
         Args:
-            tag (Hashable): data tag for which products are to be collected and plotted.
+            tag (Tag): data tag for which products are to be collected and plotted.
         """
         print(f'Making xy plot for {tag = }')
         saf = SingleAxisFigure.new(tag=tag)
@@ -1235,7 +1249,7 @@ class XYDataPlotter:
     @classmethod
     def handle_points_and_traces(
             cls,
-            tag: Hashable,
+            tag: Tag,
             points: List[Point2D],
             traces: List[Trace2D],
             dir_out: Path,
@@ -1245,7 +1259,7 @@ class XYDataPlotter:
         Plots points and traces, formats figure, saves figure, and closes matplotlinb figure.
 
         Args:
-            tag (Hashable): Tag  corresponding to the provided points and traces
+            tag (Tag): Tag  corresponding to the provided points and traces
             points (List[Point2D]): Points to be scattered
             traces (List[Trace2D]): List of traces to be plotted
             dir_out (Path): directory to output the plot
@@ -1295,7 +1309,7 @@ class TableBuilder:
     
     def load_table(
             self,
-            tag: Hashable,
+            tag: Tag,
         ):
         """
         Collects table entries from JSON files corresponding to given tag and processes them.
@@ -1306,7 +1320,7 @@ class TableBuilder:
         `'tag_melted.csv'`, `'tag_pivot.csv'`, `'name_stats.csv'`.
 
         Args:
-            tag (Hashable): product tag for which to collect and process.
+            tag (Tag): product tag for which to collect and process.
         """
         print(f'Making table for {tag = }')
 
@@ -1320,7 +1334,7 @@ class TableBuilder:
     @classmethod
     def process_table_entries(
             cls,
-            tag: Hashable,
+            tag: Tag,
             table_entries: List[TableEntry],
             out_dir: Path,
         ):
@@ -1332,7 +1346,7 @@ class TableBuilder:
         `'tag_melted.csv'`, `'tag_pivot.csv'`, `'name_stats.csv'`.
 
         Args:
-            tag (Hashable): product tag for which to collect and process.
+            tag (Tag): product tag for which to collect and process.
             table_entries (List[TableEntry]): List of table entries
             out_dir (Path): Directory to which table CSV files should be saved
         """
@@ -1398,7 +1412,7 @@ class Histogrammer:
     
     def plot(
             self,
-            tag: Hashable,
+            tag: Tag,
         ):
         """
         Generates a histogram by loading data from stored `in_dirs` and saves the plot to `out_dir` directory.
@@ -1406,7 +1420,7 @@ class Histogrammer:
         In that case, the last tag item (with an appropriate suffix) will be used for the file name.
 
         Args:
-            tag (Hashable): Tag used to filter the loaded data products
+            tag (Tag): Tag used to filter the loaded data products
         """
         print(f'Making histogram plot for {tag = }')
 
@@ -1425,7 +1439,7 @@ class Histogrammer:
     @classmethod
     def handle_histogram_entries(
             cls, 
-            tag: Hashable, 
+            tag: Tag, 
             histogram_entries: List[HistogramEntry],
             dir_out: Path,
             dpi: int,
@@ -1434,7 +1448,7 @@ class Histogrammer:
         Histograms the provided entries. Formats and saves the figure.  Closes the figure.
 
         Args:
-            tag (Hashable): Tag used to filter the loaded data products
+            tag (Tag): Tag used to filter the loaded data products
             histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendify.API.HistogramEntry]s
             dir_out (Path): Directory to which the generated histogram will be stored
             dpi (int): resolution of plot

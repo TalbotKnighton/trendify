@@ -48,7 +48,7 @@ theme:
 
 nav:
   - Welcome: index.md
-  # - Usage: usage.md
+  - Example: example.md
   - Code Reference: reference/
 
 # Add the extra section here
@@ -149,6 +149,9 @@ plugins:
           - https://numpydantic.readthedocs.io/en/latest/objects.inv
           - https://docs.pydantic.dev/latest/objects.inv
           options:
+            extensions:
+            - griffe_pydantic:
+                schema: true
             docstring_style: google
             docstring_section_style: table
             members_order: alphabetical
@@ -182,5 +185,4 @@ plugins:
 watch:
   - src/
   - scripts/
-  - css/
   - docs/
