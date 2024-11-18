@@ -508,6 +508,8 @@ class PlottableData2D(DataProduct):
 
     Attributes:
         format2d (Format2D|None): Format to apply to plot
+        tags (Tags): Tags to be used for sorting data.
+        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
     format2d: Format2D | None = None
 
@@ -527,6 +529,8 @@ class Trace2D(XYData):
         pen (Pen): Style and label information for drawing to matplotlib axes.
             Only the label information is used in Grafana.
             Eventually style information will be used in grafana.
+        tags (Tags): Tags to be used for sorting data.
+        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
     model_config = ConfigDict(extra='forbid')
     
@@ -624,11 +628,13 @@ class Point2D(XYData):
     Defines a point to be scattered onto xy plot.
 
     Attributes:
+        tags (Tags): Tags to be used for sorting data.        
         x (float | str): X value for the point.
         y (float | str): Y value for the point.
         marker (Marker | None): Style and label information for scattering points to matplotlib axes.
             Only the label information is used in Grafana.
             Eventually style information will be used in grafana.
+        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
     x: float | str
     y: float | str
@@ -673,8 +679,8 @@ class HistogramEntry(PlottableData2D):
     Use this class to specify a value to be collected into a matplotlib histogram.
 
     Attributes:
-        value (float | str): Value to be binned
         tags (Tags): Tags used to sort data products
+        value (float | str): Value to be binned
         style (HistogramStyle): Style of histogram display
     """
     value: float | str
@@ -690,10 +696,12 @@ class TableEntry(DataProduct):
     Collected table entries will be printed in three forms when possible: melted, pivot (when possible), and stats (on pivot columns, when possible).
 
     Attributes:
+        tags (Tags): Tags used to sort data products
         row (float | str): Row Label
         col (float | str): Column Label
         value (float | str): Value
         unit (str | None): Units for value
+        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
     row: float | str
     col: float | str
