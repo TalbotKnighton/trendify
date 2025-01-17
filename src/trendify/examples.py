@@ -149,7 +149,7 @@ def _main():
     products_dir = workdir.joinpath('products')
     outputs_dir = workdir.joinpath('outputs')
     grafana_dir = workdir.joinpath('grafana')
-    n_procs = 1
+    n_procs = 30
     
     trendify.make_products(
         product_generator=example_data_product_generator,
@@ -160,21 +160,24 @@ def _main():
         data_dirs=process_dirs,
         output_dir=products_dir,
     )
-    trendify.make_grafana_dashboard(
-        products_dir=products_dir,
-        output_dir=grafana_dir,
-        n_procs=n_procs,
-    )
+    # trendify.make_grafana_dashboard(
+    #     products_dir=products_dir,
+    #     output_dir=grafana_dir,
+    #     n_procs=n_procs,
+    # )
     trendify.make_tables_and_figures(
         products_dir=products_dir,
         output_dir=outputs_dir,
         dpi=500,
         n_procs=n_procs,
     )
-    trendify.make_include_files(
-        root_dir=outputs_dir,
-        heading_level=2,
-    )
+    # trendify.make_include_files(
+    #     root_dir=outputs_dir,
+    #     heading_level=2,
+    # )
 
 if __name__ == '__main__':
     _main()
+
+
+

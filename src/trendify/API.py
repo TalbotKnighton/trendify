@@ -354,7 +354,7 @@ class Marker(HashableBase):
     size: float = 5
     alpha: float = 1
     zorder: float = 0
-    label: Union[str, None] = None
+    label: str | None = None
     symbol: str = '.'
 
     @classmethod
