@@ -13,92 +13,49 @@ from typing import List
 import trendify as tdfy
 
 def process_results(workdir: Path) -> List[tdfy.DataProduct]:
+    # Load results
     inputs = pd.read_csv(workdir.joinpath('inputs.csv')).squeeze()
     results = pd.read_csv(workdir.joinpath('results.csv'))
 
+    # Do some processing
+    ...
+    
+    # Create list of data products
     products = []
 
-    # 
-    products.append(
-        tdfy.Trace2D( # to be collected with identically tagged data and displayed or plotted to a matplotlib figure
-            tags = [...], # hashable tags for sorting, collecting, and printing/ploting data products
-            x = ..., # x data
-            y = ..., # y data
-            pen = ..., # line color, width, and legend label
-            format2d = ..., # figure and axes titles
-        )
-    )
-
-    products.append(
-        tdfy.Point2D( # to be collected with identically tagged data and displayed or plotted to a matplotlib figure
-            tags = [...], # hashable tags for sorting, collecting, and printing/ploting data products
-            x = ..., # x data
-            y = ..., # y data
-            marker = ..., # color, size, symbol, and legend label
-            format2d = ..., # figure and axes titles
-        )
-    )
-
-    products.append(
-        tdfy.TableEntry(  # to be collected with identically tagged data and displayed or output to csv files
-            tags = [...], # hashable tags for sorting, collecting, and printing/ploting data products
-            row = ..., # row index
-            col = ..., # col index
-            value = ..., # value
-            units = ..., # units
-        )
-    )
-
-    products.append(
-        tdfy.HistogramEntry( # to be collected with identically tagged data, histogrammed, and displayed or plotted to a matplotlib figure
-            tags = [...], # hashable tags for sorting, collecting, and printing/ploting data products
-            value = ..., # value
-        )
-    )
+    tdfy.Trace2D( # to be collected with identically tagged data and displayed or plotted to a matplotlib figure
+        tags = [...], # hashable tags for sorting, collecting, and printing/ploting data products
+        x = ..., # x data
+        y = ..., # y data
+        pen = ..., # line color, width, and legend label
+        format2d = ..., # figure and axes titles
+    ).append_to_list(products)
+    
+    tdfy.Point2D( # to be collected with identically tagged data and displayed or plotted to a matplotlib figure
+        tags = [...], # hashable tags for sorting, collecting, and printing/ploting data products
+        x = ..., # x data
+        y = ..., # y data
+        marker = ..., # color, size, symbol, and legend label
+        format2d = ..., # figure and axes titles
+    ).append_to_list(products)
+    
+    tdfy.TableEntry(  # to be collected with identically tagged data and displayed or output to csv files
+        tags = [...], # hashable tags for sorting, collecting, and printing/ploting data products
+        row = ..., # row index
+        col = ..., # col index
+        value = ..., # value
+        units = ..., # units
+    ).append_to_list(products)
+    
+    tdfy.HistogramEntry( # to be collected with identically tagged data, histogrammed, and displayed or plotted to a matplotlib figure
+        tags = [...], # hashable tags for sorting, collecting, and printing/ploting data products
+        value = ..., # value
+    ).append_to_list(products)
 
     return products
-
-def main():
-    """
-    Makes sample data, processes it, and serves it for importing into Grafana
-    """
-
-    here = Path(__file__).parent
-    workdir = here.joinpath('workdir')
-
-    make_sample_data(workdir=workdir, n_folders=100)
-
-    process_dirs = list(workdir.joinpath('models').glob('*/'))
-    products_dir = workdir.joinpath('products')
-    outputs_dir = workdir.joinpath('outputs')
-    grafana_dir = workdir.joinpath('grafana')
-    n_procs = 1
-    
-    make_products(
-        product_generator=sample_processor,
-        dirs=process_dirs,
-        n_procs=n_procs,
-    )
-    sort_products(
-        data_dirs=process_dirs,
-        output_dir=products_dir,
-    )
-    make_grafana_dashboard(
-        sorted_products_dir=products_dir,
-        output_dir=grafana_dir,
-        n_procs=n_procs,
-    )
-    make_tables_and_figures(
-        products_dir=products_dir,
-        output_dir=outputs_dir,
-        dpi=500,
-        n_procs=n_procs,
-    )
-    make_include_files(
-        root_dir=outputs_dir,
-        heading_level=2,
-    )
 ```
+
+Use either the Python API or the CLI to run the function on multipler working directories.
 
 ### Minimum Working Example
 
@@ -250,7 +207,3 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-
-## Command Line Interface
-
-Document usage here after writing the code

@@ -67,13 +67,13 @@ import trendify
 def user_defined_data_product_generator(workdir: Path) -> trendify.ProductList:
     inputs = ... # load inputs from workdir
     results = ... # load results from workdir
-    products: trendify.ProductList = []  # create an empty list
+    products: trendify.ProductList = []
 
     # Append products to list
-    trendify.Trace2D(...).append_to_list(products)  # see inputs in code reference
-    trendify.Point2D(...).append_to_list(products)  # see inputs in code reference
-    trendify.TableEntry(...).append_to_list(products)  # see inputs in code reference
-    trendify.HistogramEntry(...).append_to_list(products)  # see inputs in code reference
+    trendify.Trace2D(...).append_to_list(products)
+    trendify.Point2D(...).append_to_list(products)
+    trendify.TableEntry(...).append_to_list(products)
+    trendify.HistogramEntry(...).append_to_list(products)
     ...
 
     # Return the list of valid data products

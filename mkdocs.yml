@@ -48,6 +48,7 @@ theme:
 
 nav:
   - Welcome: index.md
+  - Motivation: motivation.md
   - Example: example.md
   - Code Reference: reference/
 
