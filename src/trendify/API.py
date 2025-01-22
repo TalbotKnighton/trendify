@@ -972,17 +972,21 @@ class DataProductCollection(BaseModel):
     
     @classmethod
     def sort_by_tags_single_directory(cls, dir_in: Path, dir_out: Path):
-        print(f'Sorting results from {dir_in = }')
-        collection = DataProductCollection.model_validate_json(dir_in.joinpath(DATA_PRODUCTS_FNAME).read_text())
-        collection.derived_from = dir_in
-        tags = collection.get_tags()
-        for tag in tags:
-            sub_collection = collection.get_products(tag=tag)
-            save_dir = dir_out.joinpath(*atleast_1d(tag))
-            save_dir.mkdir(parents=True, exist_ok=True)
-            next_index = get_and_reserve_next_index(save_dir=save_dir, dir_in=dir_in)
-            file = save_dir.joinpath(str(next_index)).with_suffix('.json')
-            file.write_text(sub_collection.model_dump_json())
+        products_file = dir_in.joinpath(DATA_PRODUCTS_FNAME)
+        if products_file.exists():
+            print(f'Sorting results from {dir_in = }')
+            collection = DataProductCollection.model_validate_json(dir_in.joinpath(DATA_PRODUCTS_FNAME).read_text())
+            collection.derived_from = dir_in
+            tags = collection.get_tags()
+            for tag in tags:
+                sub_collection = collection.get_products(tag=tag)
+                save_dir = dir_out.joinpath(*atleast_1d(tag))
+                save_dir.mkdir(parents=True, exist_ok=True)
+                next_index = get_and_reserve_next_index(save_dir=save_dir, dir_in=dir_in)
+                file = save_dir.joinpath(str(next_index)).with_suffix('.json')
+                file.write_text(sub_collection.model_dump_json())
+        else:
+            print(f'No results found in {dir_in = }')
 
     @classmethod
     def process_single_tag_collection(
