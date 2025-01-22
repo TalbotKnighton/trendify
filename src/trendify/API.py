@@ -281,11 +281,11 @@ class Format2D(HashableBase):
 
         """
         formats = list(set(format2ds) - {None})
-        [title_fig] = set(i.title_fig for i in formats)
-        [title_legend] = set(i.title_legend for i in formats)
-        [title_ax] = set(i.title_ax for i in formats)
-        [label_x] = set(i.label_x for i in formats)
-        [label_y] = set(i.label_y for i in formats)
+        [title_fig] = set(i.title_fig for i in formats if i is not None)
+        [title_legend] = set(i.title_legend for i in formats if i is not None)
+        [title_ax] = set(i.title_ax for i in formats if i is not None)
+        [label_x] = set(i.label_x for i in formats if i is not None)
+        [label_y] = set(i.label_y for i in formats if i is not None)
         x_min = [i.lim_x_min for i in formats if i.lim_x_min is not None]
         x_max = [i.lim_x_max for i in formats if i.lim_x_max is not None]
         y_min = [i.lim_y_min for i in formats if i.lim_y_min is not None]
