@@ -1,6 +1,6 @@
 # Motivation
 
-This page explains the motivation for the Trendipy package in hopes that the reader will better understand what benefit it provides, how to use it, and what features to expect in the future.
+This page explains the motivation for the Trendify package in hopes that the reader will better understand what benefit it provides, how to use it, and what features to expect in the future.
 
 ## Problem Statement
 
@@ -17,7 +17,7 @@ It is easy to write complicted data manipulations for preparing data using a hig
 1. Computational expense (long processing times)
 2. Limited RAM
 
-As discussed below, Trendipy provides a scalable framework for quickly distilling graphs and tables from large amounts of data.
+As discussed below, Trendify provides a scalable framework for quickly distilling graphs and tables from large amounts of data.
 
 ### Illustrative Problem Statement
 
@@ -48,9 +48,9 @@ This approach prevents a memory overload since only one batch run is loaded and 
 
 A variation is to open multiple [`matplotlib Figure`][matplotlib.figure.Figure] instances at the same time (eliminateing the outer for loop).  This approach avoids having to redundantly load/process data since the processed results can be added to every relevant figure/table.  But, this can lead to a memory overload if many images and tables are being generated.
 
-### Trendipy Approach
+### Trendify Approach
 
-Trendipy uses multiple concepts to avoid the memory and computation pitfals of brute-force loops.
+Trendify uses multiple concepts to avoid the memory and computation pitfals of brute-force loops.
 
 #### Serialization/Deserialization
 
@@ -64,19 +64,19 @@ In the [`Pydantic`](https://docs.pydantic.dev/latest/) framework, type hints ser
 - Tells what type of data is expected in each variable (helps with linting hits and auto-completion in IDE)
 - Data validation (pydantic closes program if JSON data does not match type hint)
 
-Trendipy defines [`Pydantic`](https://docs.pydantic.dev/latest/) data classes to store 2D traces, table entries, etc. and load them back into memory as needed.
+Trendify defines [`Pydantic`](https://docs.pydantic.dev/latest/) data classes to store 2D traces, table entries, etc. and load them back into memory as needed.
 Loading distilled data from a JSON file is orders of magnitude faster than loading and processing raw data.
 Serialization/deserialization eliminates the need to hold large amounts of data in memory in order to generate assets.
-This allows Trendipy to decouple the raw data processing stage from the aggregation stage of generating figures and tables by saving the intermediate data products as JSON files.
+This allows Trendify to decouple the raw data processing stage from the aggregation stage of generating figures and tables by saving the intermediate data products as JSON files.
 
 #### Parallelization
 
-Trendipy uses parallel processing to utilize all available machine cores (up to a user specified value) when processing batch data.
+Trendify uses parallel processing to utilize all available machine cores (up to a user specified value) when processing batch data.
 This provides a scalable linear speedup based on the number of cores.
 
 #### Data Products
 
-At the moment, Trendipy is written to accomodate only a few specific types of data products (distilled data to be aggregated into assets).  These include Trace2D, TableEntry, HistogramEntry, etc.  Trendipy can be expanded in the future to allow any arbitrary data type and aggregation step.
+At the moment, Trendify is written to accomodate only a few specific types of data products (distilled data to be aggregated into assets).  These include Trace2D, TableEntry, HistogramEntry, etc.  Trendify can be expanded in the future to allow any arbitrary data type and aggregation step.
 
 #### Data Product Generators
 
@@ -93,9 +93,9 @@ result = apply_some_binary_function(add, 1, 1)  # The `add` function is passed a
 print(result)  # Prints `2`
 ```
 
-Trendipy provides a framework for applying any user-defined processing function to a set of working directories.
-Thus, the end-user only needs to define what processing they want to do as a function (with a pre-determined signature) and pass that function to the Trendipy framework via the command line or Python script.
+Trendify provides a framework for applying any user-defined processing function to a set of working directories.
+Thus, the end-user only needs to define what processing they want to do as a function (with a pre-determined signature) and pass that function to the Trendify framework via the command line or Python script.
 
 #### Command Line Interface
 
-The `trendipy` command line interface allows users to map a data product generator from a Python source file or an installed Python package as discussed in the [recipe][recipe] and the [CLI docs][cli].  In a terminal (with the Python environment to which `trendipy` is installed active) run the the command `trendipy --help` for more info.
+The `trendify` command line interface allows users to map a data product generator from a Python source file or an installed Python package as discussed in the [recipe][recipe] and the [CLI docs][cli].  In a terminal (with the Python environment to which `trendify` is installed active) run the the command `trendify --help` for more info.

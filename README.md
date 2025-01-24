@@ -1,2 +1,2 @@
 
-[Read the Docs](https://talbotknighton.github.io/trendipy/)
+[Read the Docs](https://talbotknighton.github.io/trendify/)

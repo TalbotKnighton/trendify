@@ -1,6 +1,6 @@
-## Welcome to Trendipy
+## Welcome to Trendify
 
-The `trendipy` package makes it easy to compare data from multiple runs of a batch process.  The core functionality is to generate CSV tables and JPEG images by mapping a user-provided processing function over a user-provided set of input data directories.  Parallelization and data serialization are used to speed up processing time and maintain low memory requirements.  `trendipy` is run via a terminal [command line interface (CLI)][cli] one-liner method or via a Python application programming interface (API).
+The `trendify` package makes it easy to compare data from multiple runs of a batch process.  The core functionality is to generate CSV tables and JPEG images by mapping a user-provided processing function over a user-provided set of input data directories.  Parallelization and data serialization are used to speed up processing time and maintain low memory requirements.  `trendify` is run via a terminal [command line interface (CLI)][cli] one-liner method or via a Python application programming interface (API).
 
 See the [Overview][overview] and [Vocabulary][vocabulary] sections below for a visual diagram of the program flow and vocabulary reference.
 
@@ -16,7 +16,7 @@ Planned future work and features are shown in the [Planned Features][planned-fea
 
 ### Overview
 
-The following flow diagram shows how `trendipy` generates assets from user inputs.
+The following flow diagram shows how `trendify` generates assets from user inputs.
 
 ``` mermaid
 graph TD
@@ -43,20 +43,20 @@ graph TD
 
 ### Vocabulary
 
-The following is a table of important trendipy objects / vocabulary sorted alphabetically:
+The following is a table of important trendify objects / vocabulary sorted alphabetically:
 
 | Term | Meaning |
 | ---- | ------- |
-| API | Application programming interface: Definition of valid objects for processing within `trendipy` framework |
+| API | Application programming interface: Definition of valid objects for processing within `trendify` framework |
 | Asset | An asset to be used in a report (such as static CSV or JPG files) or interacted with (such as a Grafana dashboard) |
-| CLI | Command line interface: `trendipy` script installed with package used to run the framework |
-| [DataProduct][trendipy.API.DataProduct] | Base class for [tagged][trendipy.API.Tag] products to be sorted and displayed in static or interactive assets.|
-| [DataProductGenerator][trendipy.API.DataProductGenerator] | A [Callable][typing.Callable] to be mapped over raw data directories.  Given the [Path][pathlib.Path] to a working directory, the method returns a [ProductList][trendipy.API.ProductList] (i.e. a list of instances of [DataProduct][trendipy.API.DataProduct] instances): [`Trace2D`][trendipy.API.Trace2D], [`Point2D`][trendipy.API.Point2D], [`TableEntry`][trendipy.API.TableEntry], [`HistogramEntry`][trendipy.API.HistogramEntry], etc. |
-| [HistogramEntry][trendipy.API.HistogramEntry] | Tagged, labeled data point to be counted and histogrammed |
-| [Point2D][trendipy.API.Point2D] | Tagged, labeled [XYData][trendipy.API.XYData] defining a point to be scattered on xy graph |
-| [Product List][trendipy.API.ProductList] | List of [DataProduct][trendipy.API.TableEntry] instances |
+| CLI | Command line interface: `trendify` script installed with package used to run the framework |
+| [DataProduct][trendify.API.DataProduct] | Base class for [tagged][trendify.API.Tag] products to be sorted and displayed in static or interactive assets.|
+| [DataProductGenerator][trendify.API.DataProductGenerator] | A [Callable][typing.Callable] to be mapped over raw data directories.  Given the [Path][pathlib.Path] to a working directory, the method returns a [ProductList][trendify.API.ProductList] (i.e. a list of instances of [DataProduct][trendify.API.DataProduct] instances): [`Trace2D`][trendify.API.Trace2D], [`Point2D`][trendify.API.Point2D], [`TableEntry`][trendify.API.TableEntry], [`HistogramEntry`][trendify.API.HistogramEntry], etc. |
+| [HistogramEntry][trendify.API.HistogramEntry] | Tagged, labeled data point to be counted and histogrammed |
+| [Point2D][trendify.API.Point2D] | Tagged, labeled [XYData][trendify.API.XYData] defining a point to be scattered on xy graph |
+| [Product List][trendify.API.ProductList] | List of [DataProduct][trendify.API.TableEntry] instances |
 | Raw Data | Data from some batch process or individual runs (with results from each run stored in separate subdirectories) |
-| [TableEntry][trendipy.API.TableEntry] | Tagged data point to be collected into a table, pivoted, and statistically analyzed |
-| [Tag][trendipy.API.Tag] | Hashable tag used for sorting and collection of [DataProduct][trendipy.API.DataProduct] instances |
-| [Trace2D][trendipy.API.Trace2D] | Tagged, labeled [XYData][trendipy.API.XYData] defining a line to be plotted on xy graph |
-| [XYData][trendipy.API.XYData] | Base class for products to be plotted on an xy graph |
+| [TableEntry][trendify.API.TableEntry] | Tagged data point to be collected into a table, pivoted, and statistically analyzed |
+| [Tag][trendify.API.Tag] | Hashable tag used for sorting and collection of [DataProduct][trendify.API.DataProduct] instances |
+| [Trace2D][trendify.API.Trace2D] | Tagged, labeled [XYData][trendify.API.XYData] defining a line to be plotted on xy graph |
+| [XYData][trendify.API.XYData] | Base class for products to be plotted on an xy graph |

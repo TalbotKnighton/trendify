@@ -17,7 +17,7 @@ dependencies = [
   "supervisor",
   "waitress",
 ]
-name = "trendipy"
+name = "trendify"
 version = "1.0.0"
 requires-python = ">= 3.11"
 authors = [
@@ -50,6 +50,6 @@ classifiers = [
 # Changelog = ""
 
 [project.scripts]
-trendipy_make_sample_data = "trendipy.examples:make_sample_data"
-trendipy = "trendipy.CLI:trendipy"
-# trendipy_server = "trendipy.CLI:serve"
+trendify_make_sample_data = "trendify.examples:make_sample_data"
+trendify = "trendify.CLI:trendify"
+# trendify_server = "trendify.CLI:serve"

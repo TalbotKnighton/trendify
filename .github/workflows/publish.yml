@@ -38,7 +38,7 @@ jobs:
     runs-on: macos-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/trendipy  # Replace trendipy with your PyPI project name
+      url: https://pypi.org/p/trendify  # Replace trendify with your PyPI project name
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
 
@@ -102,7 +102,7 @@ jobs:
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/trendipy
+      url: https://test.pypi.org/p/trendify
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
