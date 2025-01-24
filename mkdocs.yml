@@ -50,7 +50,10 @@ nav:
   - Welcome: index.md
   - Motivation: motivation.md
   - Example: example.md
+  - Recipe: recipe.md
+  - API and CLI: api_and_cli.md
   - Code Reference: reference/
+  - Planned Features: planned_features.md
 
 # Add the extra section here
 extra:
@@ -157,7 +160,7 @@ plugins:
             docstring_section_style: table
             members_order: alphabetical
             show_root_heading: true
-            show_source: false
+            show_source: true
             separate_signature: true
             show_signature: true
             show_signature_annotations: true
