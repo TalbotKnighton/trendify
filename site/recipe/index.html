@@ -897,11 +897,11 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../reference/trendify/" class="md-nav__link ">
+            <a href="../reference/trendipy/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
-    trendify
+    trendipy
   </span>
   
 
@@ -917,7 +917,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6_2">
             <span class="md-nav__icon md-icon"></span>
-            trendify
+            trendipy
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -928,7 +928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/API/" class="md-nav__link">
+      <a href="../reference/trendipy/API/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -949,7 +949,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/CLI/" class="md-nav__link">
+      <a href="../reference/trendipy/CLI/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -970,7 +970,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/examples/" class="md-nav__link">
+      <a href="../reference/trendipy/examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -991,7 +991,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/local_server/" class="md-nav__link">
+      <a href="../reference/trendipy/local_server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1012,7 +1012,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/server/" class="md-nav__link">
+      <a href="../reference/trendipy/server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1169,7 +1169,7 @@
 
 <h1 id="recipe">Recipe<a class="headerlink" href="#recipe" title="Permanent link">&para;</a></h1>
 <h2 id="defining-a-data-product-generator">Defining a Data Product Generator<a class="headerlink" href="#defining-a-data-product-generator" title="Permanent link">&para;</a></h2>
-<p>Define a [Data Product Generator][trendipy.API.DataProductGenerator] to ingest data and return a list of <code>trendipy</code> data products.  Valid products are listed in the vocabulary table above and reproduced in the smaller table here.  See the code reference for class constructor inputs.  The <code>trendipy</code> framework will map this method over a set of results directories, save and sort the returned products, and produce assets.  Each product will need to have a list of [tags][trendipy.API.Tag] assigned (the list can be length 1).  You can also provide labels to be used for generating a legend.</p>
+<p>Define a <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.DataProductGenerator">Data Product Generator</a> to ingest data and return a list of <code>trendipy</code> data products.  Valid products are listed in the vocabulary table above and reproduced in the smaller table here.  See the code reference for class constructor inputs.  The <code>trendipy</code> framework will map this method over a set of results directories, save and sort the returned products, and produce assets.  Each product will need to have a list of <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Tag">tags</a> assigned (the list can be length 1).  You can also provide labels to be used for generating a legend.</p>
 <table>
 <thead>
 <tr>
@@ -1179,20 +1179,20 @@
 </thead>
 <tbody>
 <tr>
-<td>[HistogramEntry][trendipy.API.HistogramEntry]</td>
+<td><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.HistogramEntry">HistogramEntry</a></td>
 <td>Tagged, labeled data point to be counted and histogrammed</td>
 </tr>
 <tr>
-<td>[Point2D][trendipy.API.Point2D]</td>
-<td>Tagged, labeled [XYData][trendipy.API.XYData] defining a point to be scattered on xy graph</td>
+<td><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Point2D">Point2D</a></td>
+<td>Tagged, labeled <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.XYData">XYData</a> defining a point to be scattered on xy graph</td>
 </tr>
 <tr>
-<td>[TableEntry][trendipy.API.TableEntry]</td>
+<td><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.TableEntry">TableEntry</a></td>
 <td>Tagged data point to be collected into a table, pivoted, and statistically analyzed</td>
 </tr>
 <tr>
-<td>[Trace2D][trendipy.API.Trace2D]</td>
-<td>Tagged, labeled [XYData][trendipy.API.XYData] defining a line to be plotted on xy graph</td>
+<td><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Trace2D">Trace2D</a></td>
+<td>Tagged, labeled <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.XYData">XYData</a> defining a line to be plotted on xy graph</td>
 </tr>
 </tbody>
 </table>
@@ -1217,11 +1217,11 @@
 <h2 id="running-the-generator-function">Running the Generator Function<a class="headerlink" href="#running-the-generator-function" title="Permanent link">&para;</a></h2>
 <p>Run the folling command in a terminal (with trendipy installed to the active python environment) <a class="autorefs autorefs-internal" href="../api_and_cli/#cli">command line interface (CLI)</a> to </p>
 <ul>
-<li>[make data products][trendipy.API.make_products]</li>
-<li>[sort data products][trendipy.API.sort_products]</li>
-<li>[make static assets][trendipy.API.make_tables_and_figures]</li>
-<li>[make static asset include files][trendipy.API.make_include_files]</li>
-<li>[make interactive Grafana dashboard][trendipy.API.make_grafana_dashboard]</li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_products">make data products</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.sort_products">sort data products</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_tables_and_figures">make static assets</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_include_files">make static asset include files</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_grafana_dashboard">make interactive Grafana dashboard</a></li>
 </ul>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">workdir</span><span class="o">=</span>./workdir
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">inputs</span><span class="o">=</span><span class="nv">$workdir</span>/data_directories/*/

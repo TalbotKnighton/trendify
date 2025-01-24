@@ -903,11 +903,11 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../reference/trendify/" class="md-nav__link ">
+            <a href="../reference/trendipy/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
-    trendify
+    trendipy
   </span>
   
 
@@ -923,7 +923,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6_2">
             <span class="md-nav__icon md-icon"></span>
-            trendify
+            trendipy
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -934,7 +934,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/API/" class="md-nav__link">
+      <a href="../reference/trendipy/API/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -955,7 +955,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/CLI/" class="md-nav__link">
+      <a href="../reference/trendipy/CLI/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -976,7 +976,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/examples/" class="md-nav__link">
+      <a href="../reference/trendipy/examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -997,7 +997,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/local_server/" class="md-nav__link">
+      <a href="../reference/trendipy/local_server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1018,7 +1018,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/trendify/server/" class="md-nav__link">
+      <a href="../reference/trendipy/server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1183,39 +1183,39 @@
 <h2 id="functionality-overview">Functionality Overview<a class="headerlink" href="#functionality-overview" title="Permanent link">&para;</a></h2>
 <p>The <code>trendipy</code> package </p>
 <ul>
-<li>Maps a user-defined function over given directories to produce JSON serialized [Data Products][trendipy.API.DataProduct].</li>
-<li>Sorts [Data Products][trendipy.API.DataProduct] according to user-specified [Tags][trendipy.API.Tags]</li>
+<li>Maps a user-defined function over given directories to produce JSON serialized <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.DataProduct">Data Products</a>.</li>
+<li>Sorts <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.DataProduct">Data Products</a> according to user-specified <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Tags">Tags</a></li>
 <li>Writes collected products to CSV files or static images (via <a class="autorefs autorefs-external" href="https://matplotlib.org/index.html#module-matplotlib">matplotlib</a> backend)</li>
 <li>Generates nested <code>include.md</code> files for importing generated assets into markdown reports (or MkDocs web page)</li>
-<li><em>In Progress:</em> Generates a Grafana dashboard with panels for each data [Tag][trendipy.API.Tag]</li>
+<li><em>In Progress:</em> Generates a Grafana dashboard with panels for each data <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Tag">Tag</a></li>
 <li><em>Future Work:</em> Generates nested <code>include.tex</code> files for nested assets</li>
 </ul>
-<p>Trendipy sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the [make_it_trendy][trendipy.API.make_it_trendy] method.  This method is a convenient wrapper on multiple individual steps:</p>
+<p>Trendipy sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_it_trendy">make_it_trendy</a> method.  This method is a convenient wrapper on multiple individual steps:</p>
 <ul>
-<li>[make_products][trendipy.API.make_products]</li>
-<li>[sort_products][trendipy.API.sort_products]</li>
-<li>[make_grafana_dashboard][trendipy.API.make_grafana_dashboard]</li>
-<li>[make_tables_and_figures][trendipy.API.make_tables_and_figures]</li>
-<li>[make_include_files][trendipy.API.make_include_files]</li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_products">make_products</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.sort_products">sort_products</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_grafana_dashboard">make_grafana_dashboard</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_tables_and_figures">make_tables_and_figures</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_include_files">make_include_files</a></li>
 </ul>
 <p>Each step can be mapped in parallel as part of a process pool by providing an integer argument <code>n_procs</code> greater than 1.  Parllel excecution greatly speeds up processing times for computationally expensive data product generators or for plotting large numbers data products.</p>
 <h2 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
 <p>The user specifies a function that takes in a <code>Path</code> and returns a list holding instances of the following children of
-[DataProduct][trendipy.DataProduct]: </p>
+<a class="autorefs autorefs-internal" href="../reference/trendipy/#trendipy.DataProduct">DataProduct</a>: </p>
 <ul>
-<li>[<code>Trace2D</code>][trendipy.API.Trace2D]</li>
-<li>[<code>Point2D</code>][trendipy.API.Point2D]</li>
-<li>[<code>TableEntry</code>][trendipy.API.TableEntry]</li>
-<li>[<code>HistogramEntry</code>][trendipy.API.HistogramEntry]</li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Trace2D"><code>Trace2D</code></a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Point2D"><code>Point2D</code></a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.TableEntry"><code>TableEntry</code></a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.HistogramEntry"><code>HistogramEntry</code></a></li>
 </ul>
-<p>All [Data Products][trendipy.DataProduct] inherit type checking and JSON serialization from PyDantic <a class="autorefs autorefs-external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a>.  </p>
-<p>[XYData][trendipy.API.XYData] product inputs include:</p>
+<p>All <a class="autorefs autorefs-internal" href="../reference/trendipy/#trendipy.DataProduct">Data Products</a> inherit type checking and JSON serialization from PyDantic <a class="autorefs autorefs-external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel">BaseModel</a>.  </p>
+<p><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.XYData">XYData</a> product inputs include:</p>
 <ul>
-<li>[Tags][trendipy.API.Tags] used to sort and collect the products</li>
-<li>[Pen][trendipy.API.Pen] defines the line style and legend label for [<code>Trace2D</code>][trendipy.API.Trace2D]</li>
-<li>[Marker][trendipy.API.Marker] defines the symbol style and legend label for [<code>Point2D</code>][trendipy.API.Point2D]</li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Tags">Tags</a> used to sort and collect the products</li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Pen">Pen</a> defines the line style and legend label for <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Trace2D"><code>Trace2D</code></a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Marker">Marker</a> defines the symbol style and legend label for <a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.Point2D"><code>Point2D</code></a></li>
 </ul>
-<p>[<code>TableEntry</code>][trendipy.API.TableEntry] inputs include </p>
+<p><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.TableEntry"><code>TableEntry</code></a> inputs include </p>
 <ul>
 <li><code>row</code> and <code>column</code> used to generate a pivot table if possible (so long as the <code>row</code>,<code>col</code> index pair is not repeated in a collected set)</li>
 <li><code>value</code></li>
@@ -1225,11 +1225,11 @@
 down to a unique set.  Use unique pen label, marker label, histogram style label, or row/col pair as unique identifiers.  Make sure that the formatting specified for like-tagged <code>DataProduct</code> istances to be the same.</p>
 <p>Trendipy is easiest to run from the CLI which is a wrapper on the following methods.  These can also be run via a Python script:</p>
 <ul>
-<li>[make_products][trendipy.API.make_products]</li>
-<li>[sort_products][trendipy.API.sort_products]</li>
-<li>[make_tables_and_figures][trendipy.API.make_tables_and_figures]</li>
-<li>[make_grafana_dashboard][trendipy.API.make_grafana_dashboard]</li>
-<li>[make_it_trendy][trendipy.API.make_it_trendy]</li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_products">make_products</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.sort_products">sort_products</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_tables_and_figures">make_tables_and_figures</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_grafana_dashboard">make_grafana_dashboard</a></li>
+<li><a class="autorefs autorefs-internal" href="../reference/trendipy/API/#trendipy.API.make_it_trendy">make_it_trendy</a></li>
 </ul>
 <h2 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h2>
 <p>The <code>trendipy</code> command line interface (CLI) allows a user-defined data product generator method to be mapped over raw data.</p>
