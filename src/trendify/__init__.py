@@ -2,5 +2,5 @@
 Provides top-level imports
 """
 
-from trendify.API import *
-from trendify.server import *
+from trendipy.API import *
+from trendipy.server import *
