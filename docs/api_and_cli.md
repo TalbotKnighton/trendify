@@ -3,22 +3,22 @@
 
 ## Functionality Overview
 
-The `trendify` package 
+The `trendipy` package 
 
-- Maps a user-defined function over given directories to produce JSON serialized [Data Products][trendify.API.DataProduct].
-- Sorts [Data Products][trendify.API.DataProduct] according to user-specified [Tags][trendify.API.Tags]
+- Maps a user-defined function over given directories to produce JSON serialized [Data Products][trendipy.API.DataProduct].
+- Sorts [Data Products][trendipy.API.DataProduct] according to user-specified [Tags][trendipy.API.Tags]
 - Writes collected products to CSV files or static images (via [matplotlib][matplotlib] backend)
 - Generates nested `include.md` files for importing generated assets into markdown reports (or MkDocs web page)
-- _In Progress:_ Generates a Grafana dashboard with panels for each data [Tag][trendify.API.Tag]
+- _In Progress:_ Generates a Grafana dashboard with panels for each data [Tag][trendipy.API.Tag]
 - _Future Work:_ Generates nested `include.tex` files for nested assets
 
-Trendify sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the [make_it_trendy][trendify.API.make_it_trendy] method.  This method is a convenient wrapper on multiple individual steps:
+Trendipy sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the [make_it_trendy][trendipy.API.make_it_trendy] method.  This method is a convenient wrapper on multiple individual steps:
 
-- [make_products][trendify.API.make_products]
-- [sort_products][trendify.API.sort_products]
-- [make_grafana_dashboard][trendify.API.make_grafana_dashboard]
-- [make_tables_and_figures][trendify.API.make_tables_and_figures]
-- [make_include_files][trendify.API.make_include_files]
+- [make_products][trendipy.API.make_products]
+- [sort_products][trendipy.API.sort_products]
+- [make_grafana_dashboard][trendipy.API.make_grafana_dashboard]
+- [make_tables_and_figures][trendipy.API.make_tables_and_figures]
+- [make_include_files][trendipy.API.make_include_files]
 
 Each step can be mapped in parallel as part of a process pool by providing an integer argument `n_procs` greater than 1.  Parllel excecution greatly speeds up processing times for computationally expensive data product generators or for plotting large numbers data products.
 
@@ -26,47 +26,47 @@ Each step can be mapped in parallel as part of a process pool by providing an in
 ## API
 
 The user specifies a function that takes in a `Path` and returns a list holding instances of the following children of
-[DataProduct][trendify.DataProduct]: 
+[DataProduct][trendipy.DataProduct]: 
 
-- [`Trace2D`][trendify.API.Trace2D]
-- [`Point2D`][trendify.API.Point2D]
-- [`TableEntry`][trendify.API.TableEntry]
-- [`HistogramEntry`][trendify.API.HistogramEntry]
+- [`Trace2D`][trendipy.API.Trace2D]
+- [`Point2D`][trendipy.API.Point2D]
+- [`TableEntry`][trendipy.API.TableEntry]
+- [`HistogramEntry`][trendipy.API.HistogramEntry]
 
-All [Data Products][trendify.DataProduct] inherit type checking and JSON serialization from PyDantic [BaseModel][pydantic.BaseModel].  
+All [Data Products][trendipy.DataProduct] inherit type checking and JSON serialization from PyDantic [BaseModel][pydantic.BaseModel].  
 
-[XYData][trendify.API.XYData] product inputs include:
+[XYData][trendipy.API.XYData] product inputs include:
 
-- [Tags][trendify.API.Tags] used to sort and collect the products
-- [Pen][trendify.API.Pen] defines the line style and legend label for [`Trace2D`][trendify.API.Trace2D]
-- [Marker][trendify.API.Marker] defines the symbol style and legend label for [`Point2D`][trendify.API.Point2D]
+- [Tags][trendipy.API.Tags] used to sort and collect the products
+- [Pen][trendipy.API.Pen] defines the line style and legend label for [`Trace2D`][trendipy.API.Trace2D]
+- [Marker][trendipy.API.Marker] defines the symbol style and legend label for [`Point2D`][trendipy.API.Point2D]
 
-[`TableEntry`][trendify.API.TableEntry] inputs include 
+[`TableEntry`][trendipy.API.TableEntry] inputs include 
 
 - `row` and `column` used to generate a pivot table if possible (so long as the `row`,`col` index pair is not repeated in a collected set)
 - `value`
 - `units`
 
-Labels and figure formats are assignable.  Trendify will automatically collapse matplotlib legend labels
+Labels and figure formats are assignable.  Trendipy will automatically collapse matplotlib legend labels
 down to a unique set.  Use unique pen label, marker label, histogram style label, or row/col pair as unique identifiers.  Make sure that the formatting specified for like-tagged `DataProduct` istances to be the same.
 
-Trendify is easiest to run from the CLI which is a wrapper on the following methods.  These can also be run via a Python script:
+Trendipy is easiest to run from the CLI which is a wrapper on the following methods.  These can also be run via a Python script:
 
-- [make_products][trendify.API.make_products]
-- [sort_products][trendify.API.sort_products]
-- [make_tables_and_figures][trendify.API.make_tables_and_figures]
-- [make_grafana_dashboard][trendify.API.make_grafana_dashboard]
-- [make_it_trendy][trendify.API.make_it_trendy]
+- [make_products][trendipy.API.make_products]
+- [sort_products][trendipy.API.sort_products]
+- [make_tables_and_figures][trendipy.API.make_tables_and_figures]
+- [make_grafana_dashboard][trendipy.API.make_grafana_dashboard]
+- [make_it_trendy][trendipy.API.make_it_trendy]
 
 
 
 ## CLI
 
-The `trendify` command line interface (CLI) allows a user-defined data product generator method to be mapped over raw data.
+The `trendipy` command line interface (CLI) allows a user-defined data product generator method to be mapped over raw data.
 
 ### Command Line Arguments
 
-The `trendify` command line program takes the following sub-commands that run the various steps of the `trendify` framework.
+The `trendipy` command line program takes the following sub-commands that run the various steps of the `trendipy` framework.
 
 | Command                   | Action                                                |
 | - | - |
@@ -76,7 +76,7 @@ The `trendify` command line program takes the following sub-commands that run th
 | assets-make-static        | Makes static assets                                   |
 | assets-make-interactive   | Makes interactive assets                              |
 
-The `trendify` program also takes the following `make` commands which runs runs the product
+The `trendipy` program also takes the following `make` commands which runs runs the product
 `make`, `sort`, and `serve` commands as well as generating a JSON file to define a Grafana dashboard.
 
 | Command                   | Action                                                                                    |
@@ -94,8 +94,8 @@ The make commands take some of the following arguments.
 | `-h` | `--help`                   |       | Causes help info to be printed to the Linux terminal |
 | `-g` | `--product-generator`      | `str` | Specifies the data product generator method to map over raw input data directories.  This argument uses a syntax borrowed from the script specification used in pyproject.toml files.  See [details][-product-generator] below. |
 | `-i` | `--input-directories`      | `glob` or `list[str]` | Specifies directories over which the data product generator `method` will be mapped.  Use standard bash glob expansion to pass in a list of directories or provide a glob string to run using pythons `glob.glob` method. See [details][-input-directories] below.|
-| `-n` | `--n-procs`                | `int` | Sets the number of parallel processes to use in each trendify step.  Use `-n 1` for full Traceback during debugging and `-n 10` or some integer greater than 1 for parallelization speedup on larger data sets |
-| `-o` | `--output-directory`       | `str` | Specifies the path to which `trendify` will output sorted products and assets. |
+| `-n` | `--n-procs`                | `int` | Sets the number of parallel processes to use in each trendipy step.  Use `-n 1` for full Traceback during debugging and `-n 10` or some integer greater than 1 for parallelization speedup on larger data sets |
+| `-o` | `--output-directory`       | `str` | Specifies the path to which `trendipy` will output sorted products and assets. |
 |      | `--protocol`               | `str` | Defaults to 'http'  |
 |      | `--host`                   | `str` | Defaults to '0.0.0.0' |
 |      | `--port`                   | `int` | Port to serve the products to.  Defaults to `8000` |

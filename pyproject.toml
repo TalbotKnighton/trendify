@@ -1,9 +1,11 @@
 [build-system]
-requires = ["setuptools >= 61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
+license-file = "LICENSE"
 dependencies = [
+  "filelock",
   "flask",
   "jinja2",
   "pandas",
@@ -15,7 +17,7 @@ dependencies = [
   "supervisor",
   "waitress",
 ]
-name = "trendify"
+name = "trendipy"
 version = "1.0.0"
 requires-python = ">= 3.11"
 authors = [
@@ -34,12 +36,6 @@ classifiers = [
   #   5 - Production/Stable
   "Development Status :: 3 - Alpha",
 
-  # Indicate who your project is intended for
-  "Intended Audience :: Engineers",
-  "Topic :: Engineering :: Post-processing Tools",
-
-  # Pick your license as you wish (see also "license" above)
-  "License :: OSI Approved :: MIT License",
 
   # Specify the Python versions you support here.
   "Programming Language :: Python :: 3",
@@ -54,6 +50,6 @@ classifiers = [
 # Changelog = ""
 
 [project.scripts]
-trendify_make_sample_data = "trendify.examples:make_sample_data"
-trendify = "trendify.CLI:trendify"
-# trendify_server = "trendify.CLI:serve"
+trendipy_make_sample_data = "trendipy.examples:make_sample_data"
+trendipy = "trendipy.CLI:trendipy"
+# trendipy_server = "trendipy.CLI:serve"
