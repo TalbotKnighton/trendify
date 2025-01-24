@@ -393,7 +393,7 @@ class DataProduct(BaseModel):
 
     Attributes:
         product_type (str): Product type should be the same as the class name.
-            The product type is used to search for products from a [DataProductCollection][trendipy.API.DataProductCollection].
+            The product type is used to search for products from a [DataProductCollection][trendify.API.DataProductCollection].
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
@@ -423,14 +423,14 @@ class DataProduct(BaseModel):
         Returns:
             (str): Product type should be the same as the class name.
                 The product type is used to search for products from a 
-                [DataProductCollection][trendipy.API.DataProductCollection].
+                [DataProductCollection][trendify.API.DataProductCollection].
         """
         return type(self).__name__
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
         Registers child subclasses to be able to parse them from JSON file using the 
-        [deserialize_child_classes][trendipy.API.DataProduct.deserialize_child_classes] method
+        [deserialize_child_classes][trendify.API.DataProduct.deserialize_child_classes] method
         """
         super().__init_subclass__(**kwargs)
         _data_product_subclass_registry[cls.__name__] = cls    
@@ -470,7 +470,7 @@ class DataProduct(BaseModel):
                     kwargs[key][index] = duck_type(**duck_info)
 
 ProductList = List[SerializeAsAny[InstanceOf[DataProduct]]]
-"""List of serializable [DataProduct][trendipy.API.DataProduct] or child classes thereof"""
+"""List of serializable [DataProduct][trendify.API.DataProduct] or child classes thereof"""
 
 ProductGenerator = Callable[[Path], ProductList]
 """
@@ -485,7 +485,7 @@ Returns:
 
 def get_and_reserve_next_index(save_dir: Path, dir_in: Path):
     """
-    Reserves next available file index during trendipy sorting phase.
+    Reserves next available file index during trendify sorting phase.
     Saves data to index map file.
 
     Args:
@@ -521,7 +521,7 @@ class XYData(PlottableData2D):
 class Trace2D(XYData):
     """
     A collection of points comprising a trace.
-    Use the [Trace2D.from_xy][trendipy.API.Trace2D.from_xy] constructor.
+    Use the [Trace2D.from_xy][trendify.API.Trace2D.from_xy] constructor.
 
     Attributes:
         points (List[Point2D]): List of points.  Usually the points would have null values 
@@ -588,7 +588,7 @@ class Trace2D(XYData):
             format2d: Format2D = Format2D(),
         ):
         """
-        Creates a list of [Point2D][trendipy.API.Point2D]s from xy data and returns a new [Trace2D][trendipy.API.Trace2D] product.
+        Creates a list of [Point2D][trendify.API.Point2D]s from xy data and returns a new [Trace2D][trendify.API.Trace2D] product.
 
         Args:
             tags (Tags): Tags used to sort data products
@@ -1405,7 +1405,7 @@ class TableBuilder:
 
 class Histogrammer:
     """
-    Class for loading data products and histogramming the [`HistogramEntry`][trendipy.API.HistogramEntry]s
+    Class for loading data products and histogramming the [`HistogramEntry`][trendify.API.HistogramEntry]s
 
     Args:
         in_dirs (List[Path]): Directories from which the data products are to be loaded.
@@ -1461,7 +1461,7 @@ class Histogrammer:
 
         Args:
             tag (Tag): Tag used to filter the loaded data products
-            histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendipy.API.HistogramEntry]s
+            histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendify.API.HistogramEntry]s
             dir_out (Path): Directory to which the generated histogram will be stored
             dpi (int): resolution of plot
         """
@@ -1741,11 +1741,11 @@ def make_tables_and_figures(
         dpi (int = 500): Resolution of output plots when using matplotlib 
             (for `make_xy_plots==True` and/or `make_histograms==True`)
         no_tables (bool): Whether or not to collect the 
-            [`TableEntry`][trendipy.API.TableEntry] products and write them
+            [`TableEntry`][trendify.API.TableEntry] products and write them
             to CSV files (`<tag>_melted.csv` with `<tag>_pivot.csv` and `<tag>_stats.csv` when possible).
-        no_xy_plots (bool): Whether or not to plot the [`XYData`][trendipy.API.XYData] products using matplotlib
+        no_xy_plots (bool): Whether or not to plot the [`XYData`][trendify.API.XYData] products using matplotlib
         no_histograms (bool): Whether or not to generate histograms of the 
-            [`HistogramEntry`][trendipy.API.HistogramEntry] products
+            [`HistogramEntry`][trendify.API.HistogramEntry] products
             using matplotlib.
     """
     if not (no_tables and no_xy_plots and no_histograms):
@@ -1786,18 +1786,18 @@ def make_it_trendy(
         data_product_generator (ProductGenerator | None): A callable function that returns
             a list of data products given a working directory.
         input_dirs (List[Path]): Directories over which to map the `product_generator`
-        output_dir (Path): Directory to which the trendipy products and assets will be written.
+        output_dir (Path): Directory to which the trendify products and assets will be written.
         n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be
             processed sequentially (easier for debugging since the full traceback will be provided).
             If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
             be used to load and process directories and/or tags in parallel.
         dpi_static_plots (int = 500): Resolution of output plots when using matplotlib 
             (for `make_xy_plots==True` and/or `make_histograms==True`)
-        no_static_tables (bool): Suppresses static assets from the [`TableEntry`][trendipy.API.TableEntry] products
+        no_static_tables (bool): Suppresses static assets from the [`TableEntry`][trendify.API.TableEntry] products
         no_static_xy_plots (bool): Suppresses static assets from the 
-            [`XYData`][trendipy.API.XYData] 
-            ([Trace2D][trendipy.API.Trace2D] and [Point2D][trendipy.API.Point2D]) products
-        no_static_histograms (bool): Suppresses static assets from the [`HistogramEntry`][trendipy.API.HistogramEntry] products
+            [`XYData`][trendify.API.XYData] 
+            ([Trace2D][trendify.API.Trace2D] and [Point2D][trendify.API.Point2D]) products
+        no_static_histograms (bool): Suppresses static assets from the [`HistogramEntry`][trendify.API.HistogramEntry] products
         no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
         no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
     """

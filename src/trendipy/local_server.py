@@ -13,19 +13,19 @@ from flask import Flask
 from waitress import serve
 
 # Local imports
-from trendipy import API
+from trendify import API
 
 from flask import Flask
 
-__all__ = ['TrendipyProductServerLocal']
+__all__ = ['TrendifyProductServerLocal']
 
 
 def _to_product_type(type_name: str) -> Type:
     """
-    Converts type name str to trendipy type for searching data collection
+    Converts type name str to trendify type for searching data collection
     
     Args:
-        type_name (str): trendipy data product type name
+        type_name (str): trendify data product type name
 
     Returns:
         (Type): Class type corresponding to given `type_name`
@@ -41,7 +41,7 @@ def _status_check():
 class ProductGetter:
     """
     Attributes:
-        trendy_dir (Path): Path for trendipy
+        trendy_dir (Path): Path for trendify
     """
     trendy_dir: Path
 
@@ -55,7 +55,7 @@ class ProductGetter:
 
         Args:
             tag (str): Product tag to for which to return products.  Use the format `a.b.c.d` for a multi-component tag
-            product_type_name (str): Name of trendipy product class.  
+            product_type_name (str): Name of trendify product class.  
 
         Returns:
             (Type): Type of product to return
@@ -104,7 +104,7 @@ class ProductGetter:
         return filtered_data.model_dump_json()
 
 @dataclass
-class TrendipyProductServerLocal:
+class TrendifyProductServerLocal:
     app: Flask
     product_getter: ProductGetter
 
@@ -139,8 +139,8 @@ class TrendipyProductServerLocal:
         serve(self.app, host=host, port=port)
 
 def main(host='0.0.0.0', port=8000):
-    trendy_dir = Path('/Users/talbotknighton/Documents/trendipy/workdir/trendipy_output/products')
-    TrendipyProductServerLocal.get_new(products_dir=trendy_dir, name=__name__).run(host=host, port=port)
+    trendy_dir = Path('/Users/talbotknighton/Documents/trendify/workdir/trendify_output/products')
+    TrendifyProductServerLocal.get_new(products_dir=trendy_dir, name=__name__).run(host=host, port=port)
 
 if __name__ == "__main__":
     main(host='0.0.0.0', port=8000)

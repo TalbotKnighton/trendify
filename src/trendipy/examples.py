@@ -13,7 +13,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Local imports
-import trendipy
+import trendify
 
 __all__ = ['make_example_data', 'example_data_product_generator']
 
@@ -71,7 +71,7 @@ def make_example_data(workdir: Path, n_folders: int = 10):
         series.name = int(csv.parent.stem)
         input_series.append(series)
 
-def example_data_product_generator(workdir: Path) -> trendipy.ProductList:
+def example_data_product_generator(workdir: Path) -> trendify.ProductList:
     """
     Processes the generated sample data in given workdir returning several types of data products.
 
@@ -86,31 +86,31 @@ def example_data_product_generator(workdir: Path) -> trendipy.ProductList:
     colors = list(plt.rcParams['axes.prop_cycle'].by_key()['color'])
 
     traces = [
-        trendipy.Trace2D.from_xy(
+        trendify.Trace2D.from_xy(
             x=df.index,
             y=df[col].values,
             tags=['trace_plot'],
-            pen=trendipy.Pen(label=col, color=colors[list(Channels).index(col)]),
-            format2d=trendipy.Format2D(title_legend='Column'),
+            pen=trendify.Pen(label=col, color=colors[list(Channels).index(col)]),
+            format2d=trendify.Format2D(title_legend='Column'),
         ).append_to_list(products)
         for col in df.columns
     ]
 
     for trace in traces:
-        trendipy.Point2D(
+        trendify.Point2D(
             x=workdir.name,
             y=len(trace.y),
-            marker=trendipy.Marker(
+            marker=trendify.Marker(
                 size=10,
                 label=trace.pen.label,
                 color=trace.pen.color,
             ),
-            format2d=trendipy.Format2D(title_fig='N Points'),
+            format2d=trendify.Format2D(title_fig='N Points'),
             tags=['scatter_plot'],
         ).append_to_list(products)
 
     for name, series in df.items():
-        trendipy.TableEntry(
+        trendify.TableEntry(
             row=workdir.name,
             col=name,
             value=len(series),
@@ -122,12 +122,12 @@ def example_data_product_generator(workdir: Path) -> trendipy.ProductList:
 
 def make_sample_data():
     """
-    Generates sample data to run the trendipy code on
+    Generates sample data to run the trendify code on
     """
-    from trendipy.examples import make_example_data
+    from trendify.examples import make_example_data
     import argparse
     parser = argparse.ArgumentParser(
-        prog='make_sample_data_for_trendipy',
+        prog='make_sample_data_for_trendify',
     )
     parser.add_argument(
         '-wd',
@@ -163,27 +163,27 @@ def _main():
     grafana_dir = workdir.joinpath('grafana')
     n_procs = 30
     
-    trendipy.make_products(
+    trendify.make_products(
         product_generator=example_data_product_generator,
         data_dirs=process_dirs,
         n_procs=n_procs,
     )
-    trendipy.sort_products(
+    trendify.sort_products(
         data_dirs=process_dirs,
         output_dir=products_dir,
     )
-    # trendipy.make_grafana_dashboard(
+    # trendify.make_grafana_dashboard(
     #     products_dir=products_dir,
     #     output_dir=grafana_dir,
     #     n_procs=n_procs,
     # )
-    trendipy.make_tables_and_figures(
+    trendify.make_tables_and_figures(
         products_dir=products_dir,
         output_dir=outputs_dir,
         dpi=500,
         n_procs=n_procs,
     )
-    # trendipy.make_include_files(
+    # trendify.make_include_files(
     #     root_dir=outputs_dir,
     #     heading_level=2,
     # )

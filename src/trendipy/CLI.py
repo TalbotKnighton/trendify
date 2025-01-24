@@ -11,8 +11,8 @@ import os
 from pathlib import Path
 from typing import List, Iterable
 
-from trendipy import API
-from trendipy.local_server import TrendipyProductServerLocal
+from trendify import API
+from trendify.local_server import TrendifyProductServerLocal
 
 def _import_from_path(module_name, file_path):
     """
@@ -209,7 +209,7 @@ class InputDirectories:
                     paths.append(Path(p).parent.resolve() if Path(p).is_file() else Path(p).resolve())
             return paths 
 
-class TrendipyDirectory:
+class TrendifyDirectory:
     """
     """
     def __init__(self, short_flag: str, full_flag: str):
@@ -242,19 +242,19 @@ class TrendipyDirectory:
         """
         return FileManager(arg)
 
-def trendipy():
+def trendify():
     """
     Defines the command line interface script installed with python package
     """
 
     # Main parser
     parser = argparse.ArgumentParser(
-        prog='trendipy', 
+        prog='trendify', 
         usage='Generate visual data products and static/interactives assets from raw data',
     )
     actions = parser.add_subparsers(title='Sub Commands', dest='command', metavar='')
 
-    output_dir = TrendipyDirectory('o', 'output-directory')
+    output_dir = TrendifyDirectory('o', 'output-directory')
     ''' Products '''
     ### Products Make ###
     products_make = actions.add_parser('products-make', help='Makes products or assets')
@@ -268,21 +268,21 @@ def trendipy():
     NProcs.add_argument(products_sort)
     ### Products Serve ###
     products_serve = actions.add_parser('products-serve', help='Serves data products to URL endpoint at 0.0.0.0')
-    products_serve.add_argument('trendipy_output_directory')
+    products_serve.add_argument('trendify_output_directory')
     products_serve.add_argument('--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
     products_serve.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
     
     ''' Assets '''
     ### Assets Make Static
     assets_make_static = actions.add_parser('assets-make-static', help='Makes static assets')
-    assets_make_static.add_argument('trendipy_output_directory')
+    assets_make_static.add_argument('trendify_output_directory')
     NProcs.add_argument(assets_make_static)
     ### Assets Make Interactive
     assets_make_interactive = actions.add_parser('assets-make-interactive', help='Makes interactive assets')
     interactive_asset_types = assets_make_interactive.add_subparsers(title='Interactive Asset Type', dest='interactive_asset_type')
     ## Assets Make Interactive Grafana
     assets_make_interactive_grafana = interactive_asset_types.add_parser('grafana', help='Makes Grafana dashboard')
-    assets_make_interactive_grafana.add_argument('trendipy_output_directory')
+    assets_make_interactive_grafana.add_argument('trendify_output_directory')
     assets_make_interactive_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
     assets_make_interactive_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
     assets_make_interactive_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
@@ -332,8 +332,8 @@ def trendipy():
                 n_procs=NProcs.get_from_namespace(args),
             )
         case 'products-serve':
-            TrendipyProductServerLocal.get_new(
-                products_dir=FileManager(args.trendipy_output_directory).products_dir,
+            TrendifyProductServerLocal.get_new(
+                products_dir=FileManager(args.trendify_output_directory).products_dir,
                 name=__name__
             ).run(
                 host=args.host,
@@ -341,16 +341,16 @@ def trendipy():
             )
         case 'assets-make-static':
             API.make_tables_and_figures(
-                products_dir=FileManager(args.trendipy_output_directory).products_dir,
-                output_dir=FileManager(args.trendipy_output_directory).static_assets_dir,
+                products_dir=FileManager(args.trendify_output_directory).products_dir,
+                output_dir=FileManager(args.trendify_output_directory).static_assets_dir,
                 n_procs=NProcs.get_from_namespace(args),
             )
         case 'assets-make-interactive':
             match args.interactive_asset_type:
                 case 'grafana':
                     API.make_grafana_dashboard(
-                        products_dir=FileManager(args.trendipy_output_directory).products_dir,
-                        output_dir=FileManager(args.trendipy_output_directory).grafana_dir,
+                        products_dir=FileManager(args.trendify_output_directory).products_dir,
+                        output_dir=FileManager(args.trendify_output_directory).grafana_dir,
                         protocol=args.protocol,
                         host=args.host,
                         port=args.port,
@@ -382,7 +382,7 @@ def trendipy():
                         port=p,
                         n_procs=np,
                     )
-                    TrendipyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
+                    TrendifyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
                 case 'all':
                     API.make_products(product_generator=um, data_dirs=ip, n_procs=np)
                     API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np)
@@ -398,7 +398,7 @@ def trendipy():
                         n_procs=np,
                     )
                     API.make_tables_and_figures(products_dir=td.products_dir, output_dir=td.static_assets_dir, n_procs=np)
-                    TrendipyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
+                    TrendifyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
                     
 
     # args = _Args.from_args(args)
@@ -420,14 +420,14 @@ def trendipy():
 #     """
 #     # cwd = Path(os.getcwd())
 #     parser = argparse.ArgumentParser(prog='Serve data to local Grafana instance')
-#     parser.add_argument('-d', '--directory', type=Path, help='Path to trendipy output directory', required=True)
+#     parser.add_argument('-d', '--directory', type=Path, help='Path to trendify output directory', required=True)
 #     parser.add_argument('-p', '--port', type=int, help='What port to serve the data on', default=8000)
 #     parser.add_argument('-h', '--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
 #     args = parser.parse_args()
 #     trendy_dir = Path(args.directory).resolve()
 #     port = int(args.port)
 #     host = str(parser.host)
-#     TrendipyProductServerLocal.get_new(products_dir=trendy_dir, name=__name__).run(
+#     TrendifyProductServerLocal.get_new(products_dir=trendy_dir, name=__name__).run(
 #         host=host,
 #         port=port
 #     )

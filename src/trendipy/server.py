@@ -11,7 +11,7 @@ from flask import Flask
 from waitress import serve
 
 # Local imports
-from trendipy.API import (
+from trendify.API import (
     # Collection
     DataProductCollection,
     # DataProduct types
@@ -36,7 +36,7 @@ valid_types_names_list = [t.__name__ for t in valid_product_types]
 # App
 app = Flask(__name__)
 
-DATABASE_ROOT = Path('/Users/talbotknighton/Documents/trendipy/workdir/trendipy_output/products/')
+DATABASE_ROOT = Path('/Users/talbotknighton/Documents/trendify/workdir/trendify_output/products/')
 
 @app.route('/data_products/server-status/')
 def get_status():
