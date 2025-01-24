@@ -8,6 +8,6 @@ python -m mkdocs build
 git add --all
 git commit -m 'updated docs and site'
 
-python -m mkdocs deploy
+python -m mkdocs gh-deploy
 
 git push
