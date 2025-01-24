@@ -653,6 +653,7 @@ class HistogramStyle(HashableBase):
         alpha_edge (float): Opacity of bar edge
         alpha_face (float): Opacity of bar face
         linewidth (float): Line width of bar outline
+        bins (int | list[int] | Tuple[int] | NDArray[Shape["*"], int] | None): Number of bins (see [matplotlib docs][matplotlib.pyplot.hist])
     """
     color: str = 'k'
     label: str | None = None
@@ -660,6 +661,7 @@ class HistogramStyle(HashableBase):
     alpha_edge: float = 1
     alpha_face: float = 0.3
     linewidth: float = 2
+    bins: int | list[int] | Tuple[int] | NDArray[Shape["*"], int] | None = None
 
     def as_plot_kwargs(self):
         """
@@ -671,7 +673,8 @@ class HistogramStyle(HashableBase):
             'edgecolor': (self.color, self.alpha_edge),
             'linewidth': self.linewidth,
             'label': self.label,
-            'histtype': self.histtype
+            'histtype': self.histtype,
+            'bins': self.bins,
         }
 
 class HistogramEntry(PlottableData2D):
