@@ -1,79 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/</loc>
+         <loc>https://talbotknighton.github.io/trendify/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/api_and_cli/</loc>
+         <loc>https://talbotknighton.github.io/trendify/api_and_cli/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/example/</loc>
+         <loc>https://talbotknighton.github.io/trendify/example/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/motivation/</loc>
+         <loc>https://talbotknighton.github.io/trendify/motivation/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/planned_features/</loc>
+         <loc>https://talbotknighton.github.io/trendify/planned_features/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/recipe/</loc>
+         <loc>https://talbotknighton.github.io/trendify/recipe/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/SUMMARY/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/SUMMARY/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/grafana_api/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/grafana_api/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/grafana_api/dashboard/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/grafana_api/dashboard/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/grafana_api/panels/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/grafana_api/panels/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/grafana_api/panels/xy_chart/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/grafana_api/panels/xy_chart/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/grafana_api/transformations/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/grafana_api/transformations/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/grafana_api/transformations/transformations/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/grafana_api/transformations/transformations/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/trendipy/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/trendipy/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/trendipy/API/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/trendipy/API/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/trendipy/CLI/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/trendipy/CLI/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/trendipy/examples/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/trendipy/examples/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/trendipy/local_server/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/trendipy/local_server/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
     <url>
-         <loc>https://talbotknighton.github.io/trendipy/reference/trendipy/server/</loc>
+         <loc>https://talbotknighton.github.io/trendify/reference/trendipy/server/</loc>
          <lastmod>2025-01-24</lastmod>
     </url>
 </urlset>
