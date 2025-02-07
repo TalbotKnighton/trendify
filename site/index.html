@@ -459,9 +459,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#links" class="md-nav__link">
     <span class="md-ellipsis">
-      Overview
+      Links
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flow-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flow Chart
     </span>
   </a>
   
@@ -1065,9 +1092,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#links" class="md-nav__link">
     <span class="md-ellipsis">
-      Overview
+      Links
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flow-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flow Chart
     </span>
   </a>
   
@@ -1108,15 +1162,23 @@
   <h1>Welcome</h1>
 
 <h2 id="welcome-to-trendify">Welcome to Trendify<a class="headerlink" href="#welcome-to-trendify" title="Permanent link">&para;</a></h2>
+<h3 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h3>
+<p><a href="https://pypi.org/project/trendify/">View on PyPI</a></p>
+<p><a href="https://github.com/TalbotKnighton/trendify?tab=readme-ov-file">View source code</a></p>
+<h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h3>
+<p>Install from PyPI</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>trendify
+</code></pre></div>
+<h3 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h3>
 <p>The <code>trendify</code> package makes it easy to compare data from multiple runs of a batch process.  The core functionality is to generate CSV tables and JPEG images by mapping a user-provided processing function over a user-provided set of input data directories.  Parallelization and data serialization are used to speed up processing time and maintain low memory requirements.  <code>trendify</code> is run via a terminal <a class="autorefs autorefs-internal" href="api_and_cli/#cli">command line interface (CLI)</a> one-liner method or via a Python application programming interface (API).</p>
-<p>See the <a class="autorefs autorefs-internal" href="#overview">Overview</a> and <a class="autorefs autorefs-internal" href="#vocabulary">Vocabulary</a> sections below for a visual diagram of the program flow and vocabulary reference.</p>
+<p>See the [Overview][overview] and <a class="autorefs autorefs-internal" href="#vocabulary">Vocabulary</a> sections below for a visual diagram of the program flow and vocabulary reference.</p>
 <p>The <a class="autorefs autorefs-internal" href="motivation/#motivation">Motivation</a> section discusses the problem this package solves and why it is useful.</p>
 <p>The <a class="autorefs autorefs-internal" href="recipe/#recipe">Recipe</a> section provides a template for users to follow.</p>
 <p>The <a class="autorefs autorefs-internal" href="example/#example">Example</a> section provides a minimum working example.</p>
 <p>Available python methods and command line syntax are described in the <a class="autorefs autorefs-internal" href="api_and_cli/#api-and-cli">API and CLI</a> section.</p>
 <p>Planned future work and features are shown in the <a class="autorefs autorefs-internal" href="planned_features/#planned-features">Planned Features</a> section.</p>
-<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
-<p>The following flow diagram shows how <code>trendify</code> generates assets from user inputs.</p>
+<h3 id="flow-chart">Flow Chart<a class="headerlink" href="#flow-chart" title="Permanent link">&para;</a></h3>
+<p>The following flow chart shows how <code>trendify</code> generates assets from user inputs.</p>
 <pre class="mermaid"><code>graph TD
   subgraph "User Inputs"  
    A[(Input Directories)]@{ shape: lin-cyl };

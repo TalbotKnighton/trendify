@@ -1,5 +1,21 @@
 ## Welcome to Trendify
 
+### Links
+
+[View on PyPI](https://pypi.org/project/trendify/)
+
+[View source code](https://github.com/TalbotKnighton/trendify?tab=readme-ov-file)
+
+### Installation
+
+Install from PyPI
+
+```bash
+pip install trendify
+```
+
+### Description
+
 The `trendify` package makes it easy to compare data from multiple runs of a batch process.  The core functionality is to generate CSV tables and JPEG images by mapping a user-provided processing function over a user-provided set of input data directories.  Parallelization and data serialization are used to speed up processing time and maintain low memory requirements.  `trendify` is run via a terminal [command line interface (CLI)][cli] one-liner method or via a Python application programming interface (API).
 
 See the [Overview][overview] and [Vocabulary][vocabulary] sections below for a visual diagram of the program flow and vocabulary reference.
@@ -14,9 +30,9 @@ Available python methods and command line syntax are described in the [API and C
 
 Planned future work and features are shown in the [Planned Features][planned-features] section.
 
-### Overview
+### Flow Chart
 
-The following flow diagram shows how `trendify` generates assets from user inputs.
+The following flow chart shows how `trendify` generates assets from user inputs.
 
 ``` mermaid
 graph TD
