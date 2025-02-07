@@ -18,7 +18,7 @@ pip install trendify
 
 The `trendify` package makes it easy to compare data from multiple runs of a batch process.  The core functionality is to generate CSV tables and JPEG images by mapping a user-provided processing function over a user-provided set of input data directories.  Parallelization and data serialization are used to speed up processing time and maintain low memory requirements.  `trendify` is run via a terminal [command line interface (CLI)][cli] one-liner method or via a Python application programming interface (API).
 
-See the [Overview][overview] and [Vocabulary][vocabulary] sections below for a visual diagram of the program flow and vocabulary reference.
+See the [Flow Chart][flow-chart] and [Vocabulary][vocabulary] sections below for a visual diagram of the program flow and vocabulary reference.
 
 The [Motivation][motivation] section discusses the problem this package solves and why it is useful.
 
