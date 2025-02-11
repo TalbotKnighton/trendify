@@ -11,3 +11,7 @@ git commit -m 'updated docs and site'
 python -m mkdocs gh-deploy
 
 git push
+
+rm -r dist/
+python -m build
+twine upload dist/*

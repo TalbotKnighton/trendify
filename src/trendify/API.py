@@ -8,7 +8,7 @@ Some important learning material for pydantic classes and JSON (de)serialization
 - [Deserializing Child Classes](https://blog.devgenius.io/deserialize-child-classes-with-pydantic-that-gonna-work-784230e1cf83)
 
 Attributes:
-    DATA_PRODUCTS_FNAME (str): Hard-coded json file name 'data_products.json'
+    DATA_PRODUCTS_FNAME_DEFAULT (str): Hard-coded json file name 'data_products.json'
 """
 from __future__ import annotations
 
@@ -94,7 +94,7 @@ Tags = List[Tag]
 List of tags
 """
 
-DATA_PRODUCTS_FNAME = 'data_products.json'
+DATA_PRODUCTS_FNAME_DEFAULT = 'data_products.json'
 """
 Hard-coded file name for storing data products in batch-processed input directories.
 """
@@ -953,32 +953,45 @@ class DataProductCollection(BaseModel):
             return None
     
     @classmethod
-    def sort_by_tags(cls, dirs_in: List[Path], dir_out: Path):
+    def sort_by_tags(cls, dirs_in: List[Path], dir_out: Path, data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT):
         """
         Loads the data product JSON files from `dirs_in` sorts the products.
         Sorted products are written to smaller files in a nested directory structure under `dir_out`.
-        The nested directory structure is generated accordint to the data tags.
+        A nested directory structure is generated according to the data tags.
         Resulting product files are named according to the directory from which they were originally loaded.
 
         Args:
             dirs_in (List[Path]): Directories from which the data product JSON files are to be loaded.
             dir_out (Path): Directory to which the sorted data products will be written into a 
                 nested folder structure generated according to the data tags.
+            data_products_fname (str): Name of data products file
         """
         dirs_in = list(dirs_in)
         dirs_in.sort()
         len_dirs = len(dirs_in)
         for n, dir_in in enumerate(dirs_in):
             print(f'Sorting tagged data from dir {n}/{len_dirs}', end=f'\r')
-            cls.sort_by_tags_single_directory(dir_in=dir_in, dir_out=dir_out)
+            cls.sort_by_tags_single_directory(dir_in=dir_in, dir_out=dir_out, data_products_fname=data_products_fname)
 
     
     @classmethod
-    def sort_by_tags_single_directory(cls, dir_in: Path, dir_out: Path):
-        products_file = dir_in.joinpath(DATA_PRODUCTS_FNAME)
+    def sort_by_tags_single_directory(cls, dir_in: Path, dir_out: Path, data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT):
+        """
+        Loads the data product JSON files from `dir_in` and sorts the products.
+        Sorted products are written to smaller files in a nested directory structure under `dir_out`.
+        A nested directory structure is generated according to the data tags.
+        Resulting product files are named according to the directory from which they were originally loaded.
+
+        Args:
+            dirs_in (List[Path]): Directories from which the data product JSON files are to be loaded.
+            dir_out (Path): Directory to which the sorted data products will be written into a 
+                nested folder structure generated according to the data tags.
+            data_products_fname (str): Name of data products file
+        """
+        products_file = dir_in.joinpath(data_products_fname)
         if products_file.exists():
             print(f'Sorting results from {dir_in = }')
-            collection = DataProductCollection.model_validate_json(dir_in.joinpath(DATA_PRODUCTS_FNAME).read_text())
+            collection = DataProductCollection.model_validate_json(dir_in.joinpath(data_products_fname).read_text())
             collection.derived_from = dir_in
             tags = collection.get_tags()
             for tag in tags:
@@ -1174,7 +1187,7 @@ class DataProductGenerator:
     def __init__(self, processor: ProductGenerator):
         self._processor = processor
     
-    def process_and_save(self, workdir: Path):
+    def process_and_save(self, workdir: Path, data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT):
         """
         Runs the user-defined processor method stored at instantiation.
         
@@ -1182,13 +1195,14 @@ class DataProductGenerator:
 
         Args:
             workdir (Path): working directory on which to run the processor method.
+            data_products_fname (str): Name of data products file
         """
         
         print(f'Processing {workdir = } with {self._processor = }')
         collection = DataProductCollection.from_iterable(self._processor(workdir))
         if collection.elements:
             workdir.mkdir(exist_ok=True, parents=True)
-            workdir.joinpath(DATA_PRODUCTS_FNAME).write_text(collection.model_dump_json())
+            workdir.joinpath(data_products_fname).write_text(collection.model_dump_json())
 
 class XYDataPlotter:
     """
@@ -1212,6 +1226,7 @@ class XYDataPlotter:
     def plot(
             self,  
             tag: Tag, 
+            data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
         ):
         """
         - Collects data from json files in stored `self.in_dirs`, 
@@ -1222,12 +1237,13 @@ class XYDataPlotter:
 
         Args:
             tag (Tag): data tag for which products are to be collected and plotted.
+            data_products_fname (str): Data products file name
         """
         print(f'Making xy plot for {tag = }')
         saf = SingleAxisFigure.new(tag=tag)
 
         for subdir in self.in_dirs:
-            collection = DataProductCollection.model_validate_json(subdir.joinpath(DATA_PRODUCTS_FNAME).read_text())
+            collection = DataProductCollection.model_validate_json(subdir.joinpath(data_products_fname).read_text())
             traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
             points: List[Point2D] = collection.get_products(tag=tag, object_type=Point2D).elements
 
@@ -1322,6 +1338,7 @@ class TableBuilder:
     def load_table(
             self,
             tag: Tag,
+            data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
         ):
         """
         Collects table entries from JSON files corresponding to given tag and processes them.
@@ -1338,7 +1355,7 @@ class TableBuilder:
 
         table_entries: List[TableEntry] = []
         for subdir in self.in_dirs:
-            collection = DataProductCollection.model_validate_json(subdir.joinpath(DATA_PRODUCTS_FNAME).read_text())
+            collection = DataProductCollection.model_validate_json(subdir.joinpath(data_products_fname).read_text())
             table_entries.extend(collection.get_products(tag=tag, object_type=TableEntry).elements)
 
         self.process_table_entries(tag=tag, table_entries=table_entries, out_dir=self.out_dir)
@@ -1425,6 +1442,7 @@ class Histogrammer:
     def plot(
             self,
             tag: Tag,
+            data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
         ):
         """
         Generates a histogram by loading data from stored `in_dirs` and saves the plot to `out_dir` directory.
@@ -1438,7 +1456,7 @@ class Histogrammer:
 
         histogram_entries: List[HistogramEntry] = []
         for directory in self.in_dirs:
-            collection = DataProductCollection.model_validate_json(directory.joinpath(DATA_PRODUCTS_FNAME).read_text())
+            collection = DataProductCollection.model_validate_json(directory.joinpath(data_products_fname).read_text())
             histogram_entries.extend(collection.get_products(tag=tag, object_type=HistogramEntry).elements)
 
         self.handle_histogram_entries(
@@ -1476,9 +1494,12 @@ class Histogrammer:
             else:
                 saf.ax.hist(values)
 
-        [format2d] = set([h.format2d for h in histogram_entries]) - {None}
-        saf.apply_format(format2d=format2d)
-
+        try:
+            format2d_set = set([h.format2d for h in histogram_entries]) - {None}
+            [format2d] = format2d_set
+            saf.apply_format(format2d=format2d)
+        except:
+            print(f'Format not applied to {save_path  = } multiple entries conflict for given tag:\n\t{format2d_set = }')
         save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix('.jpg')
         save_path.parent.mkdir(exist_ok=True, parents=True)
         print(f'Saving to {save_path}')
@@ -1622,6 +1643,7 @@ def make_products(
         product_generator: Callable[[Path], DataProductCollection] | None,
         data_dirs: List[Path],
         n_procs: int = 1,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
     ):
     """
     Maps `product_generator` over `dirs_in` to produce data product JSON files in those directories.
@@ -1637,6 +1659,7 @@ def make_products(
             processed sequentially (easier for debugging since the full traceback will be provided).
             If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
             be used to load and process directories and/or tags in parallel.
+        data_products_fname (str): File name to be used for storing generated data products
     """
     sorted_dirs = get_sorted_dirs(dirs=data_dirs)
 
@@ -1647,6 +1670,7 @@ def make_products(
         map_callable(
             DataProductGenerator(processor=product_generator).process_and_save,
             sorted_dirs,
+            [data_products_fname]*len(sorted_dirs),
             n_procs=n_procs,
         )
         print('\nFinished generating tagged DataProducts and writing to JSON files')
@@ -1655,6 +1679,7 @@ def sort_products(
         data_dirs: List[Path],
         output_dir: Path,
         n_procs: int = 1,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
     ):
     """
     Loads the tagged data products from `data_dirs` and sorts them (by tag) into a nested folder structure rooted at `output_dir`.
@@ -1662,6 +1687,7 @@ def sort_products(
     Args:
         data_dirs (List[Path]): Directories containing JSON data product files
         output_dir (Path): Directory to which sorted products will be written
+        data_products_fname (str): File name in which the data products to be sorted are stored
     """
     sorted_data_dirs = get_sorted_dirs(dirs=data_dirs)
 
@@ -1672,12 +1698,10 @@ def sort_products(
         DataProductCollection.sort_by_tags_single_directory,
         sorted_data_dirs,
         [output_dir]*len(sorted_data_dirs),
+        [data_products_fname]*len(sorted_data_dirs),
         n_procs=n_procs,
     )
-    # DataProductCollection.sort_by_tags(
-    #     dirs_in=sorted_data_dirs,
-    #     dir_out=output_dir,
-    # )
+    
     print('\nFinished sorting by tags')
 
 def make_grafana_dashboard(
@@ -1775,6 +1799,7 @@ def make_it_trendy(
         protocol: str = 'http',
         server: str = '0.0.0.0',
         port: int = 8000,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
     ):
     """
     Maps `data_product_generator` over `dirs_in` to produce data product JSON files in those directories.
@@ -1800,6 +1825,7 @@ def make_it_trendy(
         no_static_histograms (bool): Suppresses static assets from the [`HistogramEntry`][trendify.API.HistogramEntry] products
         no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
         no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
+        data_products_fname (str): File name to be used for storing generated data products
     """
     input_dirs = [Path(p).parent if Path(p).is_file() else Path(p) for p in list(input_dirs)]
     output_dir = Path(output_dir)
@@ -1808,6 +1834,7 @@ def make_it_trendy(
         product_generator=data_product_generator,
         data_dirs=input_dirs,
         n_procs=n_procs,
+        data_products_fname=data_products_fname,
     )
 
     products_dir = _mkdir(output_dir.joinpath('products'))
@@ -1818,6 +1845,7 @@ def make_it_trendy(
         data_dirs=input_dirs,
         output_dir=products_dir,
         n_procs=n_procs,
+        data_products_fname=data_products_fname,
     )
     end = time.time()
     print(f'Time to sort = {end - start}')

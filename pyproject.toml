@@ -18,7 +18,7 @@ dependencies = [
   "waitress",
 ]
 name = "trendify"
-version = "1.0.4"
+version = "1.0.5"
 requires-python = ">= 3.11"
 authors = [
   {name = "Talbot Knighton", email = "talbotknighton@gmail.org"},

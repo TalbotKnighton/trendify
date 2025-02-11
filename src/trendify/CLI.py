@@ -1,18 +1,26 @@
+"""
+The `Trendify` CLI allows the code to be run from a commandline interface.
+"""
+from __future__ import annotations
+
+# Standard
+
 import argparse
-
 from dataclasses import dataclass
-import importlib
 from glob import glob
-
+import importlib
 import importlib.util
-import sys
 import os
-
 from pathlib import Path
+import sys
 from typing import List, Iterable
+
+# Local
 
 from trendify import API
 from trendify.local_server import TrendifyProductServerLocal
+
+__all__ = []
 
 def _import_from_path(module_name, file_path):
     """
@@ -26,6 +34,9 @@ def _import_from_path(module_name, file_path):
 
 @dataclass
 class FileManager:
+    """
+    Determines the folder setup for `trendify` directory
+    """
     output_dir: Path
 
     def __post_init__(self):
@@ -62,6 +73,9 @@ class FileManager:
         return path
 
 class NProcs:
+    """
+    Determines the number of processors to use in parallel for running `trendify` commands
+    """
     _NAME = 'n-procs'
 
     @classmethod
@@ -162,8 +176,45 @@ class UserMethod:
             obj = getattr(obj, arg)
         return obj
 
+class DataProductsFileName:
+    """
+    Defines arguments parsed from command line
+    """
+    _NAME = 'data-products-file-name'
+
+    @classmethod
+    def get_from_namespace(cls, namespace: argparse.Namespace) -> str:
+        return cls.process_argument(getattr(namespace, cls._NAME.replace('-', '_')))
+
+    @classmethod
+    def add_argument(cls, parser: argparse.ArgumentParser):
+        """Defines the argument parsing from command line"""
+        parser.add_argument(
+            '-f', 
+            f'--{cls._NAME}', 
+            type=str,
+            default=API.DATA_PRODUCTS_FNAME_DEFAULT,
+            help=(
+                f'Sepcify the data file name to be used (defaults to {API.DATA_PRODUCTS_FNAME_DEFAULT})'
+            )
+        )
+
+    @staticmethod
+    def process_argument(arg: str) -> API.ProductGenerator:
+        """
+        Processes input data from command line flag value
+
+        Args:
+            arg (str): File name to be type-cast to string
+        
+        Returns:
+            (Callable): String (file name to be used for generated data products)
+        """
+        return str(arg)
+
 class InputDirectories:
     """
+    Parses the `--input-directories` argument from CLI
     """
     _NAME = 'input-directories'
 
@@ -211,6 +262,7 @@ class InputDirectories:
 
 class TrendifyDirectory:
     """
+    Parses the `--trendify-directory` argument from CLI
     """
     def __init__(self, short_flag: str, full_flag: str):
         self._short_flag = short_flag
@@ -244,7 +296,9 @@ class TrendifyDirectory:
 
 def trendify():
     """
-    Defines the command line interface script installed with python package
+    Defines the command line interface script installed with python package.
+
+    Run the help via `trendify -h`.
     """
 
     # Main parser
@@ -261,11 +315,13 @@ def trendify():
     InputDirectories.add_argument(products_make)
     UserMethod.add_argument(products_make)
     NProcs.add_argument(products_make)
+    DataProductsFileName.add_argument(products_make)
     ### Products Sort ###
     products_sort = actions.add_parser('products-sort', help='Sorts data products by tags')
     InputDirectories.add_argument(products_sort)
     output_dir.add_argument(products_sort)
     NProcs.add_argument(products_sort)
+    DataProductsFileName.add_argument(products_sort)
     ### Products Serve ###
     products_serve = actions.add_parser('products-serve', help='Serves data products to URL endpoint at 0.0.0.0')
     products_serve.add_argument('trendify_output_directory')
@@ -297,12 +353,14 @@ def trendify():
     UserMethod.add_argument(make_static)
     NProcs.add_argument(make_static)
     output_dir.add_argument(make_static)
+    DataProductsFileName.add_argument(make_static)
     # Interactive Grafana
     make_grafana = make_actions.add_parser('grafana', help='Generates Grafana dashboard after running products make and sort')
     InputDirectories.add_argument(make_grafana)
     UserMethod.add_argument(make_grafana)
     NProcs.add_argument(make_grafana)
     output_dir.add_argument(make_grafana)
+    DataProductsFileName.add_argument(make_grafana)
     make_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
     make_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
     make_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
@@ -312,6 +370,7 @@ def trendify():
     UserMethod.add_argument(make_grafana)
     NProcs.add_argument(make_grafana)
     output_dir.add_argument(make_grafana)
+    DataProductsFileName.add_argument(make_grafana)
     make_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
     make_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
     make_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
@@ -324,12 +383,14 @@ def trendify():
                 product_generator=UserMethod.get_from_namespace(args),
                 data_dirs=InputDirectories.get_from_namespace(args),
                 n_procs=NProcs.get_from_namespace(args),
+                data_products_fname=DataProductsFileName.get_from_namespace(args),
             )
         case 'products-sort':
             API.sort_products(
                 data_dirs=InputDirectories.get_from_namespace(args),
                 output_dir=output_dir.get_from_namespace(args).products_dir,
                 n_procs=NProcs.get_from_namespace(args),
+                data_products_fname=DataProductsFileName.get_from_namespace(args),
             )
         case 'products-serve':
             TrendifyProductServerLocal.get_new(
@@ -363,14 +424,15 @@ def trendify():
             ip = InputDirectories.get_from_namespace(args)
             np = NProcs.get_from_namespace(args)
             td = output_dir.get_from_namespace(args)
+            fn = DataProductsFileName.get_from_namespace(args)
             match args.target:
                 case 'static':
-                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np)
-                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np)
+                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np, data_products_fname=fn)
+                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np, data_products_fname=fn)
                     API.make_tables_and_figures(products_dir=td.products_dir, output_dir=td.static_assets_dir, n_procs=np)
                 case 'grafana':
-                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np)
-                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np)
+                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np, data_products_fname=fn)
+                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np, data_products_fname=fn)
                     protocol: str = args.protocol
                     h: str = args.host
                     p: int = args.port
@@ -384,8 +446,8 @@ def trendify():
                     )
                     TrendifyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
                 case 'all':
-                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np)
-                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np)
+                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np, data_products_fname=fn)
+                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np, data_products_fname=fn)
                     protocol: str = args.protocol
                     h: str = args.host
                     p: int = args.port
