@@ -1412,8 +1412,8 @@ class TableBuilder:
         """
         stats = {
             'min': df.min(axis=0),
-            'max': df.max(axis=0),
             'mean': df.mean(axis=0),
+            'max': df.max(axis=0),
             'sigma3': df.std(axis=0)*3,
         }
         df = pd.DataFrame(stats, index=df.columns)
