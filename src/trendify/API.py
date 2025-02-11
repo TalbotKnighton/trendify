@@ -983,7 +983,7 @@ class DataProductCollection(BaseModel):
         Resulting product files are named according to the directory from which they were originally loaded.
 
         Args:
-            dirs_in (List[Path]): Directories from which the data product JSON files are to be loaded.
+            dir_in (List[Path]): Directories from which the data product JSON files are to be loaded.
             dir_out (Path): Directory to which the sorted data products will be written into a 
                 nested folder structure generated according to the data tags.
             data_products_fname (str): Name of data products file
