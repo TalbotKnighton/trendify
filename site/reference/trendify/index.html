@@ -1580,15 +1580,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#trendify.make_grafana_dashboard" class="md-nav__link">
-    <span class="md-ellipsis">
-      make_grafana_dashboard
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#trendify.make_include_files" class="md-nav__link">
     <span class="md-ellipsis">
       make_include_files
@@ -3258,7 +3249,7 @@ sorted.</p>
 <a id="__codelineno-0-1097" name="__codelineno-0-1097"></a><span class="sd">        dir_in (Path): Directory from which to read data products (should be sorted first)</span>
 <a id="__codelineno-0-1098" name="__codelineno-0-1098"></a><span class="sd">        panel_dir (Path): Where to put the panel information</span>
 <a id="__codelineno-0-1099" name="__codelineno-0-1099"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-1100" name="__codelineno-0-1100"></a>
+<a id="__codelineno-0-1100" name="__codelineno-0-1100"></a>    <span class="kn">import</span> <span class="nn">grafana_api</span> <span class="k">as</span> <span class="nn">gapi</span>
 <a id="__codelineno-0-1101" name="__codelineno-0-1101"></a>    <span class="n">collection</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">collect_from_all_jsons</span><span class="p">(</span><span class="n">dir_in</span><span class="p">)</span>
 <a id="__codelineno-0-1102" name="__codelineno-0-1102"></a>    <span class="n">panel_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <a id="__codelineno-0-1103" name="__codelineno-0-1103"></a>
@@ -8100,211 +8091,6 @@ It still may end up being useful if my plotting method changes.  Keeping for pot
 <div class="doc doc-object doc-function">
 
 
-<h3 id="trendify.make_grafana_dashboard" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">make_grafana_dashboard</span>
-
-
-<a href="#trendify.make_grafana_dashboard" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">make_grafana_dashboard</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">products_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n">n_procs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">=</span> <span class="mi">1</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Makes a JSON file to import to Grafana for displaying tagged data tables, histograms and XY plots.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>products_dir</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Root directory into which products have been sorted by tag</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>output_dir</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Root directory into which Grafana dashboard and panal definitions will be written</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>n_procs</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Number of parallel tasks used for processing data product tags</p>
-              </div>
-            </td>
-            <td>
-                  <code>1</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>protocol</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Communication protocol for data server</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>host</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Sever address for providing data to interactive dashboard</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>n_procs</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Number of parallel processes</p>
-              </div>
-            </td>
-            <td>
-                  <code>1</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>src/trendify/API.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1711">1711</a></span>
-<span class="normal"><a href="#__codelineno-0-1712">1712</a></span>
-<span class="normal"><a href="#__codelineno-0-1713">1713</a></span>
-<span class="normal"><a href="#__codelineno-0-1714">1714</a></span>
-<span class="normal"><a href="#__codelineno-0-1715">1715</a></span>
-<span class="normal"><a href="#__codelineno-0-1716">1716</a></span>
-<span class="normal"><a href="#__codelineno-0-1717">1717</a></span>
-<span class="normal"><a href="#__codelineno-0-1718">1718</a></span>
-<span class="normal"><a href="#__codelineno-0-1719">1719</a></span>
-<span class="normal"><a href="#__codelineno-0-1720">1720</a></span>
-<span class="normal"><a href="#__codelineno-0-1721">1721</a></span>
-<span class="normal"><a href="#__codelineno-0-1722">1722</a></span>
-<span class="normal"><a href="#__codelineno-0-1723">1723</a></span>
-<span class="normal"><a href="#__codelineno-0-1724">1724</a></span>
-<span class="normal"><a href="#__codelineno-0-1725">1725</a></span>
-<span class="normal"><a href="#__codelineno-0-1726">1726</a></span>
-<span class="normal"><a href="#__codelineno-0-1727">1727</a></span>
-<span class="normal"><a href="#__codelineno-0-1728">1728</a></span>
-<span class="normal"><a href="#__codelineno-0-1729">1729</a></span>
-<span class="normal"><a href="#__codelineno-0-1730">1730</a></span>
-<span class="normal"><a href="#__codelineno-0-1731">1731</a></span>
-<span class="normal"><a href="#__codelineno-0-1732">1732</a></span>
-<span class="normal"><a href="#__codelineno-0-1733">1733</a></span>
-<span class="normal"><a href="#__codelineno-0-1734">1734</a></span>
-<span class="normal"><a href="#__codelineno-0-1735">1735</a></span>
-<span class="normal"><a href="#__codelineno-0-1736">1736</a></span>
-<span class="normal"><a href="#__codelineno-0-1737">1737</a></span>
-<span class="normal"><a href="#__codelineno-0-1738">1738</a></span>
-<span class="normal"><a href="#__codelineno-0-1739">1739</a></span>
-<span class="normal"><a href="#__codelineno-0-1740">1740</a></span>
-<span class="normal"><a href="#__codelineno-0-1741">1741</a></span>
-<span class="normal"><a href="#__codelineno-0-1742">1742</a></span>
-<span class="normal"><a href="#__codelineno-0-1743">1743</a></span>
-<span class="normal"><a href="#__codelineno-0-1744">1744</a></span>
-<span class="normal"><a href="#__codelineno-0-1745">1745</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1711" name="__codelineno-0-1711"></a><span class="k">def</span> <span class="nf">make_grafana_dashboard</span><span class="p">(</span>
-<a id="__codelineno-0-1712" name="__codelineno-0-1712"></a>        <span class="n">products_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-<a id="__codelineno-0-1713" name="__codelineno-0-1713"></a>        <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-<a id="__codelineno-0-1714" name="__codelineno-0-1714"></a>        <span class="n">protocol</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-0-1715" name="__codelineno-0-1715"></a>        <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-0-1716" name="__codelineno-0-1716"></a>        <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-1717" name="__codelineno-0-1717"></a>        <span class="n">n_procs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-0-1718" name="__codelineno-0-1718"></a>    <span class="p">):</span>
-<a id="__codelineno-0-1719" name="__codelineno-0-1719"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-1720" name="__codelineno-0-1720"></a><span class="sd">    Makes a JSON file to import to Grafana for displaying tagged data tables, histograms and XY plots.</span>
-<a id="__codelineno-0-1721" name="__codelineno-0-1721"></a>
-<a id="__codelineno-0-1722" name="__codelineno-0-1722"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-1723" name="__codelineno-0-1723"></a><span class="sd">        products_dir (Path): Root directory into which products have been sorted by tag</span>
-<a id="__codelineno-0-1724" name="__codelineno-0-1724"></a><span class="sd">        output_dir (Path): Root directory into which Grafana dashboard and panal definitions will be written</span>
-<a id="__codelineno-0-1725" name="__codelineno-0-1725"></a><span class="sd">        n_procs (int): Number of parallel tasks used for processing data product tags</span>
-<a id="__codelineno-0-1726" name="__codelineno-0-1726"></a><span class="sd">        protocol (str): Communication protocol for data server</span>
-<a id="__codelineno-0-1727" name="__codelineno-0-1727"></a><span class="sd">        host (str): Sever address for providing data to interactive dashboard</span>
-<a id="__codelineno-0-1728" name="__codelineno-0-1728"></a><span class="sd">        n_procs (int): Number of parallel processes</span>
-<a id="__codelineno-0-1729" name="__codelineno-0-1729"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-1730" name="__codelineno-0-1730"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\n\n</span><span class="s1">Generating Grafana Dashboard JSON Spec in </span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s1"> based on products in </span><span class="si">{</span><span class="n">products_dir</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<a id="__codelineno-0-1731" name="__codelineno-0-1731"></a>    <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-1732" name="__codelineno-0-1732"></a>
-<a id="__codelineno-0-1733" name="__codelineno-0-1733"></a>    <span class="n">product_dirs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">products_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;**/*/&#39;</span><span class="p">))</span>
-<a id="__codelineno-0-1734" name="__codelineno-0-1734"></a>    <span class="n">panel_dir</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;panels&#39;</span><span class="p">)</span>
-<a id="__codelineno-0-1735" name="__codelineno-0-1735"></a>    <span class="n">map_callable</span><span class="p">(</span>
-<a id="__codelineno-0-1736" name="__codelineno-0-1736"></a>        <span class="n">DataProductCollection</span><span class="o">.</span><span class="n">make_grafana_panels</span><span class="p">,</span>
-<a id="__codelineno-0-1737" name="__codelineno-0-1737"></a>        <span class="n">product_dirs</span><span class="p">,</span>
-<a id="__codelineno-0-1738" name="__codelineno-0-1738"></a>        <span class="p">[</span><span class="n">panel_dir</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
-<a id="__codelineno-0-1739" name="__codelineno-0-1739"></a>        <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
-<a id="__codelineno-0-1740" name="__codelineno-0-1740"></a>        <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
-<a id="__codelineno-0-1741" name="__codelineno-0-1741"></a>    <span class="p">)</span>
-<a id="__codelineno-0-1742" name="__codelineno-0-1742"></a>    <span class="n">panels</span> <span class="o">=</span> <span class="p">[</span><span class="n">gapi</span><span class="o">.</span><span class="n">Panel</span><span class="o">.</span><span class="n">model_validate_json</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">panel_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.json&#39;</span><span class="p">)]</span>
-<a id="__codelineno-0-1743" name="__codelineno-0-1743"></a>    <span class="n">dashboard</span> <span class="o">=</span> <span class="n">gapi</span><span class="o">.</span><span class="n">Dashboard</span><span class="p">(</span><span class="n">panels</span><span class="o">=</span><span class="n">panels</span><span class="p">)</span>
-<a id="__codelineno-0-1744" name="__codelineno-0-1744"></a>    <span class="n">output_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;dashboard.json&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">dashboard</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">())</span>
-<a id="__codelineno-0-1745" name="__codelineno-0-1745"></a>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Finished Generating Grafana Dashboard JSON Spec&#39;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
 <h3 id="trendify.make_include_files" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">make_include_files</span>
 
@@ -8829,8 +8615,7 @@ be used to load and process directories and/or tags in parallel.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/trendify/API.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1792">1792</a></span>
-<span class="normal"><a href="#__codelineno-0-1793">1793</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1793">1793</a></span>
 <span class="normal"><a href="#__codelineno-0-1794">1794</a></span>
 <span class="normal"><a href="#__codelineno-0-1795">1795</a></span>
 <span class="normal"><a href="#__codelineno-0-1796">1796</a></span>
@@ -8929,107 +8714,108 @@ be used to load and process directories and/or tags in parallel.</p>
 <span class="normal"><a href="#__codelineno-0-1889">1889</a></span>
 <span class="normal"><a href="#__codelineno-0-1890">1890</a></span>
 <span class="normal"><a href="#__codelineno-0-1891">1891</a></span>
-<span class="normal"><a href="#__codelineno-0-1892">1892</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1792" name="__codelineno-0-1792"></a><span class="k">def</span> <span class="nf">make_it_trendy</span><span class="p">(</span>
-<a id="__codelineno-0-1793" name="__codelineno-0-1793"></a>        <span class="n">data_product_generator</span><span class="p">:</span> <span class="n">ProductGenerator</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-1794" name="__codelineno-0-1794"></a>        <span class="n">input_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span>
-<a id="__codelineno-0-1795" name="__codelineno-0-1795"></a>        <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-<a id="__codelineno-0-1796" name="__codelineno-0-1796"></a>        <span class="n">n_procs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-0-1797" name="__codelineno-0-1797"></a>        <span class="n">dpi_static_plots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
-<a id="__codelineno-0-1798" name="__codelineno-0-1798"></a>        <span class="n">no_static_tables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-1799" name="__codelineno-0-1799"></a>        <span class="n">no_static_xy_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-1800" name="__codelineno-0-1800"></a>        <span class="n">no_static_histograms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-1801" name="__codelineno-0-1801"></a>        <span class="n">no_grafana_dashboard</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-1802" name="__codelineno-0-1802"></a>        <span class="n">no_include_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-1803" name="__codelineno-0-1803"></a>        <span class="n">protocol</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;http&#39;</span><span class="p">,</span>
-<a id="__codelineno-0-1804" name="__codelineno-0-1804"></a>        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
-<a id="__codelineno-0-1805" name="__codelineno-0-1805"></a>        <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8000</span><span class="p">,</span>
-<a id="__codelineno-0-1806" name="__codelineno-0-1806"></a>        <span class="n">data_products_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DATA_PRODUCTS_FNAME_DEFAULT</span><span class="p">,</span>
-<a id="__codelineno-0-1807" name="__codelineno-0-1807"></a>    <span class="p">):</span>
-<a id="__codelineno-0-1808" name="__codelineno-0-1808"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-1809" name="__codelineno-0-1809"></a><span class="sd">    Maps `data_product_generator` over `dirs_in` to produce data product JSON files in those directories.</span>
-<a id="__codelineno-0-1810" name="__codelineno-0-1810"></a><span class="sd">    Sorts the generated data products into a nested file structure starting from `dir_products`.</span>
-<a id="__codelineno-0-1811" name="__codelineno-0-1811"></a><span class="sd">    Nested folders are generated for tags that are Tuples.  Sorted data files are named according to the</span>
-<a id="__codelineno-0-1812" name="__codelineno-0-1812"></a><span class="sd">    directory from which they were loaded.</span>
-<a id="__codelineno-0-1813" name="__codelineno-0-1813"></a>
-<a id="__codelineno-0-1814" name="__codelineno-0-1814"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-1815" name="__codelineno-0-1815"></a><span class="sd">        data_product_generator (ProductGenerator | None): A callable function that returns</span>
-<a id="__codelineno-0-1816" name="__codelineno-0-1816"></a><span class="sd">            a list of data products given a working directory.</span>
-<a id="__codelineno-0-1817" name="__codelineno-0-1817"></a><span class="sd">        input_dirs (List[Path]): Directories over which to map the `product_generator`</span>
-<a id="__codelineno-0-1818" name="__codelineno-0-1818"></a><span class="sd">        output_dir (Path): Directory to which the trendify products and assets will be written.</span>
-<a id="__codelineno-0-1819" name="__codelineno-0-1819"></a><span class="sd">        n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be</span>
-<a id="__codelineno-0-1820" name="__codelineno-0-1820"></a><span class="sd">            processed sequentially (easier for debugging since the full traceback will be provided).</span>
-<a id="__codelineno-0-1821" name="__codelineno-0-1821"></a><span class="sd">            If `n_procs &gt; 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will</span>
-<a id="__codelineno-0-1822" name="__codelineno-0-1822"></a><span class="sd">            be used to load and process directories and/or tags in parallel.</span>
-<a id="__codelineno-0-1823" name="__codelineno-0-1823"></a><span class="sd">        dpi_static_plots (int = 500): Resolution of output plots when using matplotlib </span>
-<a id="__codelineno-0-1824" name="__codelineno-0-1824"></a><span class="sd">            (for `make_xy_plots==True` and/or `make_histograms==True`)</span>
-<a id="__codelineno-0-1825" name="__codelineno-0-1825"></a><span class="sd">        no_static_tables (bool): Suppresses static assets from the [`TableEntry`][trendify.API.TableEntry] products</span>
-<a id="__codelineno-0-1826" name="__codelineno-0-1826"></a><span class="sd">        no_static_xy_plots (bool): Suppresses static assets from the </span>
-<a id="__codelineno-0-1827" name="__codelineno-0-1827"></a><span class="sd">            [`XYData`][trendify.API.XYData] </span>
-<a id="__codelineno-0-1828" name="__codelineno-0-1828"></a><span class="sd">            ([Trace2D][trendify.API.Trace2D] and [Point2D][trendify.API.Point2D]) products</span>
-<a id="__codelineno-0-1829" name="__codelineno-0-1829"></a><span class="sd">        no_static_histograms (bool): Suppresses static assets from the [`HistogramEntry`][trendify.API.HistogramEntry] products</span>
-<a id="__codelineno-0-1830" name="__codelineno-0-1830"></a><span class="sd">        no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file</span>
-<a id="__codelineno-0-1831" name="__codelineno-0-1831"></a><span class="sd">        no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports</span>
-<a id="__codelineno-0-1832" name="__codelineno-0-1832"></a><span class="sd">        data_products_fname (str): File name to be used for storing generated data products</span>
-<a id="__codelineno-0-1833" name="__codelineno-0-1833"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-1834" name="__codelineno-0-1834"></a>    <span class="n">input_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_dirs</span><span class="p">)]</span>
-<a id="__codelineno-0-1835" name="__codelineno-0-1835"></a>    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
-<a id="__codelineno-0-1836" name="__codelineno-0-1836"></a>
-<a id="__codelineno-0-1837" name="__codelineno-0-1837"></a>    <span class="n">make_products</span><span class="p">(</span>
-<a id="__codelineno-0-1838" name="__codelineno-0-1838"></a>        <span class="n">product_generator</span><span class="o">=</span><span class="n">data_product_generator</span><span class="p">,</span>
-<a id="__codelineno-0-1839" name="__codelineno-0-1839"></a>        <span class="n">data_dirs</span><span class="o">=</span><span class="n">input_dirs</span><span class="p">,</span>
-<a id="__codelineno-0-1840" name="__codelineno-0-1840"></a>        <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
-<a id="__codelineno-0-1841" name="__codelineno-0-1841"></a>        <span class="n">data_products_fname</span><span class="o">=</span><span class="n">data_products_fname</span><span class="p">,</span>
-<a id="__codelineno-0-1842" name="__codelineno-0-1842"></a>    <span class="p">)</span>
-<a id="__codelineno-0-1843" name="__codelineno-0-1843"></a>
-<a id="__codelineno-0-1844" name="__codelineno-0-1844"></a>    <span class="n">products_dir</span> <span class="o">=</span> <span class="n">_mkdir</span><span class="p">(</span><span class="n">output_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;products&#39;</span><span class="p">))</span>
-<a id="__codelineno-0-1845" name="__codelineno-0-1845"></a>
-<a id="__codelineno-0-1846" name="__codelineno-0-1846"></a>    <span class="c1"># Sort products</span>
-<a id="__codelineno-0-1847" name="__codelineno-0-1847"></a>    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<a id="__codelineno-0-1848" name="__codelineno-0-1848"></a>    <span class="n">sort_products</span><span class="p">(</span>
-<a id="__codelineno-0-1849" name="__codelineno-0-1849"></a>        <span class="n">data_dirs</span><span class="o">=</span><span class="n">input_dirs</span><span class="p">,</span>
-<a id="__codelineno-0-1850" name="__codelineno-0-1850"></a>        <span class="n">output_dir</span><span class="o">=</span><span class="n">products_dir</span><span class="p">,</span>
-<a id="__codelineno-0-1851" name="__codelineno-0-1851"></a>        <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
-<a id="__codelineno-0-1852" name="__codelineno-0-1852"></a>        <span class="n">data_products_fname</span><span class="o">=</span><span class="n">data_products_fname</span><span class="p">,</span>
-<a id="__codelineno-0-1853" name="__codelineno-0-1853"></a>    <span class="p">)</span>
-<a id="__codelineno-0-1854" name="__codelineno-0-1854"></a>    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<a id="__codelineno-0-1855" name="__codelineno-0-1855"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Time to sort = </span><span class="si">{</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<a id="__codelineno-0-1856" name="__codelineno-0-1856"></a>
-<a id="__codelineno-0-1857" name="__codelineno-0-1857"></a>    <span class="n">no_static_assets</span> <span class="o">=</span> <span class="p">(</span><span class="n">no_static_tables</span> <span class="ow">and</span> <span class="n">no_static_histograms</span> <span class="ow">and</span> <span class="n">no_static_xy_plots</span><span class="p">)</span>
-<a id="__codelineno-0-1858" name="__codelineno-0-1858"></a>    <span class="n">no_interactive_assets</span> <span class="o">=</span> <span class="p">(</span><span class="n">no_grafana_dashboard</span><span class="p">)</span>
-<a id="__codelineno-0-1859" name="__codelineno-0-1859"></a>    <span class="n">no_assets</span> <span class="o">=</span> <span class="n">no_static_assets</span> <span class="ow">and</span> <span class="n">no_interactive_assets</span>
-<a id="__codelineno-0-1860" name="__codelineno-0-1860"></a>
-<a id="__codelineno-0-1861" name="__codelineno-0-1861"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">no_assets</span><span class="p">:</span>
-<a id="__codelineno-0-1862" name="__codelineno-0-1862"></a>        <span class="n">assets_dir</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;assets&#39;</span><span class="p">)</span>
-<a id="__codelineno-0-1863" name="__codelineno-0-1863"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">no_interactive_assets</span><span class="p">:</span>
-<a id="__codelineno-0-1864" name="__codelineno-0-1864"></a>            <span class="n">interactive_assets_dir</span> <span class="o">=</span> <span class="n">_mkdir</span><span class="p">(</span><span class="n">assets_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;interactive&#39;</span><span class="p">))</span>
-<a id="__codelineno-0-1865" name="__codelineno-0-1865"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">no_grafana_dashboard</span><span class="p">:</span>
-<a id="__codelineno-0-1866" name="__codelineno-0-1866"></a>                <span class="n">grafana_dir</span> <span class="o">=</span> <span class="n">_mkdir</span><span class="p">(</span><span class="n">interactive_assets_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;grafana&#39;</span><span class="p">))</span>
-<a id="__codelineno-0-1867" name="__codelineno-0-1867"></a>                <span class="n">make_grafana_dashboard</span><span class="p">(</span>
-<a id="__codelineno-0-1868" name="__codelineno-0-1868"></a>                    <span class="n">products_dir</span><span class="o">=</span><span class="n">products_dir</span><span class="p">,</span>
-<a id="__codelineno-0-1869" name="__codelineno-0-1869"></a>                    <span class="n">output_dir</span><span class="o">=</span><span class="n">grafana_dir</span><span class="p">,</span>
-<a id="__codelineno-0-1870" name="__codelineno-0-1870"></a>                    <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
-<a id="__codelineno-0-1871" name="__codelineno-0-1871"></a>                    <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span>
-<a id="__codelineno-0-1872" name="__codelineno-0-1872"></a>                    <span class="n">server</span><span class="o">=</span><span class="n">server</span><span class="p">,</span>
-<a id="__codelineno-0-1873" name="__codelineno-0-1873"></a>                    <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
-<a id="__codelineno-0-1874" name="__codelineno-0-1874"></a>                <span class="p">)</span>
-<a id="__codelineno-0-1875" name="__codelineno-0-1875"></a>
-<a id="__codelineno-0-1876" name="__codelineno-0-1876"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">no_static_assets</span><span class="p">:</span>
-<a id="__codelineno-0-1877" name="__codelineno-0-1877"></a>            <span class="n">static_assets_dir</span> <span class="o">=</span> <span class="n">_mkdir</span><span class="p">(</span><span class="n">assets_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;static&#39;</span><span class="p">))</span>
-<a id="__codelineno-0-1878" name="__codelineno-0-1878"></a>            <span class="n">make_tables_and_figures</span><span class="p">(</span>
-<a id="__codelineno-0-1879" name="__codelineno-0-1879"></a>                <span class="n">products_dir</span><span class="o">=</span><span class="n">products_dir</span><span class="p">,</span>
-<a id="__codelineno-0-1880" name="__codelineno-0-1880"></a>                <span class="n">output_dir</span><span class="o">=</span><span class="n">static_assets_dir</span><span class="p">,</span>
-<a id="__codelineno-0-1881" name="__codelineno-0-1881"></a>                <span class="n">dpi</span><span class="o">=</span><span class="n">dpi_static_plots</span><span class="p">,</span>
-<a id="__codelineno-0-1882" name="__codelineno-0-1882"></a>                <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
-<a id="__codelineno-0-1883" name="__codelineno-0-1883"></a>                <span class="n">no_tables</span><span class="o">=</span><span class="n">no_static_tables</span><span class="p">,</span>
-<a id="__codelineno-0-1884" name="__codelineno-0-1884"></a>                <span class="n">no_xy_plots</span><span class="o">=</span><span class="n">no_static_xy_plots</span><span class="p">,</span>
-<a id="__codelineno-0-1885" name="__codelineno-0-1885"></a>                <span class="n">no_histograms</span><span class="o">=</span><span class="n">no_static_histograms</span><span class="p">,</span>
-<a id="__codelineno-0-1886" name="__codelineno-0-1886"></a>            <span class="p">)</span>
-<a id="__codelineno-0-1887" name="__codelineno-0-1887"></a>
-<a id="__codelineno-0-1888" name="__codelineno-0-1888"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">no_include_files</span><span class="p">:</span>
-<a id="__codelineno-0-1889" name="__codelineno-0-1889"></a>                <span class="n">make_include_files</span><span class="p">(</span>
-<a id="__codelineno-0-1890" name="__codelineno-0-1890"></a>                    <span class="n">root_dir</span><span class="o">=</span><span class="n">static_assets_dir</span><span class="p">,</span>
-<a id="__codelineno-0-1891" name="__codelineno-0-1891"></a>                    <span class="n">heading_level</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<a id="__codelineno-0-1892" name="__codelineno-0-1892"></a>                <span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-1892">1892</a></span>
+<span class="normal"><a href="#__codelineno-0-1893">1893</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1793" name="__codelineno-0-1793"></a><span class="k">def</span> <span class="nf">make_it_trendy</span><span class="p">(</span>
+<a id="__codelineno-0-1794" name="__codelineno-0-1794"></a>        <span class="n">data_product_generator</span><span class="p">:</span> <span class="n">ProductGenerator</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-1795" name="__codelineno-0-1795"></a>        <span class="n">input_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span>
+<a id="__codelineno-0-1796" name="__codelineno-0-1796"></a>        <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+<a id="__codelineno-0-1797" name="__codelineno-0-1797"></a>        <span class="n">n_procs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-1798" name="__codelineno-0-1798"></a>        <span class="n">dpi_static_plots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+<a id="__codelineno-0-1799" name="__codelineno-0-1799"></a>        <span class="n">no_static_tables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-1800" name="__codelineno-0-1800"></a>        <span class="n">no_static_xy_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-1801" name="__codelineno-0-1801"></a>        <span class="n">no_static_histograms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-1802" name="__codelineno-0-1802"></a>        <span class="n">no_grafana_dashboard</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-1803" name="__codelineno-0-1803"></a>        <span class="n">no_include_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-1804" name="__codelineno-0-1804"></a>        <span class="n">protocol</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;http&#39;</span><span class="p">,</span>
+<a id="__codelineno-0-1805" name="__codelineno-0-1805"></a>        <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
+<a id="__codelineno-0-1806" name="__codelineno-0-1806"></a>        <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8000</span><span class="p">,</span>
+<a id="__codelineno-0-1807" name="__codelineno-0-1807"></a>        <span class="n">data_products_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DATA_PRODUCTS_FNAME_DEFAULT</span><span class="p">,</span>
+<a id="__codelineno-0-1808" name="__codelineno-0-1808"></a>    <span class="p">):</span>
+<a id="__codelineno-0-1809" name="__codelineno-0-1809"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-1810" name="__codelineno-0-1810"></a><span class="sd">    Maps `data_product_generator` over `dirs_in` to produce data product JSON files in those directories.</span>
+<a id="__codelineno-0-1811" name="__codelineno-0-1811"></a><span class="sd">    Sorts the generated data products into a nested file structure starting from `dir_products`.</span>
+<a id="__codelineno-0-1812" name="__codelineno-0-1812"></a><span class="sd">    Nested folders are generated for tags that are Tuples.  Sorted data files are named according to the</span>
+<a id="__codelineno-0-1813" name="__codelineno-0-1813"></a><span class="sd">    directory from which they were loaded.</span>
+<a id="__codelineno-0-1814" name="__codelineno-0-1814"></a>
+<a id="__codelineno-0-1815" name="__codelineno-0-1815"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-1816" name="__codelineno-0-1816"></a><span class="sd">        data_product_generator (ProductGenerator | None): A callable function that returns</span>
+<a id="__codelineno-0-1817" name="__codelineno-0-1817"></a><span class="sd">            a list of data products given a working directory.</span>
+<a id="__codelineno-0-1818" name="__codelineno-0-1818"></a><span class="sd">        input_dirs (List[Path]): Directories over which to map the `product_generator`</span>
+<a id="__codelineno-0-1819" name="__codelineno-0-1819"></a><span class="sd">        output_dir (Path): Directory to which the trendify products and assets will be written.</span>
+<a id="__codelineno-0-1820" name="__codelineno-0-1820"></a><span class="sd">        n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be</span>
+<a id="__codelineno-0-1821" name="__codelineno-0-1821"></a><span class="sd">            processed sequentially (easier for debugging since the full traceback will be provided).</span>
+<a id="__codelineno-0-1822" name="__codelineno-0-1822"></a><span class="sd">            If `n_procs &gt; 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will</span>
+<a id="__codelineno-0-1823" name="__codelineno-0-1823"></a><span class="sd">            be used to load and process directories and/or tags in parallel.</span>
+<a id="__codelineno-0-1824" name="__codelineno-0-1824"></a><span class="sd">        dpi_static_plots (int = 500): Resolution of output plots when using matplotlib </span>
+<a id="__codelineno-0-1825" name="__codelineno-0-1825"></a><span class="sd">            (for `make_xy_plots==True` and/or `make_histograms==True`)</span>
+<a id="__codelineno-0-1826" name="__codelineno-0-1826"></a><span class="sd">        no_static_tables (bool): Suppresses static assets from the [`TableEntry`][trendify.API.TableEntry] products</span>
+<a id="__codelineno-0-1827" name="__codelineno-0-1827"></a><span class="sd">        no_static_xy_plots (bool): Suppresses static assets from the </span>
+<a id="__codelineno-0-1828" name="__codelineno-0-1828"></a><span class="sd">            [`XYData`][trendify.API.XYData] </span>
+<a id="__codelineno-0-1829" name="__codelineno-0-1829"></a><span class="sd">            ([Trace2D][trendify.API.Trace2D] and [Point2D][trendify.API.Point2D]) products</span>
+<a id="__codelineno-0-1830" name="__codelineno-0-1830"></a><span class="sd">        no_static_histograms (bool): Suppresses static assets from the [`HistogramEntry`][trendify.API.HistogramEntry] products</span>
+<a id="__codelineno-0-1831" name="__codelineno-0-1831"></a><span class="sd">        no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file</span>
+<a id="__codelineno-0-1832" name="__codelineno-0-1832"></a><span class="sd">        no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports</span>
+<a id="__codelineno-0-1833" name="__codelineno-0-1833"></a><span class="sd">        data_products_fname (str): File name to be used for storing generated data products</span>
+<a id="__codelineno-0-1834" name="__codelineno-0-1834"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-1835" name="__codelineno-0-1835"></a>    <span class="n">input_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_dirs</span><span class="p">)]</span>
+<a id="__codelineno-0-1836" name="__codelineno-0-1836"></a>    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+<a id="__codelineno-0-1837" name="__codelineno-0-1837"></a>
+<a id="__codelineno-0-1838" name="__codelineno-0-1838"></a>    <span class="n">make_products</span><span class="p">(</span>
+<a id="__codelineno-0-1839" name="__codelineno-0-1839"></a>        <span class="n">product_generator</span><span class="o">=</span><span class="n">data_product_generator</span><span class="p">,</span>
+<a id="__codelineno-0-1840" name="__codelineno-0-1840"></a>        <span class="n">data_dirs</span><span class="o">=</span><span class="n">input_dirs</span><span class="p">,</span>
+<a id="__codelineno-0-1841" name="__codelineno-0-1841"></a>        <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
+<a id="__codelineno-0-1842" name="__codelineno-0-1842"></a>        <span class="n">data_products_fname</span><span class="o">=</span><span class="n">data_products_fname</span><span class="p">,</span>
+<a id="__codelineno-0-1843" name="__codelineno-0-1843"></a>    <span class="p">)</span>
+<a id="__codelineno-0-1844" name="__codelineno-0-1844"></a>
+<a id="__codelineno-0-1845" name="__codelineno-0-1845"></a>    <span class="n">products_dir</span> <span class="o">=</span> <span class="n">_mkdir</span><span class="p">(</span><span class="n">output_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;products&#39;</span><span class="p">))</span>
+<a id="__codelineno-0-1846" name="__codelineno-0-1846"></a>
+<a id="__codelineno-0-1847" name="__codelineno-0-1847"></a>    <span class="c1"># Sort products</span>
+<a id="__codelineno-0-1848" name="__codelineno-0-1848"></a>    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<a id="__codelineno-0-1849" name="__codelineno-0-1849"></a>    <span class="n">sort_products</span><span class="p">(</span>
+<a id="__codelineno-0-1850" name="__codelineno-0-1850"></a>        <span class="n">data_dirs</span><span class="o">=</span><span class="n">input_dirs</span><span class="p">,</span>
+<a id="__codelineno-0-1851" name="__codelineno-0-1851"></a>        <span class="n">output_dir</span><span class="o">=</span><span class="n">products_dir</span><span class="p">,</span>
+<a id="__codelineno-0-1852" name="__codelineno-0-1852"></a>        <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
+<a id="__codelineno-0-1853" name="__codelineno-0-1853"></a>        <span class="n">data_products_fname</span><span class="o">=</span><span class="n">data_products_fname</span><span class="p">,</span>
+<a id="__codelineno-0-1854" name="__codelineno-0-1854"></a>    <span class="p">)</span>
+<a id="__codelineno-0-1855" name="__codelineno-0-1855"></a>    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<a id="__codelineno-0-1856" name="__codelineno-0-1856"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Time to sort = </span><span class="si">{</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-1857" name="__codelineno-0-1857"></a>
+<a id="__codelineno-0-1858" name="__codelineno-0-1858"></a>    <span class="n">no_static_assets</span> <span class="o">=</span> <span class="p">(</span><span class="n">no_static_tables</span> <span class="ow">and</span> <span class="n">no_static_histograms</span> <span class="ow">and</span> <span class="n">no_static_xy_plots</span><span class="p">)</span>
+<a id="__codelineno-0-1859" name="__codelineno-0-1859"></a>    <span class="n">no_interactive_assets</span> <span class="o">=</span> <span class="p">(</span><span class="n">no_grafana_dashboard</span><span class="p">)</span>
+<a id="__codelineno-0-1860" name="__codelineno-0-1860"></a>    <span class="n">no_assets</span> <span class="o">=</span> <span class="n">no_static_assets</span> <span class="ow">and</span> <span class="n">no_interactive_assets</span>
+<a id="__codelineno-0-1861" name="__codelineno-0-1861"></a>
+<a id="__codelineno-0-1862" name="__codelineno-0-1862"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">no_assets</span><span class="p">:</span>
+<a id="__codelineno-0-1863" name="__codelineno-0-1863"></a>        <span class="n">assets_dir</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;assets&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-1864" name="__codelineno-0-1864"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">no_interactive_assets</span><span class="p">:</span>
+<a id="__codelineno-0-1865" name="__codelineno-0-1865"></a>            <span class="n">interactive_assets_dir</span> <span class="o">=</span> <span class="n">_mkdir</span><span class="p">(</span><span class="n">assets_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;interactive&#39;</span><span class="p">))</span>
+<a id="__codelineno-0-1866" name="__codelineno-0-1866"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">no_grafana_dashboard</span><span class="p">:</span>
+<a id="__codelineno-0-1867" name="__codelineno-0-1867"></a>                <span class="n">grafana_dir</span> <span class="o">=</span> <span class="n">_mkdir</span><span class="p">(</span><span class="n">interactive_assets_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;grafana&#39;</span><span class="p">))</span>
+<a id="__codelineno-0-1868" name="__codelineno-0-1868"></a>                <span class="n">make_grafana_dashboard</span><span class="p">(</span>
+<a id="__codelineno-0-1869" name="__codelineno-0-1869"></a>                    <span class="n">products_dir</span><span class="o">=</span><span class="n">products_dir</span><span class="p">,</span>
+<a id="__codelineno-0-1870" name="__codelineno-0-1870"></a>                    <span class="n">output_dir</span><span class="o">=</span><span class="n">grafana_dir</span><span class="p">,</span>
+<a id="__codelineno-0-1871" name="__codelineno-0-1871"></a>                    <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
+<a id="__codelineno-0-1872" name="__codelineno-0-1872"></a>                    <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span>
+<a id="__codelineno-0-1873" name="__codelineno-0-1873"></a>                    <span class="n">server</span><span class="o">=</span><span class="n">server</span><span class="p">,</span>
+<a id="__codelineno-0-1874" name="__codelineno-0-1874"></a>                    <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+<a id="__codelineno-0-1875" name="__codelineno-0-1875"></a>                <span class="p">)</span>
+<a id="__codelineno-0-1876" name="__codelineno-0-1876"></a>
+<a id="__codelineno-0-1877" name="__codelineno-0-1877"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">no_static_assets</span><span class="p">:</span>
+<a id="__codelineno-0-1878" name="__codelineno-0-1878"></a>            <span class="n">static_assets_dir</span> <span class="o">=</span> <span class="n">_mkdir</span><span class="p">(</span><span class="n">assets_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;static&#39;</span><span class="p">))</span>
+<a id="__codelineno-0-1879" name="__codelineno-0-1879"></a>            <span class="n">make_tables_and_figures</span><span class="p">(</span>
+<a id="__codelineno-0-1880" name="__codelineno-0-1880"></a>                <span class="n">products_dir</span><span class="o">=</span><span class="n">products_dir</span><span class="p">,</span>
+<a id="__codelineno-0-1881" name="__codelineno-0-1881"></a>                <span class="n">output_dir</span><span class="o">=</span><span class="n">static_assets_dir</span><span class="p">,</span>
+<a id="__codelineno-0-1882" name="__codelineno-0-1882"></a>                <span class="n">dpi</span><span class="o">=</span><span class="n">dpi_static_plots</span><span class="p">,</span>
+<a id="__codelineno-0-1883" name="__codelineno-0-1883"></a>                <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
+<a id="__codelineno-0-1884" name="__codelineno-0-1884"></a>                <span class="n">no_tables</span><span class="o">=</span><span class="n">no_static_tables</span><span class="p">,</span>
+<a id="__codelineno-0-1885" name="__codelineno-0-1885"></a>                <span class="n">no_xy_plots</span><span class="o">=</span><span class="n">no_static_xy_plots</span><span class="p">,</span>
+<a id="__codelineno-0-1886" name="__codelineno-0-1886"></a>                <span class="n">no_histograms</span><span class="o">=</span><span class="n">no_static_histograms</span><span class="p">,</span>
+<a id="__codelineno-0-1887" name="__codelineno-0-1887"></a>            <span class="p">)</span>
+<a id="__codelineno-0-1888" name="__codelineno-0-1888"></a>
+<a id="__codelineno-0-1889" name="__codelineno-0-1889"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">no_include_files</span><span class="p">:</span>
+<a id="__codelineno-0-1890" name="__codelineno-0-1890"></a>                <span class="n">make_include_files</span><span class="p">(</span>
+<a id="__codelineno-0-1891" name="__codelineno-0-1891"></a>                    <span class="n">root_dir</span><span class="o">=</span><span class="n">static_assets_dir</span><span class="p">,</span>
+<a id="__codelineno-0-1892" name="__codelineno-0-1892"></a>                    <span class="n">heading_level</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<a id="__codelineno-0-1893" name="__codelineno-0-1893"></a>                <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -9381,8 +9167,7 @@ using matplotlib.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/trendify/API.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1747">1747</a></span>
-<span class="normal"><a href="#__codelineno-0-1748">1748</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1748">1748</a></span>
 <span class="normal"><a href="#__codelineno-0-1749">1749</a></span>
 <span class="normal"><a href="#__codelineno-0-1750">1750</a></span>
 <span class="normal"><a href="#__codelineno-0-1751">1751</a></span>
@@ -9424,50 +9209,51 @@ using matplotlib.</p>
 <span class="normal"><a href="#__codelineno-0-1787">1787</a></span>
 <span class="normal"><a href="#__codelineno-0-1788">1788</a></span>
 <span class="normal"><a href="#__codelineno-0-1789">1789</a></span>
-<span class="normal"><a href="#__codelineno-0-1790">1790</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1747" name="__codelineno-0-1747"></a><span class="k">def</span> <span class="nf">make_tables_and_figures</span><span class="p">(</span>
-<a id="__codelineno-0-1748" name="__codelineno-0-1748"></a>        <span class="n">products_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-<a id="__codelineno-0-1749" name="__codelineno-0-1749"></a>        <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-<a id="__codelineno-0-1750" name="__codelineno-0-1750"></a>        <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
-<a id="__codelineno-0-1751" name="__codelineno-0-1751"></a>        <span class="n">n_procs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-0-1752" name="__codelineno-0-1752"></a>        <span class="n">no_tables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-1753" name="__codelineno-0-1753"></a>        <span class="n">no_xy_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-1754" name="__codelineno-0-1754"></a>        <span class="n">no_histograms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-1755" name="__codelineno-0-1755"></a>    <span class="p">):</span>
-<a id="__codelineno-0-1756" name="__codelineno-0-1756"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-1757" name="__codelineno-0-1757"></a><span class="sd">    Makes CSV tables and creates plots (using matplotlib).</span>
-<a id="__codelineno-0-1758" name="__codelineno-0-1758"></a>
-<a id="__codelineno-0-1759" name="__codelineno-0-1759"></a><span class="sd">    Tags will be processed in parallel and output in nested directory structure under `output_dir`.</span>
-<a id="__codelineno-0-1760" name="__codelineno-0-1760"></a>
-<a id="__codelineno-0-1761" name="__codelineno-0-1761"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-1762" name="__codelineno-0-1762"></a><span class="sd">        products_dir (Path): Directory to which the sorted data products will be written</span>
-<a id="__codelineno-0-1763" name="__codelineno-0-1763"></a><span class="sd">        output_dir (Path): Directory to which tables and matplotlib histograms and plots will be written if</span>
-<a id="__codelineno-0-1764" name="__codelineno-0-1764"></a><span class="sd">            the appropriate boolean variables `make_tables`, `make_xy_plots`, `make_histograms` are true.</span>
-<a id="__codelineno-0-1765" name="__codelineno-0-1765"></a><span class="sd">        n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be</span>
-<a id="__codelineno-0-1766" name="__codelineno-0-1766"></a><span class="sd">            processed sequentially (easier for debugging since the full traceback will be provided).</span>
-<a id="__codelineno-0-1767" name="__codelineno-0-1767"></a><span class="sd">            If `n_procs &gt; 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will</span>
-<a id="__codelineno-0-1768" name="__codelineno-0-1768"></a><span class="sd">            be used to load and process directories and/or tags in parallel.</span>
-<a id="__codelineno-0-1769" name="__codelineno-0-1769"></a><span class="sd">        dpi (int = 500): Resolution of output plots when using matplotlib </span>
-<a id="__codelineno-0-1770" name="__codelineno-0-1770"></a><span class="sd">            (for `make_xy_plots==True` and/or `make_histograms==True`)</span>
-<a id="__codelineno-0-1771" name="__codelineno-0-1771"></a><span class="sd">        no_tables (bool): Whether or not to collect the </span>
-<a id="__codelineno-0-1772" name="__codelineno-0-1772"></a><span class="sd">            [`TableEntry`][trendify.API.TableEntry] products and write them</span>
-<a id="__codelineno-0-1773" name="__codelineno-0-1773"></a><span class="sd">            to CSV files (`&lt;tag&gt;_melted.csv` with `&lt;tag&gt;_pivot.csv` and `&lt;tag&gt;_stats.csv` when possible).</span>
-<a id="__codelineno-0-1774" name="__codelineno-0-1774"></a><span class="sd">        no_xy_plots (bool): Whether or not to plot the [`XYData`][trendify.API.XYData] products using matplotlib</span>
-<a id="__codelineno-0-1775" name="__codelineno-0-1775"></a><span class="sd">        no_histograms (bool): Whether or not to generate histograms of the </span>
-<a id="__codelineno-0-1776" name="__codelineno-0-1776"></a><span class="sd">            [`HistogramEntry`][trendify.API.HistogramEntry] products</span>
-<a id="__codelineno-0-1777" name="__codelineno-0-1777"></a><span class="sd">            using matplotlib.</span>
-<a id="__codelineno-0-1778" name="__codelineno-0-1778"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-1779" name="__codelineno-0-1779"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">no_tables</span> <span class="ow">and</span> <span class="n">no_xy_plots</span> <span class="ow">and</span> <span class="n">no_histograms</span><span class="p">):</span>
-<a id="__codelineno-0-1780" name="__codelineno-0-1780"></a>        <span class="n">product_dirs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">products_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;**/*/&#39;</span><span class="p">))</span>
-<a id="__codelineno-0-1781" name="__codelineno-0-1781"></a>        <span class="n">map_callable</span><span class="p">(</span>
-<a id="__codelineno-0-1782" name="__codelineno-0-1782"></a>            <span class="n">DataProductCollection</span><span class="o">.</span><span class="n">process_single_tag_collection</span><span class="p">,</span>
-<a id="__codelineno-0-1783" name="__codelineno-0-1783"></a>            <span class="n">product_dirs</span><span class="p">,</span>
-<a id="__codelineno-0-1784" name="__codelineno-0-1784"></a>            <span class="p">[</span><span class="n">output_dir</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
-<a id="__codelineno-0-1785" name="__codelineno-0-1785"></a>            <span class="p">[</span><span class="n">no_tables</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
-<a id="__codelineno-0-1786" name="__codelineno-0-1786"></a>            <span class="p">[</span><span class="n">no_xy_plots</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
-<a id="__codelineno-0-1787" name="__codelineno-0-1787"></a>            <span class="p">[</span><span class="n">no_histograms</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
-<a id="__codelineno-0-1788" name="__codelineno-0-1788"></a>            <span class="p">[</span><span class="n">dpi</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
-<a id="__codelineno-0-1789" name="__codelineno-0-1789"></a>            <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
-<a id="__codelineno-0-1790" name="__codelineno-0-1790"></a>        <span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-1790">1790</a></span>
+<span class="normal"><a href="#__codelineno-0-1791">1791</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1748" name="__codelineno-0-1748"></a><span class="k">def</span> <span class="nf">make_tables_and_figures</span><span class="p">(</span>
+<a id="__codelineno-0-1749" name="__codelineno-0-1749"></a>        <span class="n">products_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+<a id="__codelineno-0-1750" name="__codelineno-0-1750"></a>        <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+<a id="__codelineno-0-1751" name="__codelineno-0-1751"></a>        <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+<a id="__codelineno-0-1752" name="__codelineno-0-1752"></a>        <span class="n">n_procs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-1753" name="__codelineno-0-1753"></a>        <span class="n">no_tables</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-1754" name="__codelineno-0-1754"></a>        <span class="n">no_xy_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-1755" name="__codelineno-0-1755"></a>        <span class="n">no_histograms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-1756" name="__codelineno-0-1756"></a>    <span class="p">):</span>
+<a id="__codelineno-0-1757" name="__codelineno-0-1757"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-1758" name="__codelineno-0-1758"></a><span class="sd">    Makes CSV tables and creates plots (using matplotlib).</span>
+<a id="__codelineno-0-1759" name="__codelineno-0-1759"></a>
+<a id="__codelineno-0-1760" name="__codelineno-0-1760"></a><span class="sd">    Tags will be processed in parallel and output in nested directory structure under `output_dir`.</span>
+<a id="__codelineno-0-1761" name="__codelineno-0-1761"></a>
+<a id="__codelineno-0-1762" name="__codelineno-0-1762"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-1763" name="__codelineno-0-1763"></a><span class="sd">        products_dir (Path): Directory to which the sorted data products will be written</span>
+<a id="__codelineno-0-1764" name="__codelineno-0-1764"></a><span class="sd">        output_dir (Path): Directory to which tables and matplotlib histograms and plots will be written if</span>
+<a id="__codelineno-0-1765" name="__codelineno-0-1765"></a><span class="sd">            the appropriate boolean variables `make_tables`, `make_xy_plots`, `make_histograms` are true.</span>
+<a id="__codelineno-0-1766" name="__codelineno-0-1766"></a><span class="sd">        n_procs (int = 1): Number of processes to run in parallel.  If `n_procs==1`, directories will be</span>
+<a id="__codelineno-0-1767" name="__codelineno-0-1767"></a><span class="sd">            processed sequentially (easier for debugging since the full traceback will be provided).</span>
+<a id="__codelineno-0-1768" name="__codelineno-0-1768"></a><span class="sd">            If `n_procs &gt; 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will</span>
+<a id="__codelineno-0-1769" name="__codelineno-0-1769"></a><span class="sd">            be used to load and process directories and/or tags in parallel.</span>
+<a id="__codelineno-0-1770" name="__codelineno-0-1770"></a><span class="sd">        dpi (int = 500): Resolution of output plots when using matplotlib </span>
+<a id="__codelineno-0-1771" name="__codelineno-0-1771"></a><span class="sd">            (for `make_xy_plots==True` and/or `make_histograms==True`)</span>
+<a id="__codelineno-0-1772" name="__codelineno-0-1772"></a><span class="sd">        no_tables (bool): Whether or not to collect the </span>
+<a id="__codelineno-0-1773" name="__codelineno-0-1773"></a><span class="sd">            [`TableEntry`][trendify.API.TableEntry] products and write them</span>
+<a id="__codelineno-0-1774" name="__codelineno-0-1774"></a><span class="sd">            to CSV files (`&lt;tag&gt;_melted.csv` with `&lt;tag&gt;_pivot.csv` and `&lt;tag&gt;_stats.csv` when possible).</span>
+<a id="__codelineno-0-1775" name="__codelineno-0-1775"></a><span class="sd">        no_xy_plots (bool): Whether or not to plot the [`XYData`][trendify.API.XYData] products using matplotlib</span>
+<a id="__codelineno-0-1776" name="__codelineno-0-1776"></a><span class="sd">        no_histograms (bool): Whether or not to generate histograms of the </span>
+<a id="__codelineno-0-1777" name="__codelineno-0-1777"></a><span class="sd">            [`HistogramEntry`][trendify.API.HistogramEntry] products</span>
+<a id="__codelineno-0-1778" name="__codelineno-0-1778"></a><span class="sd">            using matplotlib.</span>
+<a id="__codelineno-0-1779" name="__codelineno-0-1779"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-1780" name="__codelineno-0-1780"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">no_tables</span> <span class="ow">and</span> <span class="n">no_xy_plots</span> <span class="ow">and</span> <span class="n">no_histograms</span><span class="p">):</span>
+<a id="__codelineno-0-1781" name="__codelineno-0-1781"></a>        <span class="n">product_dirs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">products_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;**/*/&#39;</span><span class="p">))</span>
+<a id="__codelineno-0-1782" name="__codelineno-0-1782"></a>        <span class="n">map_callable</span><span class="p">(</span>
+<a id="__codelineno-0-1783" name="__codelineno-0-1783"></a>            <span class="n">DataProductCollection</span><span class="o">.</span><span class="n">process_single_tag_collection</span><span class="p">,</span>
+<a id="__codelineno-0-1784" name="__codelineno-0-1784"></a>            <span class="n">product_dirs</span><span class="p">,</span>
+<a id="__codelineno-0-1785" name="__codelineno-0-1785"></a>            <span class="p">[</span><span class="n">output_dir</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
+<a id="__codelineno-0-1786" name="__codelineno-0-1786"></a>            <span class="p">[</span><span class="n">no_tables</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
+<a id="__codelineno-0-1787" name="__codelineno-0-1787"></a>            <span class="p">[</span><span class="n">no_xy_plots</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
+<a id="__codelineno-0-1788" name="__codelineno-0-1788"></a>            <span class="p">[</span><span class="n">no_histograms</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
+<a id="__codelineno-0-1789" name="__codelineno-0-1789"></a>            <span class="p">[</span><span class="n">dpi</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">product_dirs</span><span class="p">),</span>
+<a id="__codelineno-0-1790" name="__codelineno-0-1790"></a>            <span class="n">n_procs</span><span class="o">=</span><span class="n">n_procs</span><span class="p">,</span>
+<a id="__codelineno-0-1791" name="__codelineno-0-1791"></a>        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

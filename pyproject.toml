@@ -19,7 +19,7 @@ dependencies = [
   "waitress",
 ]
 name = "trendify"
-version = "1.0.8"
+version = "1.0.9"
 requires-python = ">= 3.9"
 authors = [
   {name = "Talbot Knighton", email = "talbotknighton@gmail.org"},
