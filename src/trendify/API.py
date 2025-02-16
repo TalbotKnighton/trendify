@@ -21,7 +21,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import time
 from typing import Union, List, Iterable, Any, Callable, Tuple, Type, Optional, TypeVar, Hashable
-from typing import Self
+try:
+    from typing import Self
+except:
+    from typing_extensions import Self
 import warnings
 
 # Common imports
