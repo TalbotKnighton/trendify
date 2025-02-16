@@ -5,7 +5,8 @@ from __future__ import annotations
 
 # Standard imports
 from pathlib import Path
-from strenum import StrEnum, auto
+from enum import auto
+from strenum import StrEnum
 
 # Common imports
 import numpy as np

@@ -15,7 +15,8 @@ from __future__ import annotations
 # Standard imports
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
-from strenum import StrEnum, auto
+from enum import auto
+from strenum import StrEnum
 from itertools import chain
 from pathlib import Path
 import matplotlib.pyplot as plt
