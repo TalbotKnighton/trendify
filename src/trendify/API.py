@@ -36,7 +36,7 @@ from numpydantic import NDArray, Shape
 from pydantic import BaseModel, ConfigDict, InstanceOf, SerializeAsAny, computed_field, model_validator
 
 # Local imports
-import grafana_api as gapi
+# import grafana_api as gapi
 
 __all__ = [
     'ProductList',
@@ -1097,7 +1097,7 @@ class DataProductCollection(BaseModel):
             dir_in (Path): Directory from which to read data products (should be sorted first)
             panel_dir (Path): Where to put the panel information
         """
-
+        import grafana_api as gapi
         collection = cls.collect_from_all_jsons(dir_in)
         panel_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1716,6 +1716,7 @@ def make_grafana_dashboard(
         port: int,
         n_procs: int = 1,
     ):
+    import grafana_api as gapi
     """
     Makes a JSON file to import to Grafana for displaying tagged data tables, histograms and XY plots.
 
