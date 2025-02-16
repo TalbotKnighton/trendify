@@ -46,7 +46,7 @@ class ScalarInput(Input):
 
     Attributes:
         name (str): Name of the input
-        value (float|int|bool)
+        value (float|int|bool): Scalar input value
     """
     # Configuration
     model_config = ConfigDict(arbitrary_types_allowed=True, extra='allow')
