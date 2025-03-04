@@ -1,0 +1,10 @@
+row,col,value,unit
+Normal,Mean,0.01,
+Normal,Std Dev,1.02,
+Normal,Skewness,0.05,
+Uniform,Mean,0.00,
+Uniform,Std Dev,1.15,
+Uniform,Skewness,0.00,
+Exponential,Mean,1.00,
+Exponential,Std Dev,1.00,
+Exponential,Skewness,2.00,

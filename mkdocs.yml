@@ -49,7 +49,9 @@ theme:
 nav:
   - Welcome: index.md
   - Motivation: motivation.md
-  - Example: example.md
+  - Examples: 
+    - Basic: example.md
+    - Claude: ai_examples.md
   - Recipe: recipe.md
   - API and CLI: api_and_cli.md
   - Code Reference: reference/
