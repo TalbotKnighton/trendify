@@ -27,13 +27,14 @@ try:
 except:
     from typing_extensions import Self
 import warnings
+from enum import Enum
 
 # Common imports
 from filelock import FileLock
 import numpy as np
 import pandas as pd
 from numpydantic import NDArray, Shape
-from pydantic import BaseModel, ConfigDict, InstanceOf, SerializeAsAny, computed_field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, InstanceOf, SerializeAsAny, computed_field, model_validator
 
 # Local imports
 # import grafana_api as gapi
@@ -46,7 +47,9 @@ __all__ = [
     'Trace2D', # XY Data
     'Point2D', # XY Data
     'TableEntry', 
-    'HistogramEntry', 
+    'HistogramEntry',
+    'LineOrientation',
+    'AxLine',
     # Stylers
     'HistogramStyle', 
     'Pen', 
@@ -646,6 +649,48 @@ class Point2D(XYData):
     
     model_config = ConfigDict(extra='forbid')
 
+class LineOrientation(Enum):
+    """Defines orientation for axis lines
+    
+    Attributes:
+        HORIZONTAL (LineOrientation): Horizontal line
+        VERTICAL (LineOrientation): Vertical line
+    """
+    HORIZONTAL = "horizontal"
+    VERTICAL = "vertical"
+
+class AxLine(PlottableData2D):
+    """
+    Defines a horizontal or vertical line to be drawn on a plot.
+
+    Attributes:
+        value (float): Value at which to draw the line (x-value for vertical, y-value for horizontal)
+        orientation (LineOrientation): Whether line should be horizontal or vertical
+        pen (Pen): Style and label information for drawing to matplotlib axes
+        tags (Tags): Tags to be used for sorting data
+        metadata (dict[str, str]): A dictionary of metadata
+    """
+    value: float
+    orientation: LineOrientation
+    pen: Pen = Pen()
+    
+    model_config = ConfigDict(extra='forbid')
+
+    def plot_to_ax(self, ax: plt.Axes):
+        """
+        Plots line to matplotlib axes object.
+
+        Args:
+            ax (plt.Axes): axes to which line should be plotted
+        """
+        match self.orientation:
+            case LineOrientation.HORIZONTAL:
+                ax.axhline(y=self.value, **self.pen.as_scatter_plot_kwargs())
+            case LineOrientation.VERTICAL:
+                ax.axvline(x=self.value, **self.pen.as_scatter_plot_kwargs())
+            case _:
+                print(f'Unrecognized line orientation {self.orientation}')
+        
 class HistogramStyle(HashableBase):
     """
     Label and style data for generating histogram bars
@@ -692,7 +737,7 @@ class HistogramEntry(PlottableData2D):
     """
     value: float | str
     tags: Tags
-    style: HistogramStyle = HistogramStyle()
+    style: HistogramStyle | None = Field(default_factory=HistogramStyle)
 
     model_config = ConfigDict(extra='forbid')
 
@@ -1009,7 +1054,7 @@ class DataProductCollection(BaseModel):
             print(f'No results found in {dir_in = }')
 
     @classmethod
-    def process_single_tag_collection(
+    def process_collection(
             cls,
             dir_in: Path,
             dir_out: Path,
@@ -1036,49 +1081,69 @@ class DataProductCollection(BaseModel):
 
         if collection is not None:
 
-            [tag] = collection.get_tags()
+            for tag in collection.get_tags():
+            # tags = collection.get_tags()
+            # try:
+            #     [tag] = collection.get_tags()
+            # except:
+            #     breakpoint()
 
-            if not no_tables:
+                if not no_tables:
+                    
+                    table_entries: List[TableEntry] = collection.get_products(tag=tag, object_type=TableEntry).elements
+
+                    if table_entries:
+                        print(f'\n\nMaking tables for {tag = }\n')
+                        TableBuilder.process_table_entries(
+                            tag=tag,
+                            table_entries=table_entries,
+                            out_dir=dir_out
+                        )
+                        print(f'\nFinished tables for {tag = }\n')
+
+                if not no_xy_plots:
+
+                    traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
+                    points: List[Point2D] = collection.get_products(tag=tag, object_type=Point2D).elements
+                    axlines: List[AxLine] = collection.get_products(tag=tag, object_type=AxLine).elements  # Add this line
+
+                    if points or traces or axlines:  # Update condition
+                        print(f'\n\nMaking xy plot for {tag = }\n')
+                        XYDataPlotter.handle_points_and_traces(
+                            tag=tag,
+                            points=points,
+                            traces=traces,
+                            axlines=axlines,  # Add this parameter
+                            dir_out=dir_out,
+                            dpi=dpi,
+                        )
+                        print(f'\nFinished xy plot for {tag = }\n')
+                        
+                    # traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
+                    # points: List[Point2D] = collection.get_products(tag=tag, object_type=Point2D).elements
+                    # if points or traces:
+                    #     print(f'\n\nMaking xy plot for {tag = }\n')
+                    #     XYDataPlotter.handle_points_and_traces(
+                    #         tag=tag,
+                    #         points=points,
+                    #         traces=traces,
+                    #         dir_out=dir_out,
+                    #         dpi=dpi,
+                    #     )
+                    #     print(f'\nFinished xy plot for {tag = }\n')
                 
-                table_entries: List[TableEntry] = collection.get_products(tag=tag, object_type=TableEntry).elements
+                if not no_histograms:
+                    histogram_entries: List[HistogramEntry] = collection.get_products(tag=tag, object_type=HistogramEntry).elements
 
-                if table_entries:
-                    print(f'\n\nMaking tables for {tag = }\n')
-                    TableBuilder.process_table_entries(
-                        tag=tag,
-                        table_entries=table_entries,
-                        out_dir=dir_out
-                    )
-                    print(f'\nFinished tables for {tag = }\n')
-
-            if not no_xy_plots:
-                
-                traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
-                points: List[Point2D] = collection.get_products(tag=tag, object_type=Point2D).elements
-
-                if points or traces:
-                    print(f'\n\nMaking xy plot for {tag = }\n')
-                    XYDataPlotter.handle_points_and_traces(
-                        tag=tag,
-                        points=points,
-                        traces=traces,
-                        dir_out=dir_out,
-                        dpi=dpi,
-                    )
-                    print(f'\nFinished xy plot for {tag = }\n')
-            
-            if not no_histograms:
-                histogram_entries: List[HistogramEntry] = collection.get_products(tag=tag, object_type=HistogramEntry).elements
-
-                if histogram_entries:
-                    print(f'\n\nMaking histogram for {tag = }\n')
-                    Histogrammer.handle_histogram_entries(
-                        tag=tag,
-                        histogram_entries=histogram_entries,
-                        dir_out=dir_out,
-                        dpi=dpi
-                    )
-                    print(f'\nFinished histogram for {tag = }\n')
+                    if histogram_entries:
+                        print(f'\n\nMaking histogram for {tag = }\n')
+                        Histogrammer.handle_histogram_entries(
+                            tag=tag,
+                            histogram_entries=histogram_entries,
+                            dir_out=dir_out,
+                            dpi=dpi
+                        )
+                        print(f'\nFinished histogram for {tag = }\n')
 
 
     @classmethod
@@ -1284,16 +1349,18 @@ class XYDataPlotter:
             tag: Tag,
             points: List[Point2D],
             traces: List[Trace2D],
+            axlines: List[AxLine],  # Add this parameter
             dir_out: Path,
             dpi: int,
         ):
         """
-        Plots points and traces, formats figure, saves figure, and closes matplotlinb figure.
+        Plots points, traces, and axlines, formats figure, saves figure, and closes matplotlinb figure.
 
         Args:
             tag (Tag): Tag  corresponding to the provided points and traces
             points (List[Point2D]): Points to be scattered
             traces (List[Trace2D]): List of traces to be plotted
+            axlines (List[AxLine]): List of axis lines to be plotted
             dir_out (Path): directory to output the plot
             dpi (int): resolution of plot
         """
@@ -1312,6 +1379,10 @@ class XYDataPlotter:
         for trace in traces:
             trace.plot_to_ax(saf.ax)
 
+        # Add plotting of axlines
+        for axline in axlines:
+            axline.plot_to_ax(saf.ax)
+        
         formats = list(set([p.format2d for p in points] + [t.format2d for t in traces]))
         format2d = Format2D.union_from_iterable(formats)
         saf.apply_format(format2d)
@@ -1385,19 +1456,22 @@ class TableBuilder:
         """
         melted = pd.DataFrame([t.get_entry_dict() for t in table_entries])
         pivot = TableEntry.pivot_table(melted=melted)
-        if pivot is None:
-            print(f'Could not generate pivot table for {tag = }')
-        else:
-            stats = cls.get_stats_table(df=pivot)
 
         save_path_partial = out_dir.joinpath(*tuple(atleast_1d(tag)))
         save_path_partial.parent.mkdir(exist_ok=True, parents=True)
         print(f'Saving to {str(save_path_partial)}_*.csv')
 
         melted.to_csv(save_path_partial.with_stem(save_path_partial.stem + '_melted').with_suffix('.csv'), index=False)
+        
         if pivot is not None:
             pivot.to_csv(save_path_partial.with_stem(save_path_partial.stem + '_pivot').with_suffix('.csv'), index=True)
-            stats.to_csv(save_path_partial.with_stem(save_path_partial.stem + '_stats').with_suffix('.csv'), index=True)
+        
+            try:
+                stats = cls.get_stats_table(df=pivot)
+                if not stats.empty and not stats.isna().all().all():
+                    stats.to_csv(save_path_partial.with_stem(save_path_partial.stem + '_stats').with_suffix('.csv'), index=True)
+            except Exception as e:
+                print(f'Could not generate pivot table for {tag = }. Error: {str(e)}')
     
     @classmethod
     def get_stats_table(
@@ -1414,15 +1488,18 @@ class TableBuilder:
             (pd.DataFrame): Dataframe having statistics (column headers) for each of the columns
                 of the input `df`.  The columns of `df` will be the row indices of the stats table.
         """
+        # Try to convert to numeric, coerce errors to NaN
+        numeric_df = df.apply(pd.to_numeric, errors='coerce')
+        
         stats = {
-            'min': df.min(axis=0),
-            'mean': df.mean(axis=0),
-            'max': df.max(axis=0),
-            'sigma3': df.std(axis=0)*3,
+            'min': numeric_df.min(axis=0),
+            'mean': numeric_df.mean(axis=0),
+            'max': numeric_df.max(axis=0),
+            'sigma3': numeric_df.std(axis=0)*3,
         }
-        df = pd.DataFrame(stats, index=df.columns)
-        df.index.name = 'Name'
-        return df
+        df_stats = pd.DataFrame(stats, index=df.columns)
+        df_stats.index.name = 'Name'
+        return df_stats
 
 class Histogrammer:
     """
@@ -1780,7 +1857,7 @@ def make_tables_and_figures(
     if not (no_tables and no_xy_plots and no_histograms):
         product_dirs = list(products_dir.glob('**/*/'))
         map_callable(
-            DataProductCollection.process_single_tag_collection,
+            DataProductCollection.process_collection,
             product_dirs,
             [output_dir]*len(product_dirs),
             [no_tables]*len(product_dirs),

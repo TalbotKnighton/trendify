@@ -1,3 +1,10 @@
 **/workdir/
 **/__pycache__/**/*
 **/*.egg*/
+**/*.egg-info/**
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.pyz
+dist/
+build/
