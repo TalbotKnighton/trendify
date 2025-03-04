@@ -1,5 +1,10 @@
 # Trendify Examples
 
+
+!!! warning
+
+    This particular page was AI-generated and not yet tested.  Use it for ideas, but trust the rest of the documentation more until this warning is removed.
+
 This guide demonstrates how to use the various data products in Trendify. We'll create example data, generate different types of data products, and show how to process them.
 
 ## Setup
@@ -168,12 +173,14 @@ make_it_trendy(
 ```
 
 After running this code, you'll find:
+
 - Generated plots in the output directory
 - CSV files with table data
 - Histogram plots
 - A organized structure based on the tags you used
 
 The plots will include:
+
 - The sine wave with scattered points
 - Reference lines (horizontal at y=0 and vertical at x=5)
 - A histogram of the normal distribution
@@ -184,6 +191,7 @@ Each plot will be properly formatted with titles, labels, and legends as specifi
 ## Viewing Results
 
 You can find your results in the following locations:
+
 - `example_dir/output/assets/static/` - Static plots and tables
 - `example_dir/output/assets/interactive/` - Interactive Grafana dashboard configuration (if enabled)
 - `example_dir/output/products/` - Sorted JSON files containing the data products
