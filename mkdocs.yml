@@ -51,7 +51,7 @@ nav:
   - Motivation: motivation.md
   - Examples: 
     - Basic: example.md
-    - Claude: ai_examples.md
+    - More: more_examples.md
   - Recipe: recipe.md
   - API and CLI: api_and_cli.md
   - Code Reference: reference/

@@ -294,6 +294,7 @@ class TrendifyDirectory:
         """
         return FileManager(arg)
 
+    
 def trendify():
     """
     Defines the command line interface script installed with python package.
@@ -308,7 +309,9 @@ def trendify():
     )
     actions = parser.add_subparsers(title='Sub Commands', dest='command', metavar='')
 
-    output_dir = TrendifyDirectory('o', 'output-directory')
+    short_flag = 'o'
+    full_flag = 'output-directory'
+    output_dir = TrendifyDirectory(short_flag, full_flag)
     ''' Products '''
     ### Products Make ###
     products_make = actions.add_parser('products-make', help='Makes products or assets')
@@ -374,6 +377,21 @@ def trendify():
     make_grafana.add_argument('--protocol', type=str, help='What communication protocol is used to serve the data on', default='http')
     make_grafana.add_argument('--host', type=str, help='What addres to serve the data to', default='0.0.0.0')
     make_grafana.add_argument('--port', type=int, help='What port to serve the data on', default=8000)
+    
+    # Gallery
+    make_gallery = make_actions.add_parser('gallery', help='Generates a gallery of examples')
+    # output_dir.add_argument(make_gallery)
+    make_gallery.add_argument(
+        f'-{short_flag}',
+        f'--{full_flag}',
+        type=Path,
+        required=False,
+        help=(
+            'Sepcify output root directory to which the gallery data, products, and assets will be written. '
+            'Defaults to current working directory'
+        ),
+        default='./gallery/',
+    )
 
     # Test
     args = parser.parse_args()
@@ -420,47 +438,51 @@ def trendify():
                 case _:
                     raise NotImplementedError
         case 'make':
-            um = UserMethod.get_from_namespace(args)
-            ip = InputDirectories.get_from_namespace(args)
-            np = NProcs.get_from_namespace(args)
-            td = output_dir.get_from_namespace(args)
-            fn = DataProductsFileName.get_from_namespace(args)
-            match args.target:
-                case 'static':
-                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np, data_products_fname=fn)
-                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np, data_products_fname=fn)
-                    API.make_tables_and_figures(products_dir=td.products_dir, output_dir=td.static_assets_dir, n_procs=np)
-                case 'grafana':
-                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np, data_products_fname=fn)
-                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np, data_products_fname=fn)
-                    protocol: str = args.protocol
-                    h: str = args.host
-                    p: int = args.port
-                    API.make_grafana_dashboard(
-                        products_dir=td.products_dir,
-                        output_dir=td.grafana_dir,
-                        protocol=protocol,
-                        host=h,
-                        port=p,
-                        n_procs=np,
-                    )
-                    TrendifyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
-                case 'all':
-                    API.make_products(product_generator=um, data_dirs=ip, n_procs=np, data_products_fname=fn)
-                    API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np, data_products_fname=fn)
-                    protocol: str = args.protocol
-                    h: str = args.host
-                    p: int = args.port
-                    API.make_grafana_dashboard(
-                        products_dir=td.products_dir,
-                        output_dir=td.grafana_dir,
-                        protocol=protocol,
-                        host=h,
-                        port=p,
-                        n_procs=np,
-                    )
-                    API.make_tables_and_figures(products_dir=td.products_dir, output_dir=td.static_assets_dir, n_procs=np)
-                    TrendifyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
+            if args.target == 'gallery':
+                from trendify.gallery import make_gallery
+                make_gallery(Path(getattr(args, full_flag.replace('-', '_'), '.')))
+            else:
+                um = UserMethod.get_from_namespace(args)
+                ip = InputDirectories.get_from_namespace(args)
+                np = NProcs.get_from_namespace(args)
+                td = output_dir.get_from_namespace(args)
+                fn = DataProductsFileName.get_from_namespace(args)
+                match args.target:
+                    case 'static':
+                        API.make_products(product_generator=um, data_dirs=ip, n_procs=np, data_products_fname=fn)
+                        API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np, data_products_fname=fn)
+                        API.make_tables_and_figures(products_dir=td.products_dir, output_dir=td.static_assets_dir, n_procs=np)
+                    case 'grafana':
+                        API.make_products(product_generator=um, data_dirs=ip, n_procs=np, data_products_fname=fn)
+                        API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np, data_products_fname=fn)
+                        protocol: str = args.protocol
+                        h: str = args.host
+                        p: int = args.port
+                        API.make_grafana_dashboard(
+                            products_dir=td.products_dir,
+                            output_dir=td.grafana_dir,
+                            protocol=protocol,
+                            host=h,
+                            port=p,
+                            n_procs=np,
+                        )
+                        TrendifyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
+                    case 'all':
+                        API.make_products(product_generator=um, data_dirs=ip, n_procs=np, data_products_fname=fn)
+                        API.sort_products(data_dirs=ip, output_dir=td.products_dir, n_procs=np, data_products_fname=fn)
+                        protocol: str = args.protocol
+                        h: str = args.host
+                        p: int = args.port
+                        API.make_grafana_dashboard(
+                            products_dir=td.products_dir,
+                            output_dir=td.grafana_dir,
+                            protocol=protocol,
+                            host=h,
+                            port=p,
+                            n_procs=np,
+                        )
+                        API.make_tables_and_figures(products_dir=td.products_dir, output_dir=td.static_assets_dir, n_procs=np)
+                        TrendifyProductServerLocal.get_new(products_dir=td.products_dir, name=__name__).run(host=h, port=p)
                     
 
     # args = _Args.from_args(args)
