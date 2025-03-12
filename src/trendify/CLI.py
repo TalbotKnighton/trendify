@@ -295,11 +295,15 @@ class TrendifyDirectory:
         return FileManager(arg)
 
     
-def trendify():
+def trendify(*pargs):
     """
     Defines the command line interface script installed with python package.
 
     Run the help via `trendify -h`.
+
+    Args:
+        *pargs (list[Any]): List of flags and arguments to pass to commandline.
+            Simulates running from commandline in pythong script.
     """
 
     # Main parser
@@ -394,7 +398,10 @@ def trendify():
     )
 
     # Test
-    args = parser.parse_args()
+    if pargs:
+        args = parser.parse_args(*pargs)
+    else:
+        args = parser.parse_args()
     match args.command:
         case 'products-make':
             API.make_products(
