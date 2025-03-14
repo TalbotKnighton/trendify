@@ -16,6 +16,7 @@ from __future__ import annotations
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from enum import auto
+import os
 from strenum import StrEnum
 from itertools import chain
 from pathlib import Path
@@ -28,8 +29,11 @@ except:
     from typing_extensions import Self
 import warnings
 from enum import Enum
+import traceback
+import logging
 
 # Common imports
+import dash
 from filelock import FileLock
 import numpy as np
 import pandas as pd
@@ -38,6 +42,7 @@ from pydantic import BaseModel, ConfigDict, Field, InstanceOf, SerializeAsAny, c
 
 # Local imports
 # import grafana_api as gapi
+logger = logging.getLogger(__name__)
 
 __all__ = [
     'ProductList',
@@ -64,6 +69,7 @@ __all__ = [
     'make_include_files',
     # combined process
     'make_it_trendy',
+    'serve_products_to_plotly_dashboard',
 ]
 
 class ProductType(StrEnum):
@@ -785,7 +791,8 @@ class TableEntry(DataProduct):
         """
         try:
             result = melted.pivot(index='row', columns='col', values='value')
-        except ValueError:
+        except ValueError as e:
+            logger.debug(traceback.format_exc())
             result = None
         return result
     
@@ -880,31 +887,60 @@ class DataProductCollection(BaseModel):
         """
         self.elements.extend(flatten(products))
 
-    # def convert_traces_to_points(self):
-    #     constructor = type(self)
-    #     unchanged_elements = self.drop_products(object_type=Trace2D).elements
-    #     traces: List[Trace2D] = self.get_products(object_type=Trace2D).elements
-    #     trace_points = [t.propagate_format2d_and_pen for t in traces]
-    #     return constructor(elements=unchanged_elements)
+    def generate_plotly_dashboard(
+            self, 
+            title: str = 'Trendify Autodash', 
+            debug: bool = False,
+        ) -> dash.Dash:
+        from trendify.plotly_dashboard import generate_plotly_dashboard
+        return generate_plotly_dashboard(
+            collection=self,
+            title=title,
+            debug=debug,
+        )
     
-    # @classmethod
-    # def get_tags_from_file(cls, subdir: Path):
-    #     """
-    #     DEPRICATED
+    def serve_plotly_dashboard(
+            self, 
+            title: str = "Trendify Autodash",
+            host: str = '127.0.0.1',
+            port: int = 8000,
+            debug: bool = False,
+        ):
+        app = self.generate_plotly_dashboard(
+            title=title,
+            debug=debug,
+        )
+        if not debug:
+            try:
+                import waitress
+                # Try to use waitress if available (a production WSGI server)
+                os.environ['FLASK_ENV'] = 'production'  # This reduces some of the output
+                print(f"Starting production server with waitress on http://{host}:{port}")
+                waitress.serve(app.server, host=host, port=port)
+            except ImportError:
+                # Fall back to development server with a message about installing waitress
+                print("Warning: 'waitress' package not found. For production use, install it with:")
+                print("pip install waitress")
+                print(f"Starting development server on {host}:{port}")
+                app.run_server(debug=debug, host=host, port=port)
+        else:
+            # Use Flask development server
+            app.run_server(debug=debug, host=host, port=port)
+        
+    @classmethod
+    def collect_and_serve_plotly_dashboard(
+            cls: DataProductCollection,
+            *dirs: Path, 
+            recursive: bool = False,
+            title: str = "Trendify Autodash",
+            host: str = '127.0.0.1',
+            port: int = 8000,
+            debug: bool = False,
+            data_products_filename: str = DATA_PRODUCTS_FNAME_DEFAULT,
+        ) -> tuple[DataProductCollection, dash.Dash]:
+        collection = cls.collect_from_all_jsons(*dirs, recursive=recursive, data_products_filename=data_products_filename)
+        collection.generate_plotly_dashboard(title=title, debug=debug).run(debug=debug, host=host, port=port)
 
-    #     Reads file and returns the tags in each type of tag set.
-
-    #     Returns:
-    #         (TagSets): a data class holding the tags of each type in set objects.
-    #     """
-    #     collection = DataProductCollection.model_validate_json(subdir.joinpath(DATA_PRODUCTS_FNAME).read_text())
-    #     tags = TagSets(
-    #         XYData=collection.get_tags(XYData), 
-    #         TableEntry=collection.get_tags(TableEntry),
-    #         HistogramEntry=collection.get_tags(HistogramEntry),
-    #     )
-    #     return tags
-    
     def drop_products(self, tag: Tag | None = None, object_type: Type[R] | None = None) -> Self[R]:
         """
         Removes products matching `tag` and/or `object_type` from collection elements.
@@ -970,7 +1006,7 @@ class DataProductCollection(BaseModel):
         return cls(elements=list(flatten(chain(c.elements for c in collections))))
     
     @classmethod
-    def collect_from_all_jsons(cls, *dirs: Path, recursive: bool = False):
+    def collect_from_all_jsons(cls, *dirs: Path, recursive: bool = False, data_products_filename: str|None = '*.json'):
         """
         Loads all products from JSONs in the given list of directories.  
         If recursive is set to `True`, the directories will be searched recursively 
@@ -986,9 +1022,9 @@ class DataProductCollection(BaseModel):
                 Otherwise, returns None if no product JSON files were found.
         """
         if not recursive:
-            jsons: List[Path] = list(flatten(chain(list(d.glob('*.json')) for d in dirs)))
+            jsons: List[Path] = list(flatten(chain(list(d.glob(data_products_filename)) for d in dirs)))
         else:
-            jsons: List[Path] = list(flatten(chain(list(d.glob(f'**/*.json')) for d in dirs)))
+            jsons: List[Path] = list(flatten(chain(list(d.glob(f'**/{data_products_filename}')) for d in dirs)))
         if jsons:
             return cls.union(
                 *tuple(
@@ -1022,7 +1058,6 @@ class DataProductCollection(BaseModel):
             print(f'Sorting tagged data from dir {n}/{len_dirs}', end=f'\r')
             cls.sort_by_tags_single_directory(dir_in=dir_in, dir_out=dir_out, data_products_fname=data_products_fname)
 
-    
     @classmethod
     def sort_by_tags_single_directory(cls, dir_in: Path, dir_out: Path, data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT):
         """
@@ -1144,7 +1179,6 @@ class DataProductCollection(BaseModel):
                             dpi=dpi
                         )
                         print(f'\nFinished histogram for {tag = }\n')
-
 
     @classmethod
     def make_grafana_panels(
@@ -1968,3 +2002,21 @@ def make_it_trendy(
                     root_dir=static_assets_dir,
                     heading_level=2,
                 )
+    
+def serve_products_to_plotly_dashboard(
+        *dirs: Path,
+        title: str = 'Trendify Autodash',
+        host: str = '127.0.0.1',
+        port: int = 8000,
+        debug: bool = False,
+        data_products_filename: str = DATA_PRODUCTS_FNAME_DEFAULT,
+    ):
+    """
+    """
+    collection = DataProductCollection.collect_from_all_jsons(*dirs, data_products_filename=data_products_filename)
+    collection.serve_plotly_dashboard(
+        title=title,
+        debug=debug, 
+        host=host, 
+        port=port,
+    )
