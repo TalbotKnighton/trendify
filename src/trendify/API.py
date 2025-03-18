@@ -764,7 +764,7 @@ class TableEntry(DataProduct):
     row: float | str
     col: float | str
     value: float | str | bool
-    unit: str | None
+    unit: str | None = None
     
     model_config = ConfigDict(extra='forbid')
 

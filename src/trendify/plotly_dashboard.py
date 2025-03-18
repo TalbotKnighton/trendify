@@ -113,42 +113,7 @@ class PlotlyDashboardGenerator:
         self._register_callbacks()
         
         return self.app
-    
-    def _create_app_layout(self, title: str, tab_contents: List[Dict]) -> html.Div:
-        """Create the main application layout."""
-        if not tab_contents:
-            return html.Div([
-                html.H1(title),
-                html.Div("No data products found to visualize.")
-            ])
-        
-        tabs = []
-        tab_content_divs = []
-        
-        for tab in tab_contents:
-            tabs.append(dcc.Tab(label=tab['label'], value=tab['value']))
-            tab_content_divs.append(
-                html.Div(
-                    tab['content'],
-                    id=f"content-{tab['value']}",
-                    style={'display': 'none'}
-                )
-            )
-        
-        return html.Div([
-            html.H1(title),
-            dcc.Tabs(
-                id='tabs',
-                value=tab_contents[0]['value'],
-                children=tabs
-            ),
-            html.Div(id='tab-content', children=tab_content_divs),
-            
-            # Stores
-            dcc.Store(id='active-tab', data=tab_contents[0]['value']),
-            dcc.Store(id='color-maps'),
-        ])
-    
+
     def _create_tab_content(self, tag_str: str) -> List[html.Div]:
         """Create content for a single tab."""
         data = self.tag_data[tag_str]
@@ -645,23 +610,138 @@ class PlotlyDashboardGenerator:
         
         fig.update_layout(**layout_args)
         return fig
-    
+
+    def _create_app_layout(self, title: str, tab_contents: List[Dict]) -> html.Div:
+        """Create the main application layout with category-based tag selection."""
+        if not tab_contents:
+            return html.Div([
+                html.H1(title),
+                html.Div("No data products found to visualize.")
+            ])
+        
+        # Extract categories from tag names
+        # Assuming tag structure might be like 'category/tag_name' or just 'tag_name'
+        categories = set()
+        tag_categories = {}
+        
+        for tab in tab_contents:
+            tag_name = tab['label']
+            parts = tag_name.split('/')
+            
+            if len(parts) > 1:
+                # Tag has a category prefix
+                category = parts[0]
+                tag_display = '/'.join(parts[1:])  # Use remaining parts as the display name
+            else:
+                # Tag has no category, put it in "General"
+                category = "General"
+                tag_display = tag_name
+                
+            categories.add(category)
+            if category not in tag_categories:
+                tag_categories[category] = []
+                
+            tag_categories[category].append({
+                'label': tag_display,
+                'value': tab['value'],
+                'content': tab['content']
+            })
+        
+        # Sort categories
+        sorted_categories = sorted(list(categories))
+        
+        # Create dropdown options for categories
+        category_options = [{'label': cat, 'value': cat} for cat in sorted_categories]
+        
+        # Default selections
+        default_category = sorted_categories[0] if sorted_categories else None
+        default_tag = tag_categories[default_category][0]['value'] if default_category and tag_categories[default_category] else None
+        
+        # Create content divs for each tag - properly set the style during creation
+        content_divs = []
+        for i, tab in enumerate(tab_contents):
+            # Set the first one to be visible, all others hidden
+            display_style = {'display': 'block'} if i == 0 else {'display': 'none'}
+            
+            content_divs.append(
+                html.Div(
+                    tab['content'],
+                    id=f"content-{tab['value']}",
+                    style=display_style  # Set style directly during creation
+                )
+            )
+        
+        return html.Div([
+            html.H1(title),
+            html.Div([
+                # Category selection
+                html.Div([
+                    html.Label("Category:"),
+                    dcc.Dropdown(
+                        id='category-selector',
+                        options=category_options,
+                        value=default_category,
+                        clearable=False,
+                        style={'width': '100%'}
+                    )
+                ], style={'width': '45%', 'display': 'inline-block', 'marginRight': '5%'}),
+                
+                # Tag selection
+                html.Div([
+                    html.Label("Tag:"),
+                    dcc.Dropdown(
+                        id='tag-selector',
+                        # Options will be set by callback
+                        clearable=False,
+                        style={'width': '100%'}
+                    )
+                ], style={'width': '45%', 'display': 'inline-block'}),
+            ], style={'margin': '10px 0', 'width': '100%'}),
+            
+            html.Div(id='tag-content-container', children=content_divs),
+            
+            # Stores
+            dcc.Store(id='active-tag', data=default_tag),
+            dcc.Store(id='tag-categories', data=tag_categories),
+            dcc.Store(id='color-maps'),
+        ])
     def _register_callbacks(self):
         """Register all the callbacks for the dashboard."""
-        # Tab switching callback
+        # Category change callback - updates the tag dropdown options
         @self.app.callback(
-            [Output('active-tab', 'data')] + 
-            [Output(f'content-{tag}', 'style') for tag in self.tag_data.keys()],
-            [Input('tabs', 'value')]
+            [Output('tag-selector', 'options'),
+            Output('tag-selector', 'value')],
+            [Input('category-selector', 'value')],
+            [State('tag-categories', 'data')]
         )
-        def switch_tab(tab_value):
+        def update_tag_options(selected_category, tag_categories):
+            if not selected_category or selected_category not in tag_categories:
+                return [], None
+                
+            tag_options = [
+                {'label': tag['label'], 'value': tag['value']}
+                for tag in tag_categories[selected_category]
+            ]
+            
+            # Set default tag to the first one in the category
+            default_tag = tag_options[0]['value'] if tag_options else None
+            
+            return tag_options, default_tag
+        
+        # Tag selection callback - updates which content is displayed
+        @self.app.callback(
+            [Output('active-tag', 'data')] + 
+            [Output(f'content-{tag}', 'style') for tag in self.tag_data.keys()],
+            [Input('tag-selector', 'value')]
+        )
+        def switch_tag(tag_value):
             styles = []
             for tag in self.tag_data.keys():
-                if tag == tab_value:
+                if tag == tag_value:
                     styles.append({'display': 'block'})
                 else:
                     styles.append({'display': 'none'})
-            return [tab_value] + styles
+            return [tag_value] + styles
         
         # Register callbacks for each tag's components
         for tag_str in self.tag_data.keys():
@@ -703,7 +783,7 @@ class PlotlyDashboardGenerator:
                 @self.app.callback(
                     Output(f'histogram-{tag_str}', 'figure'),
                     [Input(f'hist-bins-{tag_str}', 'value'),
-                     Input(f'hist-options-{tag_str}', 'value')]
+                    Input(f'hist-options-{tag_str}', 'value')]
                 )
                 def update_histogram(bins, options, tag_str=tag_str):
                     data = self.tag_data[tag_str]
