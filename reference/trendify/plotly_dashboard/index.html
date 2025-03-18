@@ -1533,49 +1533,49 @@ with matplotlib, but with interactive Plotly features.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/trendify/plotly_dashboard.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-721">721</a></span>
-<span class="normal"><a href="#__codelineno-0-722">722</a></span>
-<span class="normal"><a href="#__codelineno-0-723">723</a></span>
-<span class="normal"><a href="#__codelineno-0-724">724</a></span>
-<span class="normal"><a href="#__codelineno-0-725">725</a></span>
-<span class="normal"><a href="#__codelineno-0-726">726</a></span>
-<span class="normal"><a href="#__codelineno-0-727">727</a></span>
-<span class="normal"><a href="#__codelineno-0-728">728</a></span>
-<span class="normal"><a href="#__codelineno-0-729">729</a></span>
-<span class="normal"><a href="#__codelineno-0-730">730</a></span>
-<span class="normal"><a href="#__codelineno-0-731">731</a></span>
-<span class="normal"><a href="#__codelineno-0-732">732</a></span>
-<span class="normal"><a href="#__codelineno-0-733">733</a></span>
-<span class="normal"><a href="#__codelineno-0-734">734</a></span>
-<span class="normal"><a href="#__codelineno-0-735">735</a></span>
-<span class="normal"><a href="#__codelineno-0-736">736</a></span>
-<span class="normal"><a href="#__codelineno-0-737">737</a></span>
-<span class="normal"><a href="#__codelineno-0-738">738</a></span>
-<span class="normal"><a href="#__codelineno-0-739">739</a></span>
-<span class="normal"><a href="#__codelineno-0-740">740</a></span>
-<span class="normal"><a href="#__codelineno-0-741">741</a></span>
-<span class="normal"><a href="#__codelineno-0-742">742</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-721" name="__codelineno-0-721"></a><span class="k">def</span> <span class="nf">generate_plotly_dashboard</span><span class="p">(</span>
-<a id="__codelineno-0-722" name="__codelineno-0-722"></a>        <span class="n">collection</span><span class="p">:</span> <span class="n">DataProductCollection</span><span class="p">,</span>
-<a id="__codelineno-0-723" name="__codelineno-0-723"></a>        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Trendify Dashboard&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-724" name="__codelineno-0-724"></a>        <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<a id="__codelineno-0-725" name="__codelineno-0-725"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dash</span><span class="o">.</span><span class="n">Dash</span><span class="p">:</span>
-<a id="__codelineno-0-726" name="__codelineno-0-726"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-727" name="__codelineno-0-727"></a><span class="sd">    Generate a Plotly dashboard from a data product collection.</span>
-<a id="__codelineno-0-728" name="__codelineno-0-728"></a>
-<a id="__codelineno-0-729" name="__codelineno-0-729"></a><span class="sd">    This function creates an interactive dashboard that visualizes the data products</span>
-<a id="__codelineno-0-730" name="__codelineno-0-730"></a><span class="sd">    in the collection, similar to how DataProductCollection.process_collection works</span>
-<a id="__codelineno-0-731" name="__codelineno-0-731"></a><span class="sd">    with matplotlib, but with interactive Plotly features.</span>
-<a id="__codelineno-0-732" name="__codelineno-0-732"></a>
-<a id="__codelineno-0-733" name="__codelineno-0-733"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-734" name="__codelineno-0-734"></a><span class="sd">        collection (DataProductCollection): Collection of data products to visualize</span>
-<a id="__codelineno-0-735" name="__codelineno-0-735"></a><span class="sd">        title (str): Title for the dashboard</span>
-<a id="__codelineno-0-736" name="__codelineno-0-736"></a><span class="sd">        debug (bool): Whether to enable debug logging</span>
-<a id="__codelineno-0-737" name="__codelineno-0-737"></a>
-<a id="__codelineno-0-738" name="__codelineno-0-738"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-739" name="__codelineno-0-739"></a><span class="sd">        dash.Dash: The configured Dash application ready to run</span>
-<a id="__codelineno-0-740" name="__codelineno-0-740"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-741" name="__codelineno-0-741"></a>    <span class="n">generator</span> <span class="o">=</span> <span class="n">PlotlyDashboardGenerator</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
-<a id="__codelineno-0-742" name="__codelineno-0-742"></a>    <span class="k">return</span> <span class="n">generator</span><span class="o">.</span><span class="n">process_collection</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-801">801</a></span>
+<span class="normal"><a href="#__codelineno-0-802">802</a></span>
+<span class="normal"><a href="#__codelineno-0-803">803</a></span>
+<span class="normal"><a href="#__codelineno-0-804">804</a></span>
+<span class="normal"><a href="#__codelineno-0-805">805</a></span>
+<span class="normal"><a href="#__codelineno-0-806">806</a></span>
+<span class="normal"><a href="#__codelineno-0-807">807</a></span>
+<span class="normal"><a href="#__codelineno-0-808">808</a></span>
+<span class="normal"><a href="#__codelineno-0-809">809</a></span>
+<span class="normal"><a href="#__codelineno-0-810">810</a></span>
+<span class="normal"><a href="#__codelineno-0-811">811</a></span>
+<span class="normal"><a href="#__codelineno-0-812">812</a></span>
+<span class="normal"><a href="#__codelineno-0-813">813</a></span>
+<span class="normal"><a href="#__codelineno-0-814">814</a></span>
+<span class="normal"><a href="#__codelineno-0-815">815</a></span>
+<span class="normal"><a href="#__codelineno-0-816">816</a></span>
+<span class="normal"><a href="#__codelineno-0-817">817</a></span>
+<span class="normal"><a href="#__codelineno-0-818">818</a></span>
+<span class="normal"><a href="#__codelineno-0-819">819</a></span>
+<span class="normal"><a href="#__codelineno-0-820">820</a></span>
+<span class="normal"><a href="#__codelineno-0-821">821</a></span>
+<span class="normal"><a href="#__codelineno-0-822">822</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-801" name="__codelineno-0-801"></a><span class="k">def</span> <span class="nf">generate_plotly_dashboard</span><span class="p">(</span>
+<a id="__codelineno-0-802" name="__codelineno-0-802"></a>        <span class="n">collection</span><span class="p">:</span> <span class="n">DataProductCollection</span><span class="p">,</span>
+<a id="__codelineno-0-803" name="__codelineno-0-803"></a>        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Trendify Dashboard&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-804" name="__codelineno-0-804"></a>        <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-0-805" name="__codelineno-0-805"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dash</span><span class="o">.</span><span class="n">Dash</span><span class="p">:</span>
+<a id="__codelineno-0-806" name="__codelineno-0-806"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-807" name="__codelineno-0-807"></a><span class="sd">    Generate a Plotly dashboard from a data product collection.</span>
+<a id="__codelineno-0-808" name="__codelineno-0-808"></a>
+<a id="__codelineno-0-809" name="__codelineno-0-809"></a><span class="sd">    This function creates an interactive dashboard that visualizes the data products</span>
+<a id="__codelineno-0-810" name="__codelineno-0-810"></a><span class="sd">    in the collection, similar to how DataProductCollection.process_collection works</span>
+<a id="__codelineno-0-811" name="__codelineno-0-811"></a><span class="sd">    with matplotlib, but with interactive Plotly features.</span>
+<a id="__codelineno-0-812" name="__codelineno-0-812"></a>
+<a id="__codelineno-0-813" name="__codelineno-0-813"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-814" name="__codelineno-0-814"></a><span class="sd">        collection (DataProductCollection): Collection of data products to visualize</span>
+<a id="__codelineno-0-815" name="__codelineno-0-815"></a><span class="sd">        title (str): Title for the dashboard</span>
+<a id="__codelineno-0-816" name="__codelineno-0-816"></a><span class="sd">        debug (bool): Whether to enable debug logging</span>
+<a id="__codelineno-0-817" name="__codelineno-0-817"></a>
+<a id="__codelineno-0-818" name="__codelineno-0-818"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-819" name="__codelineno-0-819"></a><span class="sd">        dash.Dash: The configured Dash application ready to run</span>
+<a id="__codelineno-0-820" name="__codelineno-0-820"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-821" name="__codelineno-0-821"></a>    <span class="n">generator</span> <span class="o">=</span> <span class="n">PlotlyDashboardGenerator</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+<a id="__codelineno-0-822" name="__codelineno-0-822"></a>    <span class="k">return</span> <span class="n">generator</span><span class="o">.</span><span class="n">process_collection</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
