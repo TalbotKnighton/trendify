@@ -23,14 +23,18 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import time
 from typing import Union, List, Iterable, Any, Callable, Tuple, Type, Optional, TypeVar, Hashable
+
+from trendify.mixins import DATA_PRODUCTS_FNAME_DEFAULT, R, HashableBase, Tag, Tags
 try:
     from typing import Self
 except:
     from typing_extensions import Self
 import warnings
-from enum import Enum
+from enum import Enum, StrEnum, auto
 import traceback
+from typing import ClassVar
 import logging
+
 
 # Common imports
 import dash
@@ -59,8 +63,8 @@ __all__ = [
     'HistogramStyle', 
     'Pen', 
     'Marker',  
-    # Format
-    'Format2D', 
+    # Format,
+    'Format2D',
     # process directories
     'make_products',
     'sort_products',
@@ -71,6 +75,7 @@ __all__ = [
     'make_it_trendy',
     'serve_products_to_plotly_dashboard',
 ]
+
 
 class ProductType(StrEnum):
     """
@@ -94,23 +99,6 @@ class ProductType(StrEnum):
 def _mkdir(p: Path):
     p.mkdir(exist_ok=True, parents=True)
     return p
-
-R = TypeVar('R')
-
-Tag = Union[Tuple[Hashable, ...], Hashable]
-"""
-Determines what types can be used to define a tag
-"""
-
-Tags = List[Tag]
-"""
-List of tags
-"""
-
-DATA_PRODUCTS_FNAME_DEFAULT = 'data_products.json'
-"""
-Hard-coded file name for storing data products in batch-processed input directories.
-"""
 
 def should_be_flattened(obj: Any):
     """
@@ -242,16 +230,6 @@ class SingleAxisFigure:
         Closes stored matplotlib figure before deleting reference to object.
         """
         plt.close(self.fig)
-
-class HashableBase(BaseModel):
-    """
-    Defines a base for hashable pydantic data classes so that they can be reduced to a minimal set through type-casting.
-    """
-    def __hash__(self):
-        """
-        Defines hash function
-        """
-        return hash((type(self),) + tuple(self.__dict__.values()))
 
 class Format2D(HashableBase):
     """
