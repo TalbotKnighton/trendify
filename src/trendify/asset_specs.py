@@ -125,11 +125,14 @@ class AssetSpec(HashableBase):
 
     def add_to_spec_registry(
         self,
+        asset_specs: AssetSpecs,
         namespace: str = DEFAULT_NAMESPACE,
         conflict_resolver: AssetSpecConflictBehavior = AssetSpecConflictBehavior.raise_error_if_different,
     ):
-        AssetSpecs.add_spec(
-            spec=self, namespace=namespace, conflict_resolver=conflict_resolver
+        asset_specs.add_spec(
+            spec=self,
+            namespace=namespace,
+            conflict_resolver=conflict_resolver,
         )
         return self
 
@@ -220,23 +223,24 @@ class SpecLinker(AssetSpec):
 
     def get_spec(
         self,
+        asset_specs: AssetSpecs,
         spec_type: Type[T] | str,
     ) -> Optional[T]:
         match get_spec_type_name(spec_type):
             case FigSpec.__name__:
-                return AssetSpecs.get_spec(
+                return asset_specs.get_spec(
                     tag=self.tag_fig_spec, spec_type=FigSpec, namespace=self.namespace
                 )
             case GridSpec.__name__:
-                return AssetSpecs.get_spec(
+                return asset_specs.get_spec(
                     tag=self.tag_grid_spec, spec_type=GridSpec, namespace=self.namespace
                 )
             case AxSpec.__name__:
-                return AssetSpecs.get_spec(
+                return asset_specs.get_spec(
                     tag=self.tag_ax_spec, spec_type=AxSpec, namespace=self.namespace
                 )
             case LegendSpec.__name__:
-                return AssetSpecs.get_spec(
+                return asset_specs.get_spec(
                     tag=self.tag_legend_spec,
                     spec_type=LegendSpec,
                     namespace=self.namespace,
@@ -278,7 +282,7 @@ class FigSpec(AssetSpec):
     dpi: int = 400
 
 
-class _AssetSpecs(BaseModel):
+class AssetSpecs(BaseModel):
     # Config
     model_config = ConfigDict(arbitrary_types_allowed=False, extra="forbid")
 
@@ -314,7 +318,7 @@ class _AssetSpecs(BaseModel):
                     self.specs[spec_tag] = spec
                 case AssetSpecConflictBehavior.raise_error:
                     raise ValueError(
-                        f"Spec already exists for {spec_tag = } in {_AssetSpecs.__name__} for {namespace = }:"
+                        f"Spec already exists for {spec_tag = } in {AssetSpecs.__name__} for {namespace = }:"
                         f"\n{existing_spec = }\n"
                     )
                 case AssetSpecConflictBehavior.raise_error_if_different:
@@ -322,7 +326,7 @@ class _AssetSpecs(BaseModel):
                         pass
                     else:
                         raise ValueError(
-                            f"Spec already exists for {spec.tag = } in {_AssetSpecs.__name__} for {namespace = }:"
+                            f"Spec already exists for {spec.tag = } in {AssetSpecs.__name__} for {namespace = }:"
                             f"\n{existing_spec = }\n"
                             f"\nThis does not match given spec:"
                             f"\n{spec = }\n"
@@ -394,6 +398,7 @@ class _AssetSpecs(BaseModel):
             tag=spec_tag,
             title=title_fig,
         ).add_to_spec_registry(
+            asset_specs=self,
             namespace=namespace,
             conflict_resolver=conflict_resolver,
         )
@@ -406,6 +411,7 @@ class _AssetSpecs(BaseModel):
             top=1 - margin_top,
             bottom=margin_bottom,
         ).add_to_spec_registry(
+            asset_specs=self,
             namespace=namespace,
             conflict_resolver=conflict_resolver,
         )
@@ -419,6 +425,7 @@ class _AssetSpecs(BaseModel):
             lim_y_min=lim_y_min,
             lim_y_max=lim_y_max,
         ).add_to_spec_registry(
+            asset_specs=self,
             namespace=namespace,
             conflict_resolver=conflict_resolver,
         )
@@ -427,6 +434,7 @@ class _AssetSpecs(BaseModel):
             title=title_legend,
             location=location_legend,
         ).add_to_spec_registry(
+            asset_specs=self,
             namespace=namespace,
             conflict_resolver=conflict_resolver,
         )
@@ -441,6 +449,7 @@ class _AssetSpecs(BaseModel):
             row=0,
             namespace=namespace,
         ).add_to_spec_registry(
+            asset_specs=self,
             namespace=namespace,
             conflict_resolver=conflict_resolver,
         )
@@ -475,7 +484,7 @@ class _AssetSpecs(BaseModel):
                             print(f"\nFinished tables for {tag = }\n")
 
                 fig_specs = [
-                    fs for key, fs in AssetSpecs.get_specs(spec_type=FigSpec).items()
+                    fs for key, fs in self.get_specs(spec_type=FigSpec).items()
                 ]
                 for fs in fig_specs:
                     fig = plt.figure(
@@ -484,16 +493,23 @@ class _AssetSpecs(BaseModel):
                     )
                     linkers = [
                         linker
-                        for key, linker in AssetSpecs.get_specs(
-                            spec_type=SpecLinker
-                        ).items()
+                        for key, linker in self.get_specs(spec_type=SpecLinker).items()
                         if linker.tag_fig_spec == fs.tag
                     ]
                     for linker in linkers:
-                        gs = linker.get_spec(GridSpec).to_matplotlib_gridspec()
+                        gs = linker.get_spec(
+                            asset_specs=self,
+                            spec_type=GridSpec,
+                        ).to_matplotlib_gridspec()
                         ax = fig.add_subplot(gs[linker.row, linker.col])
-                        linker.get_spec(AxSpec).apply_to_ax(ax=ax)
-                        ls = linker.get_spec(LegendSpec)
+                        linker.get_spec(
+                            asset_specs=self,
+                            spec_type=AxSpec,
+                        ).apply_to_ax(ax=ax)
+                        ls = linker.get_spec(
+                            asset_specs=self,
+                            spec_type=LegendSpec,
+                        )
                         ax.legend(title=ls.title)
 
                         for tag in linker.tag_products:
@@ -549,9 +565,6 @@ class _AssetSpecs(BaseModel):
                 )
 
 
-AssetSpecs = _AssetSpecs(specs={})
-
-
 def _test():
     from trendify.API import DataProductCollection
     from pathlib import Path
@@ -560,10 +573,12 @@ def _test():
     gdir = here.resolve().joinpath("gallery", "data")
 
     collection = DataProductCollection.collect_from_all_jsons(gdir, recursive=True)
-    for t in collection.get_tags():
-        AssetSpecs.add_single_axis_figure(t, product_tags=[t], title_fig=t)
 
-    AssetSpecs.apply_to(
+    asset_specs = AssetSpecs(specs={})
+    for t in collection.get_tags():
+        asset_specs.add_single_axis_figure(t, product_tags=[t], title_fig=t)
+
+    asset_specs.apply_to(
         collection=collection,
         output_type=OutputType.static,
         output_dir=Path("./test_assetspec"),
