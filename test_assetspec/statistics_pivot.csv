@@ -1,0 +1,4 @@
+row,Mean,Skewness,Std Dev
+Exponential,1.00,2.00,1.00
+Normal,0.01,0.05,1.02
+Uniform,0.00,0.00,1.15
