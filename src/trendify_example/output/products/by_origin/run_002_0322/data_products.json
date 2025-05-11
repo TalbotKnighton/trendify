@@ -1,0 +1,94 @@
+{
+  "metadata": {
+    "origin_id": "run_002_0322",
+    "original_dir": "trendify_example/data/run_002",
+    "product_count": 4,
+    "creation_timestamp": "2025-04-28T10:14:19.883268",
+    "product_type_counts": {
+      "TableEntry": 4
+    },
+    "tag_counts": {
+      "performance_metrics": 4
+    },
+    "type_info": {
+      "module_spec": "trendify.products_assets",
+      "base_name": "ProductMetadata",
+      "type_params": null,
+      "version": null,
+      "alias": null,
+      "extra_args": null,
+      "use_cache": true
+    }
+  },
+  "products": [
+    {
+      "tags": [
+        "performance_metrics"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.products_assets",
+        "base_name": "TableEntry",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "performance_metrics"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.products_assets",
+        "base_name": "TableEntry",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "performance_metrics"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.products_assets",
+        "base_name": "TableEntry",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "performance_metrics"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.products_assets",
+        "base_name": "TableEntry",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    }
+  ],
+  "type_info": {
+    "module_spec": "trendify.products_assets",
+    "base_name": "ProductsModel",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

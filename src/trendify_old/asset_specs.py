@@ -50,7 +50,7 @@ from trendify.API import (
     Trace2D,
     XYDataPlotter,
 )
-from trendify.mixins import HashableBase, Tag, Tags
+from trendify.utils import HashableBase, Tag, Tags
 
 try:
     from typing import Self
@@ -454,7 +454,7 @@ class AssetSpecs(BaseModel):
             conflict_resolver=conflict_resolver,
         )
 
-    def apply_to(
+    def apply_to_collection(
         self,
         collection: DataProductCollection,
         output_type: OutputType = OutputType.static,
@@ -578,7 +578,7 @@ def _test():
     for t in collection.get_tags():
         asset_specs.add_single_axis_figure(t, product_tags=[t], title_fig=t)
 
-    asset_specs.apply_to(
+    asset_specs.apply_to_collection(
         collection=collection,
         output_type=OutputType.static,
         output_dir=Path("./test_assetspec"),

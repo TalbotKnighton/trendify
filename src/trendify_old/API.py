@@ -36,7 +36,7 @@ from typing import (
     Hashable,
 )
 
-from trendify.mixins import DATA_PRODUCTS_FNAME_DEFAULT, R, HashableBase, Tag, Tags
+from trendify.utils import DATA_PRODUCTS_FNAME_DEFAULT, R, HashableBase, Tag, Tags
 
 try:
     from typing import Self
@@ -543,12 +543,9 @@ class PlottableData2D(DataProduct):
     Base class for children of DataProduct to be plotted ax xy data on a 2D plot
 
     Attributes:
-        format2d (Format2D|None): Format to apply to plot
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
-
-    format2d: Format2D | None = None
 
 
 class XYData(PlottableData2D):

@@ -1,0 +1,1 @@
+from trendify.renderers.default_static import MatplotlibRenderer
