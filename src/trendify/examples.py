@@ -137,10 +137,10 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
 
         trendify.AxLine(
             tags=["histogram"],
-            value=series.min(),
+            value=series.mean(),
             orientation=trendify.LineOrientation.VERTICAL,
-            pen=trendify.Pen(color="b"),
-        )
+            pen=trendify.Pen(color="b", label="mean"),
+        ).append_to_list(products)
 
     return products
 

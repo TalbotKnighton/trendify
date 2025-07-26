@@ -1253,6 +1253,8 @@ class DataProductCollection(BaseModel):
                 #     [tag] = collection.get_tags()
                 # except:
                 #     breakpoint()
+                saf: SingleAxisFigure | None = None
+                format_2ds: list[Format2D] = []
 
                 if not no_tables:
 
@@ -1281,14 +1283,31 @@ class DataProductCollection(BaseModel):
 
                     if points or traces or axlines:  # Update condition
                         print(f"\n\nMaking xy plot for {tag = }\n")
-                        XYDataPlotter.handle_points_and_traces(
+                        saf = XYDataPlotter.handle_points_and_traces(
                             tag=tag,
                             points=points,
                             traces=traces,
                             axlines=axlines,  # Add this parameter
                             dir_out=dir_out,
                             dpi=dpi,
+                            saf=saf,
                         )
+
+                        format_2ds += [
+                            p.format2d
+                            for p in points
+                            if isinstance(p.format2d, Format2D)
+                        ]
+                        format_2ds += [
+                            t.format2d
+                            for t in traces
+                            if isinstance(t.format2d, Format2D)
+                        ]
+                        format_2ds += [
+                            a.format2d
+                            for a in axlines
+                            if isinstance(a.format2d, Format2D)
+                        ]
                         print(f"\nFinished xy plot for {tag = }\n")
 
                     # traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
@@ -1311,13 +1330,33 @@ class DataProductCollection(BaseModel):
 
                     if histogram_entries:
                         print(f"\n\nMaking histogram for {tag = }\n")
-                        Histogrammer.handle_histogram_entries(
+                        saf = Histogrammer.handle_histogram_entries(
                             tag=tag,
                             histogram_entries=histogram_entries,
                             dir_out=dir_out,
                             dpi=dpi,
+                            saf=saf,
                         )
+
+                        format_2ds += [
+                            h.format2d
+                            for h in histogram_entries
+                            if isinstance(h.format2d, Format2D)
+                        ]
                         print(f"\nFinished histogram for {tag = }\n")
+
+                if isinstance(saf, SingleAxisFigure):
+                    formats = list(set(format_2ds))
+                    format2d = Format2D.union_from_iterable(formats)
+                    saf.apply_format(format2d)
+
+                    save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix(
+                        ".jpg"
+                    )
+                    save_path.parent.mkdir(exist_ok=True, parents=True)
+                    print(f"Saving to {save_path}")
+                    saf.savefig(save_path, dpi=dpi)
+                    del saf
 
     @classmethod
     def make_grafana_panels(
@@ -1570,6 +1609,7 @@ class XYDataPlotter:
         axlines: List[AxLine],  # Add this parameter
         dir_out: Path,
         dpi: int,
+        saf: SingleAxisFigure | None = None,
     ):
         """
         Plots points, traces, and axlines, formats figure, saves figure, and closes matplotlinb figure.
@@ -1583,7 +1623,8 @@ class XYDataPlotter:
             dpi (int): resolution of plot
         """
 
-        saf = SingleAxisFigure.new(tag=tag)
+        if saf is None:
+            saf = SingleAxisFigure.new(tag=tag)
 
         if points:
             markers = set([p.marker for p in points])
@@ -1601,16 +1642,25 @@ class XYDataPlotter:
         for axline in axlines:
             axline.plot_to_ax(saf.ax)
 
-        formats = list(set([p.format2d for p in points] + [t.format2d for t in traces]))
-        format2d = Format2D.union_from_iterable(formats)
-        saf.apply_format(format2d)
+        # formats = list(
+        #     set(
+        #         [p.format2d for p in points]
+        #         + [t.format2d for t in traces]
+        #         + [a.format2d for a in axlines]
+        #     )
+        # )
+
+        # format2d = Format2D.union_from_iterable(formats)
+        # saf.apply_format(format2d)
         # saf.ax.autoscale(enable=True, axis='both', tight=True)
 
-        save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
-        save_path.parent.mkdir(exist_ok=True, parents=True)
-        print(f"Saving to {save_path = }")
-        saf.savefig(path=save_path, dpi=dpi)
-        del saf
+        # save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
+        # save_path.parent.mkdir(exist_ok=True, parents=True)
+        # print(f"Saving to {save_path = }")
+        # saf.savefig(path=save_path, dpi=dpi)
+        # del saf
+
+        return saf
 
 
 class TableBuilder:
@@ -1801,7 +1851,8 @@ class Histogrammer:
         histogram_entries: List[HistogramEntry],
         dir_out: Path,
         dpi: int,
-    ):
+        saf: SingleAxisFigure | None = None,
+    ) -> SingleAxisFigure:
         """
         Histograms the provided entries. Formats and saves the figure.  Closes the figure.
 
@@ -1811,7 +1862,8 @@ class Histogrammer:
             dir_out (Path): Directory to which the generated histogram will be stored
             dpi (int): resolution of plot
         """
-        saf = SingleAxisFigure.new(tag=tag)
+        if saf is None:
+            saf = SingleAxisFigure.new(tag=tag)
 
         histogram_styles = set([h.style for h in histogram_entries])
         for s in histogram_styles:
@@ -1822,19 +1874,22 @@ class Histogrammer:
             else:
                 saf.ax.hist(values)
 
-        try:
-            format2d_set = set([h.format2d for h in histogram_entries]) - {None}
-            [format2d] = format2d_set
-            saf.apply_format(format2d=format2d)
-        except:
-            print(
-                f"Format not applied to {save_path  = } multiple entries conflict for given tag:\n\t{format2d_set = }"
-            )
-        save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
-        save_path.parent.mkdir(exist_ok=True, parents=True)
-        print(f"Saving to {save_path}")
-        saf.savefig(save_path, dpi=dpi)
-        del saf
+        # save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
+        # try:
+        #     format2d_set = set([h.format2d for h in histogram_entries]) - {None}
+        #     [format2d] = format2d_set
+        #     saf.apply_format(format2d=format2d)
+        # except:
+        #     print(
+        #         f"Format not applied to {save_path  = } multiple entries conflict for given tag:\n\t{format2d_set = }"
+        #     )
+        # save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
+        # save_path.parent.mkdir(exist_ok=True, parents=True)
+        # print(f"Saving to {save_path}")
+        # saf.savefig(save_path, dpi=dpi)
+        # del saf
+
+        return saf
 
 
 ### Runners
