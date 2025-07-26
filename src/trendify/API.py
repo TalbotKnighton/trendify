@@ -774,7 +774,7 @@ class HistogramStyle(HashableBase):
     color: str = "k"
     label: str | None = None
     histtype: str = "stepfilled"
-    alpha_edge: float = 1
+    alpha_edge: float = 0
     alpha_face: float = 0.3
     linewidth: float = 2
     bins: int | list[int] | Tuple[int] | NDArray[Shape["*"], int] | None = None
