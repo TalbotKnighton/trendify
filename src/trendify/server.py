@@ -36,43 +36,48 @@ valid_types_names_list = [t.__name__ for t in valid_product_types]
 # App
 app = Flask(__name__)
 
-DATABASE_ROOT = Path('/Users/talbotknighton/Documents/trendify/workdir/trendify_output/products/')
+DATABASE_ROOT = Path(
+    "/Users/talbotknighton/Documents/trendify/workdir/trendify_output/products/"
+)
 
-@app.route('/data_products/server-status/')
+
+@app.route("/data_products/server-status/")
 def get_status():
-    return 'Data Products server is working...'
+    return "Data Products server is working..."
 
-@app.route('/data_products/aggregate/<analysis>/<file>')
-@app.route('/data_products/aggregate/<analysis>/<file>/')
+
+@app.route("/data_products/aggregate/<analysis>/<file>")
+@app.route("/data_products/aggregate/<analysis>/<file>/")
 def get_aggregate_data_products(
-        analysis: str = 'workdir',
-        file: str = 'trace_plots',
-    ):
+    analysis: str = "workdir",
+    file: str = "trace_plots",
+):
     FAILED_RETURN_VALUE = None
     query_return = FAILED_RETURN_VALUE
 
     analysis = str(analysis)
-    analysis_path_components = analysis.split('.') if '.' in analysis else [analysis]
-    assert not any(('.' in x) for x in analysis_path_components)
+    analysis_path_components = analysis.split(".") if "." in analysis else [analysis]
+    assert not any(("." in x) for x in analysis_path_components)
     file = str(file)
-    assert len(file.split('.')) <= 2
+    assert len(file.split(".")) <= 2
     collection_path_components = analysis_path_components + [file]
     load_path = DATABASE_ROOT.joinpath(*tuple(collection_path_components))
     assert load_path.is_relative_to(DATABASE_ROOT)
-    
+
     df = pd.read_csv(load_path, index_col=0)
     query_return = df.to_csv()
     return query_return
 
-@app.route('/data_products/<analysis>/<tag>')
-@app.route('/data_products/<analysis>/<tag>/')
-@app.route('/data_products/<analysis>/<tag>/<product_type>')
-@app.route('/data_products/<analysis>/<tag>/<product_type>/')
+
+@app.route("/data_products/<analysis>/<tag>")
+@app.route("/data_products/<analysis>/<tag>/")
+@app.route("/data_products/<analysis>/<tag>/<product_type>")
+@app.route("/data_products/<analysis>/<tag>/<product_type>/")
 def get_data_products(
-        analysis: str = 'workdir.products',
-        tag: str = 'trace_plots',
-        product_type: str = 'DataProduct',
-    ):
+    analysis: str = "workdir.products",
+    tag: str = "trace_plots",
+    product_type: str = "DataProduct",
+):
     """
     Example: Traces
         parse-json
@@ -102,30 +107,34 @@ def get_data_products(
         case HistogramEntry.__name__:
             filter_type = HistogramEntry
         case _:
-            query_return = f'{product_type = } should be in {valid_types_names_list}'
+            query_return = f"{product_type = } should be in {valid_types_names_list}"
             return query_return
-    
+
     try:
         analysis = str(analysis)
-        analysis_path_components = analysis.split('.') if '.' in analysis else [analysis]
+        analysis_path_components = (
+            analysis.split(".") if "." in analysis else [analysis]
+        )
         tag = str(tag)
-        tag_path_components = tag.split('.') if '.' in tag else [tag]
+        tag_path_components = tag.split(".") if "." in tag else [tag]
         collection_path_components = analysis_path_components + tag_path_components
         data_dir = DATABASE_ROOT.joinpath(*tuple(analysis_path_components))
         collection_dir = data_dir.joinpath(*tuple(tag_path_components))
-        assert not any(('.' in x) for x in collection_path_components)
+        assert not any(("." in x) for x in collection_path_components)
         assert collection_dir.is_relative_to(data_dir)
     except AssertionError:
-        query_return = f'Do not try to access stuff outside of {data_dir = }'
-        print(f'Do not try to access stuff outside of {data_dir = }')
+        query_return = f"Do not try to access stuff outside of {data_dir = }"
+        print(f"Do not try to access stuff outside of {data_dir = }")
         return query_return
-    
-    data: DataProductCollection = DataProductCollection.collect_from_all_jsons(collection_dir)
+
+    data: DataProductCollection = DataProductCollection.collect_from_all_jsons(
+        collection_dir
+    )
     if data is None:
-        return f'Did not find data product jsons in {collection_dir}'
+        return f"Did not find data product jsons in {collection_dir}"
     formatted_tag = (
-        tag_path_components[0] 
-        if len(tag_path_components) == 1 
+        tag_path_components[0]
+        if len(tag_path_components) == 1
         else tuple(tag_path_components)
     )
     filtered_data = data.get_products(
@@ -139,16 +148,16 @@ def get_data_products(
 if __name__ == "__main__":
     # print(
     #     get_data_products(
-    #         analysis='workdir.products', 
-    #         tag='tables', 
+    #         analysis='workdir.products',
+    #         tag='tables',
     #         product_type='DataProduct',
     #     )
     # )
     # print(
     #     get_aggregate_data_products(
-    #         analysis='workdir.aggregate', 
+    #         analysis='workdir.aggregate',
     #         file='stdin.csv',
     #     )
     # )
-    print('Starting Server')
+    print("Starting Server")
     serve(app, host="0.0.0.0", port=8000)

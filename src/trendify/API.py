@@ -1,5 +1,5 @@
 """
-Module for generating, sorting, and plotting data products.  
+Module for generating, sorting, and plotting data products.
 This uses pydantic dataclasses for JSON serialization to avoid overloading system memory.
 
 Some important learning material for pydantic classes and JSON (de)serialization:
@@ -10,6 +10,7 @@ Some important learning material for pydantic classes and JSON (de)serialization
 Attributes:
     DATA_PRODUCTS_FNAME_DEFAULT (str): Hard-coded json file name 'data_products.json'
 """
+
 from __future__ import annotations
 
 # Standard imports
@@ -22,7 +23,19 @@ from itertools import chain
 from pathlib import Path
 import matplotlib.pyplot as plt
 import time
-from typing import Union, List, Iterable, Any, Callable, Tuple, Type, Optional, TypeVar, Hashable
+from typing import (
+    Union,
+    List,
+    Iterable,
+    Any,
+    Callable,
+    Tuple,
+    Type,
+    Optional,
+    TypeVar,
+    Hashable,
+)
+
 try:
     from typing import Self
 except:
@@ -38,39 +51,48 @@ from filelock import FileLock
 import numpy as np
 import pandas as pd
 from numpydantic import NDArray, Shape
-from pydantic import BaseModel, ConfigDict, Field, InstanceOf, SerializeAsAny, computed_field, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    InstanceOf,
+    SerializeAsAny,
+    computed_field,
+    model_validator,
+)
 
 # Local imports
 # import grafana_api as gapi
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    'ProductList',
-    'ProductGenerator',
-    'ProductType',
+    "ProductList",
+    "ProductGenerator",
+    "ProductType",
     # DataProducts
-    'Trace2D', # XY Data
-    'Point2D', # XY Data
-    'TableEntry', 
-    'HistogramEntry',
-    'LineOrientation',
-    'AxLine',
+    "Trace2D",  # XY Data
+    "Point2D",  # XY Data
+    "TableEntry",
+    "HistogramEntry",
+    "LineOrientation",
+    "AxLine",
     # Stylers
-    'HistogramStyle', 
-    'Pen', 
-    'Marker',  
+    "HistogramStyle",
+    "Pen",
+    "Marker",
     # Format
-    'Format2D', 
+    "Format2D",
     # process directories
-    'make_products',
-    'sort_products',
-    'make_grafana_dashboard',
-    'make_tables_and_figures',
-    'make_include_files',
+    "make_products",
+    "sort_products",
+    "make_grafana_dashboard",
+    "make_tables_and_figures",
+    "make_include_files",
     # combined process
-    'make_it_trendy',
-    'serve_products_to_plotly_dashboard',
+    "make_it_trendy",
+    "serve_products_to_plotly_dashboard",
 ]
+
 
 class ProductType(StrEnum):
     """
@@ -84,6 +106,7 @@ class ProductType(StrEnum):
         TableEntry (str): class name
         HistogramEntry (str): class name
     """
+
     DataProduct = auto()
     XYData = auto()
     Trace2D = auto()
@@ -91,11 +114,13 @@ class ProductType(StrEnum):
     TableEntry = auto()
     HistogramEntry = auto()
 
+
 def _mkdir(p: Path):
     p.mkdir(exist_ok=True, parents=True)
     return p
 
-R = TypeVar('R')
+
+R = TypeVar("R")
 
 Tag = Union[Tuple[Hashable, ...], Hashable]
 """
@@ -107,24 +132,26 @@ Tags = List[Tag]
 List of tags
 """
 
-DATA_PRODUCTS_FNAME_DEFAULT = 'data_products.json'
+DATA_PRODUCTS_FNAME_DEFAULT = "data_products.json"
 """
 Hard-coded file name for storing data products in batch-processed input directories.
 """
+
 
 def should_be_flattened(obj: Any):
     """
     Checks if object is an iterable container that should be flattened.
     `DataProduct`s will not be flattened.  Strings will not be flattened.
     Everything else will be flattened.
-    
+
     Args:
         obj (Any): Object to be tested
-    
+
     Returns:
         (bool): Whether or not to flatten object
     """
     return isinstance(obj, Iterable) and not isinstance(obj, (str, bytes, DataProduct))
+
 
 def flatten(obj: Iterable):
     """
@@ -132,7 +159,7 @@ def flatten(obj: Iterable):
 
     Args:
         obj (Iterable): Object to be flattened
-    
+
     Returns:
         (Iterable): Flattned iterable
     """
@@ -141,7 +168,8 @@ def flatten(obj: Iterable):
     else:
         for sublist in obj:
             yield from flatten(sublist)
-        
+
+
 def atleast_1d(obj: Any) -> Iterable:
     """
     Converts scalar objec to a list of length 1 or leaves an iterable object unchanged.
@@ -156,6 +184,7 @@ def atleast_1d(obj: Any) -> Iterable:
         return [obj]
     else:
         return obj
+
 
 def squeeze(obj: Union[Iterable, Any]):
     """
@@ -172,6 +201,7 @@ def squeeze(obj: Union[Iterable, Any]):
     else:
         return obj
 
+
 @dataclass
 class SingleAxisFigure:
     """
@@ -182,6 +212,7 @@ class SingleAxisFigure:
         fig (plt.Figure): Matplotlib figure.
         tag (Tag): Figure tag.  Not yet used.
     """
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
     tag: Tag
     fig: plt.Figure
@@ -194,7 +225,7 @@ class SingleAxisFigure:
 
         Args:
             tag (Tag): tag (not yet used)
-        
+
         Returns:
             (Type[Self]): New single axis figure
         """
@@ -205,7 +236,7 @@ class SingleAxisFigure:
             fig=fig,
             ax=ax,
         )
-    
+
     def apply_format(self, format2d: Format2D):
         """
         Applies format to figure and axes labels and limits
@@ -215,18 +246,20 @@ class SingleAxisFigure:
         """
         self.ax.set_title(format2d.title_ax)
         self.fig.suptitle(format2d.title_fig)
-        with warnings.catch_warnings(action='ignore', category=UserWarning):
+        with warnings.catch_warnings(action="ignore", category=UserWarning):
             handles, labels = self.ax.get_legend_handles_labels()
             by_label = dict(zip(labels, handles))
             if by_label:
-                self.ax.legend(by_label.values(), by_label.keys(), title=format2d.title_legend)
+                self.ax.legend(
+                    by_label.values(), by_label.keys(), title=format2d.title_legend
+                )
         self.ax.set_xlabel(format2d.label_x)
         self.ax.set_ylabel(format2d.label_y)
         self.ax.set_xlim(format2d.lim_x_min, format2d.lim_x_max)
         self.ax.set_ylim(format2d.lim_y_min, format2d.lim_y_max)
         self.fig.tight_layout(rect=[0, 0.03, 1, 0.95])
         return self
-    
+
     def savefig(self, path: Path, dpi: int = 500):
         """
         Wrapper on matplotlib savefig method.  Saves figure to given path with given dpi resolution.
@@ -236,22 +269,25 @@ class SingleAxisFigure:
         """
         self.fig.savefig(path, dpi=dpi)
         return self
-    
+
     def __del__(self):
         """
         Closes stored matplotlib figure before deleting reference to object.
         """
         plt.close(self.fig)
 
+
 class HashableBase(BaseModel):
     """
     Defines a base for hashable pydantic data classes so that they can be reduced to a minimal set through type-casting.
     """
+
     def __hash__(self):
         """
         Defines hash function
         """
         return hash((type(self),) + tuple(self.__dict__.values()))
+
 
 class Format2D(HashableBase):
     """
@@ -268,6 +304,7 @@ class Format2D(HashableBase):
         lim_y_min (float | str | None): Sets [y-axis lower bound][matplotlib.axes.Axes.set_ylim]
         lim_y_max (float | str | None): Sets [y-axis upper bound][matplotlib.axes.Axes.set_ylim]
     """
+
     title_fig: Optional[str] | None = None
     title_legend: Optional[str] | None = None
     title_ax: Optional[str] | None = None
@@ -277,8 +314,8 @@ class Format2D(HashableBase):
     lim_x_max: float | str | None = None
     lim_y_min: float | str | None = None
     lim_y_max: float | str | None = None
-    
-    model_config = ConfigDict(extra='forbid')
+
+    model_config = ConfigDict(extra="forbid")
 
     @classmethod
     def union_from_iterable(cls, format2ds: Iterable[Format2D]):
@@ -320,6 +357,7 @@ class Format2D(HashableBase):
             lim_y_max=lim_y_max,
         )
 
+
 class Pen(HashableBase):
     """
     Defines the pen drawing to matplotlib.
@@ -328,28 +366,30 @@ class Pen(HashableBase):
         color (str): Color of line
         size (float): Line width
         alpha (float): Opacity from 0 to 1 (inclusive)
-        zorder (float): Prioritization 
+        zorder (float): Prioritization
         label (Union[str, None]): Legend label
     """
-    color: str = 'k'
+
+    color: str = "k"
     size: float = 1
     alpha: float = 1
     zorder: float = 0
     label: Union[str, None] = None
-    
-    model_config = ConfigDict(extra='forbid')
+
+    model_config = ConfigDict(extra="forbid")
 
     def as_scatter_plot_kwargs(self):
         """
         Returns kwargs dictionary for passing to [matplotlib plot][matplotlib.axes.Axes.plot] method
         """
         return {
-            'color': self.color,
-            'linewidth': self.size,
-            'alpha': self.alpha,
-            'zorder': self.zorder,
-            'label': self.label,
+            "color": self.color,
+            "linewidth": self.size,
+            "alpha": self.alpha,
+            "zorder": self.zorder,
+            "label": self.label,
         }
+
 
 class Marker(HashableBase):
     """
@@ -359,29 +399,30 @@ class Marker(HashableBase):
         color (str): Color of line
         size (float): Line width
         alpha (float): Opacity from 0 to 1 (inclusive)
-        zorder (float): Prioritization 
+        zorder (float): Prioritization
         label (Union[str, None]): Legend label
         symbol (str): Matplotlib symbol string
     """
-    color: str = 'k'
+
+    color: str = "k"
     size: float = 5
     alpha: float = 1
     zorder: float = 0
     label: str | None = None
-    symbol: str = '.'
+    symbol: str = "."
 
     @classmethod
     def from_pen(
-            cls,
-            pen: Pen,
-            symbol: str = '.',
-        ):
+        cls,
+        pen: Pen,
+        symbol: str = ".",
+    ):
         """
         Converts Pen to marker with the option to specify a symbol
         """
         return cls(symbol=symbol, **pen.model_dump())
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra="forbid")
 
     def as_scatter_plot_kwargs(self):
         """
@@ -389,16 +430,18 @@ class Marker(HashableBase):
             (dict): dictionary of `kwargs` for [matplotlib scatter][matplotlib.axes.Axes.scatter]
         """
         return {
-            'marker': self.symbol,
-            'c': self.color,
-            's': self.size,
-            'alpha': self.alpha,
-            'zorder': self.zorder,
-            'label': self.label,
-            'marker': self.symbol,
+            "marker": self.symbol,
+            "c": self.color,
+            "s": self.size,
+            "alpha": self.alpha,
+            "zorder": self.zorder,
+            "label": self.label,
+            "marker": self.symbol,
         }
 
+
 _data_product_subclass_registry: dict[str, DataProduct] = {}
+
 
 class DataProduct(BaseModel):
     """
@@ -410,10 +453,11 @@ class DataProduct(BaseModel):
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
+
     tags: Tags
     metadata: dict[str, str] = {}
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     @classmethod
     def _remove_computed_fields(cls, data: dict[str, Any]) -> dict[str, Any]:
         """
@@ -435,28 +479,28 @@ class DataProduct(BaseModel):
         """
         Returns:
             (str): Product type should be the same as the class name.
-                The product type is used to search for products from a 
+                The product type is used to search for products from a
                 [DataProductCollection][trendify.API.DataProductCollection].
         """
         return type(self).__name__
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
-        Registers child subclasses to be able to parse them from JSON file using the 
+        Registers child subclasses to be able to parse them from JSON file using the
         [deserialize_child_classes][trendify.API.DataProduct.deserialize_child_classes] method
         """
         super().__init_subclass__(**kwargs)
-        _data_product_subclass_registry[cls.__name__] = cls    
-    
-    model_config = ConfigDict(extra='allow')
-    
+        _data_product_subclass_registry[cls.__name__] = cls
+
+    model_config = ConfigDict(extra="allow")
+
     def append_to_list(self, l: List):
         """
         Appends self to list.
 
         Args:
             l (List): list to which `self` will be appended
-        
+
         Returns:
             (Self): returns instance of `self`
         """
@@ -472,7 +516,7 @@ class DataProduct(BaseModel):
             key (str): json key
             kwargs (dict): json entries stored under given key
         """
-        type_key = 'product_type'
+        type_key = "product_type"
         elements = kwargs.get(key, None)
         if elements:
             for index in range(len(kwargs[key])):
@@ -481,6 +525,7 @@ class DataProduct(BaseModel):
                     product_type = duck_info.pop(type_key)
                     duck_type = _data_product_subclass_registry[product_type]
                     kwargs[key][index] = duck_type(**duck_info)
+
 
 ProductList = List[SerializeAsAny[InstanceOf[DataProduct]]]
 """List of serializable [DataProduct][trendify.API.DataProduct] or child classes thereof"""
@@ -496,6 +541,7 @@ Returns:
     (ProductList): List of data products to be sorted and used to produce assets
 """
 
+
 def get_and_reserve_next_index(save_dir: Path, dir_in: Path):
     """
     Reserves next available file index during trendify sorting phase.
@@ -506,14 +552,17 @@ def get_and_reserve_next_index(save_dir: Path, dir_in: Path):
         dir_in (Path): Directory from which data is being pulled for sorting
     """
     assert save_dir.is_dir()
-    lock_file = save_dir.joinpath('reserving_index.lock')
+    lock_file = save_dir.joinpath("reserving_index.lock")
     with FileLock(lock_file):
-        index_map = save_dir.joinpath('index_map.csv')
-        index_list = index_map.read_text().strip().split('\n') if index_map.exists() else []
-        next_index = int(index_list[-1].split(',')[0])+1 if index_list else 0
-        index_list.append(f'{next_index},{dir_in}')
-        index_map.write_text('\n'.join(index_list))
+        index_map = save_dir.joinpath("index_map.csv")
+        index_list = (
+            index_map.read_text().strip().split("\n") if index_map.exists() else []
+        )
+        next_index = int(index_list[-1].split(",")[0]) + 1 if index_list else 0
+        index_list.append(f"{next_index},{dir_in}")
+        index_map.write_text("\n".join(index_list))
     return next_index
+
 
 class PlottableData2D(DataProduct):
     """
@@ -524,12 +573,15 @@ class PlottableData2D(DataProduct):
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
+
     format2d: Format2D | None = None
+
 
 class XYData(PlottableData2D):
     """
     Base class for children of DataProduct to be plotted ax xy data on a 2D plot
     """
+
 
 class Trace2D(XYData):
     """
@@ -537,7 +589,7 @@ class Trace2D(XYData):
     Use the [Trace2D.from_xy][trendify.API.Trace2D.from_xy] constructor.
 
     Attributes:
-        points (List[Point2D]): List of points.  Usually the points would have null values 
+        points (List[Point2D]): List of points.  Usually the points would have null values
             for `marker` and `format2d` fields to save space.
         pen (Pen): Style and label information for drawing to matplotlib axes.
             Only the label information is used in Grafana.
@@ -545,11 +597,12 @@ class Trace2D(XYData):
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
-    model_config = ConfigDict(extra='forbid')
-    
+
+    model_config = ConfigDict(extra="forbid")
+
     points: List[Point2D]
     pen: Pen = Pen()
-    
+
     @property
     def x(self) -> NDArray[Shape["*"], float]:
         """
@@ -569,37 +622,36 @@ class Trace2D(XYData):
             (NDArray[Shape["*"], float]): array of y values from `self.points`
         """
         return np.array([p.y for p in self.points])
-    
-    def propagate_format2d_and_pen(self, marker_symbol: str = '.') -> None:
+
+    def propagate_format2d_and_pen(self, marker_symbol: str = ".") -> None:
         """
         Propagates format and style info to all `self.points` (in-place).
         I thought this would  be useful for grafana before I learned better methods for propagating the data.
         It still may end up being useful if my plotting method changes.  Keeping for potential future use case.
-        
+
         Args:
             marker_symbol (str): Valid matplotlib marker symbol
         """
         self.points = [
             p.model_copy(
                 update={
-                    'tags': self.tags,
-                    'format2d': self.format2d,
-                    'marker': Marker.from_pen(self.pen, symbol=marker_symbol)
+                    "tags": self.tags,
+                    "format2d": self.format2d,
+                    "marker": Marker.from_pen(self.pen, symbol=marker_symbol),
                 }
-            ) 
-            for p 
-            in self.points
+            )
+            for p in self.points
         ]
 
     @classmethod
     def from_xy(
-            cls,
-            tags: Tags,
-            x: NDArray[Shape["*"], float],
-            y: NDArray[Shape["*"], float],
-            pen: Pen = Pen(),
-            format2d: Format2D = Format2D(),
-        ):
+        cls,
+        tags: Tags,
+        x: NDArray[Shape["*"], float],
+        y: NDArray[Shape["*"], float],
+        pen: Pen = Pen(),
+        format2d: Format2D = Format2D(),
+    ):
         """
         Creates a list of [Point2D][trendify.API.Point2D]s from xy data and returns a new [Trace2D][trendify.API.Trace2D] product.
 
@@ -611,8 +663,8 @@ class Trace2D(XYData):
             format2d (Format2D): Format to apply to plot
         """
         return cls(
-            tags = tags,
-            points = [
+            tags=tags,
+            points=[
                 Point2D(
                     tags=[None],
                     x=x_,
@@ -620,8 +672,7 @@ class Trace2D(XYData):
                     marker=None,
                     format2d=None,
                 )
-                for x_, y_
-                in zip(x, y)
+                for x_, y_ in zip(x, y)
             ],
             pen=pen,
             format2d=format2d,
@@ -636,12 +687,13 @@ class Trace2D(XYData):
         """
         ax.plot(self.x, self.y, **self.pen.as_scatter_plot_kwargs())
 
+
 class Point2D(XYData):
     """
     Defines a point to be scattered onto xy plot.
 
     Attributes:
-        tags (Tags): Tags to be used for sorting data.        
+        tags (Tags): Tags to be used for sorting data.
         x (float | str): X value for the point.
         y (float | str): Y value for the point.
         marker (Marker | None): Style and label information for scattering points to matplotlib axes.
@@ -649,21 +701,25 @@ class Point2D(XYData):
             Eventually style information will be used in grafana.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
+
     x: float | str
     y: float | str
     marker: Marker | None = Marker()
-    
-    model_config = ConfigDict(extra='forbid')
+
+    model_config = ConfigDict(extra="forbid")
+
 
 class LineOrientation(Enum):
     """Defines orientation for axis lines
-    
+
     Attributes:
         HORIZONTAL (LineOrientation): Horizontal line
         VERTICAL (LineOrientation): Vertical line
     """
+
     HORIZONTAL = "horizontal"
     VERTICAL = "vertical"
+
 
 class AxLine(PlottableData2D):
     """
@@ -676,11 +732,12 @@ class AxLine(PlottableData2D):
         tags (Tags): Tags to be used for sorting data
         metadata (dict[str, str]): A dictionary of metadata
     """
+
     value: float
     orientation: LineOrientation
     pen: Pen = Pen()
-    
-    model_config = ConfigDict(extra='forbid')
+
+    model_config = ConfigDict(extra="forbid")
 
     def plot_to_ax(self, ax: plt.Axes):
         """
@@ -695,8 +752,9 @@ class AxLine(PlottableData2D):
             case LineOrientation.VERTICAL:
                 ax.axvline(x=self.value, **self.pen.as_scatter_plot_kwargs())
             case _:
-                print(f'Unrecognized line orientation {self.orientation}')
-        
+                print(f"Unrecognized line orientation {self.orientation}")
+
+
 class HistogramStyle(HashableBase):
     """
     Label and style data for generating histogram bars
@@ -710,9 +768,10 @@ class HistogramStyle(HashableBase):
         linewidth (float): Line width of bar outline
         bins (int | list[int] | Tuple[int] | NDArray[Shape["*"], int] | None): Number of bins (see [matplotlib docs][matplotlib.pyplot.hist])
     """
-    color: str = 'k'
+
+    color: str = "k"
     label: str | None = None
-    histtype: str = 'stepfilled'
+    histtype: str = "stepfilled"
     alpha_edge: float = 1
     alpha_face: float = 0.3
     linewidth: float = 2
@@ -724,13 +783,14 @@ class HistogramStyle(HashableBase):
             (dict): kwargs for matplotlib `hist` method
         """
         return {
-            'facecolor': (self.color, self.alpha_face),
-            'edgecolor': (self.color, self.alpha_edge),
-            'linewidth': self.linewidth,
-            'label': self.label,
-            'histtype': self.histtype,
-            'bins': self.bins,
+            "facecolor": (self.color, self.alpha_face),
+            "edgecolor": (self.color, self.alpha_edge),
+            "linewidth": self.linewidth,
+            "label": self.label,
+            "histtype": self.histtype,
+            "bins": self.bins,
         }
+
 
 class HistogramEntry(PlottableData2D):
     """
@@ -741,11 +801,13 @@ class HistogramEntry(PlottableData2D):
         value (float | str): Value to be binned
         style (HistogramStyle): Style of histogram display
     """
+
     value: float | str
     tags: Tags
     style: HistogramStyle | None = Field(default_factory=HistogramStyle)
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra="forbid")
+
 
 class TableEntry(DataProduct):
     """
@@ -761,12 +823,13 @@ class TableEntry(DataProduct):
         unit (str | None): Units for value
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
+
     row: float | str
     col: float | str
     value: float | str | bool
     unit: str | None = None
-    
-    model_config = ConfigDict(extra='forbid')
+
+    model_config = ConfigDict(extra="forbid")
 
     def get_entry_dict(self):
         """
@@ -775,8 +838,13 @@ class TableEntry(DataProduct):
         Returns:
             (dict[str, str | float]): Dictionary of entries to be used in creating a melted [DataFrame][pandas.DataFrame]
         """
-        return {'row': self.row, 'col': self.col, 'value': self.value, 'unit': self.unit}
-    
+        return {
+            "row": self.row,
+            "col": self.col,
+            "value": self.value,
+            "unit": self.unit,
+        }
+
     @classmethod
     def pivot_table(cls, melted: pd.DataFrame):
         """
@@ -784,18 +852,18 @@ class TableEntry(DataProduct):
 
         Args:
             melted (pd.DataFrame): Melted data frame having columns named `'row'`, `'col'`, `'value'`.
-        
+
         Returns:
-            (pd.DataFrame | None): pivoted DataFrame if pivot works else `None`. Pivot operation fails if 
+            (pd.DataFrame | None): pivoted DataFrame if pivot works else `None`. Pivot operation fails if
                 row or column index pairs are repeated.
         """
         try:
-            result = melted.pivot(index='row', columns='col', values='value')
+            result = melted.pivot(index="row", columns="col", values="value")
         except ValueError as e:
             logger.debug(traceback.format_exc())
             result = None
         return result
-    
+
     @classmethod
     def load_and_pivot(cls, path: Path):
         """
@@ -810,28 +878,30 @@ class TableEntry(DataProduct):
         """
         return cls.pivot_table(melted=pd.read_csv(path))
 
-UQL_TableEntry = r'''
+
+UQL_TableEntry = r"""
 parse-json
 | project "elements"
 | project "row", "col", "value", "unit", "metadata"
-'''#.replace('\n', r'\n').replace('"', r'\"') + '"'
+"""  # .replace('\n', r'\n').replace('"', r'\"') + '"'
 
-UQL_Point2D = r'''
+UQL_Point2D = r"""
 parse-json
 | project "elements"
 | extend "label"="marker.label"
-'''#.replace('\n', r'\n').replace('"', r'\"') + '"'
+"""  # .replace('\n', r'\n').replace('"', r'\"') + '"'
 
-UQL_Trace2D = r'''
+UQL_Trace2D = r"""
 parse-json
 | project "elements"
 | extend "label"="pen.label"
 | mv-expand "points"
 | extend "x"="points.x", "y"="points.y"
 | project "label", "x", "y", "metadata"
-'''#.replace('\n', r'\n').replace('"', r'\"') + '"'
+"""  # .replace('\n', r'\n').replace('"', r'\"') + '"'
 
 ### Asset producers
+
 
 class DataProductCollection(BaseModel):
     """
@@ -842,11 +912,12 @@ class DataProductCollection(BaseModel):
     Attributes:
         elements (ProductList): A list of data products.
     """
+
     derived_from: Path | None = None
     elements: ProductList | None = None
 
     def __init__(self, **kwargs: Any):
-        DataProduct.deserialize_child_classes(key='elements', **kwargs)                
+        DataProduct.deserialize_child_classes(key="elements", **kwargs)
         super().__init__(**kwargs)
 
     @classmethod
@@ -856,19 +927,19 @@ class DataProductCollection(BaseModel):
 
         Args:
             products (Tuple[ProductList, ...]): Lists of data products to combine into a collection
-        
+
         Returns:
             (cls): A data product collection containing all of the provided products in the `*products` argument.
         """
         return cls(elements=list(flatten(products)))
-    
+
     def get_tags(self, data_product_type: Type[DataProduct] | None = None) -> set:
         """
         Gets the tags related to a given type of `DataProduct`.  Parent classes will match all child class types.
-        
+
         Args:
             data_product_type (Type[DataProduct] | None): type for which you want to get the list of tags
-        
+
         Returns:
             (set): set of tags applying to the given `data_product_type`.
         """
@@ -878,34 +949,35 @@ class DataProductCollection(BaseModel):
                 for t in e.tags:
                     tags.append(t)
         return set(tags)
-    
+
     def add_products(self, *products: DataProduct):
         """
         Args:
             products (Tuple[DataProduct|ProductList, ...]): Products or lists of products to be
-                appended to collection elements.  
+                appended to collection elements.
         """
         self.elements.extend(flatten(products))
 
     def generate_plotly_dashboard(
-            self, 
-            title: str = 'Trendify Autodash', 
-            debug: bool = False,
-        ) -> dash.Dash:
+        self,
+        title: str = "Trendify Autodash",
+        debug: bool = False,
+    ) -> dash.Dash:
         from trendify.plotly_dashboard import generate_plotly_dashboard
+
         return generate_plotly_dashboard(
             collection=self,
             title=title,
             debug=debug,
         )
-    
+
     def serve_plotly_dashboard(
-            self, 
-            title: str = "Trendify Autodash",
-            host: str = '127.0.0.1',
-            port: int = 8000,
-            debug: bool = False,
-        ):
+        self,
+        title: str = "Trendify Autodash",
+        host: str = "127.0.0.1",
+        port: int = 8000,
+        debug: bool = False,
+    ):
         app = self.generate_plotly_dashboard(
             title=title,
             debug=debug,
@@ -913,35 +985,48 @@ class DataProductCollection(BaseModel):
         if not debug:
             try:
                 import waitress
+
                 # Try to use waitress if available (a production WSGI server)
-                os.environ['FLASK_ENV'] = 'production'  # This reduces some of the output
-                print(f"Starting production server with waitress on http://{host}:{port}")
+                os.environ["FLASK_ENV"] = (
+                    "production"  # This reduces some of the output
+                )
+                print(
+                    f"Starting production server with waitress on http://{host}:{port}"
+                )
                 waitress.serve(app.server, host=host, port=port)
             except ImportError:
                 # Fall back to development server with a message about installing waitress
-                print("Warning: 'waitress' package not found. For production use, install it with:")
+                print(
+                    "Warning: 'waitress' package not found. For production use, install it with:"
+                )
                 print("pip install waitress")
                 print(f"Starting development server on {host}:{port}")
                 app.run_server(debug=debug, host=host, port=port)
         else:
             # Use Flask development server
             app.run_server(debug=debug, host=host, port=port)
-        
+
     @classmethod
     def collect_and_serve_plotly_dashboard(
-            cls: DataProductCollection,
-            *dirs: Path, 
-            recursive: bool = False,
-            title: str = "Trendify Autodash",
-            host: str = '127.0.0.1',
-            port: int = 8000,
-            debug: bool = False,
-            data_products_filename: str = DATA_PRODUCTS_FNAME_DEFAULT,
-        ) -> tuple[DataProductCollection, dash.Dash]:
-        collection = cls.collect_from_all_jsons(*dirs, recursive=recursive, data_products_filename=data_products_filename)
-        collection.generate_plotly_dashboard(title=title, debug=debug).run(debug=debug, host=host, port=port)
+        cls: DataProductCollection,
+        *dirs: Path,
+        recursive: bool = False,
+        title: str = "Trendify Autodash",
+        host: str = "127.0.0.1",
+        port: int = 8000,
+        debug: bool = False,
+        data_products_filename: str = DATA_PRODUCTS_FNAME_DEFAULT,
+    ) -> tuple[DataProductCollection, dash.Dash]:
+        collection = cls.collect_from_all_jsons(
+            *dirs, recursive=recursive, data_products_filename=data_products_filename
+        )
+        collection.generate_plotly_dashboard(title=title, debug=debug).run(
+            debug=debug, host=host, port=port
+        )
 
-    def drop_products(self, tag: Tag | None = None, object_type: Type[R] | None = None) -> Self[R]:
+    def drop_products(
+        self, tag: Tag | None = None, object_type: Type[R] | None = None
+    ) -> Self[R]:
         """
         Removes products matching `tag` and/or `object_type` from collection elements.
 
@@ -957,15 +1042,29 @@ class DataProductCollection(BaseModel):
             case (True, True):
                 return type(self)(elements=self.elements)
             case (True, False):
-                return type(self)(elements=[e for e in self.elements if not isinstance(e, object_type)])
+                return type(self)(
+                    elements=[
+                        e for e in self.elements if not isinstance(e, object_type)
+                    ]
+                )
             case (False, True):
-                return type(self)(elements=[e for e in self.elements if not tag in e.tags])
+                return type(self)(
+                    elements=[e for e in self.elements if not tag in e.tags]
+                )
             case (False, False):
-                return type(self)(elements=[e for e in self.elements if not (tag in e.tags and isinstance(e, object_type))])
+                return type(self)(
+                    elements=[
+                        e
+                        for e in self.elements
+                        if not (tag in e.tags and isinstance(e, object_type))
+                    ]
+                )
             case _:
-                raise ValueError('Something is wrong with match statement')
-    
-    def get_products(self, tag: Tag | None = None, object_type: Type[R] | None = None) -> Self[R]:
+                raise ValueError("Something is wrong with match statement")
+
+    def get_products(
+        self, tag: Tag | None = None, object_type: Type[R] | None = None
+    ) -> Self[R]:
         """
         Returns a new collection containing products matching `tag` and/or `object_type`.
         Both `tag` and `object_type` default to `None` which matches all products.
@@ -982,14 +1081,22 @@ class DataProductCollection(BaseModel):
             case (True, True):
                 return type(self)(elements=self.elements)
             case (True, False):
-                return type(self)(elements=[e for e in self.elements if isinstance(e, object_type)])
+                return type(self)(
+                    elements=[e for e in self.elements if isinstance(e, object_type)]
+                )
             case (False, True):
                 return type(self)(elements=[e for e in self.elements if tag in e.tags])
             case (False, False):
-                return type(self)(elements=[e for e in self.elements if tag in e.tags and isinstance(e, object_type)])
+                return type(self)(
+                    elements=[
+                        e
+                        for e in self.elements
+                        if tag in e.tags and isinstance(e, object_type)
+                    ]
+                )
             case _:
-                raise ValueError('Something is wrong with match statement')
-    
+                raise ValueError("Something is wrong with match statement")
+
     @classmethod
     def union(cls, *collections: DataProductCollection):
         """
@@ -998,47 +1105,58 @@ class DataProductCollection(BaseModel):
         Args:
             collections (Tuple[DataProductCollection, ...]): Data product collections
                 for which the products should be combined into a new collection.
-        
+
         Returns:
             (Type[Self]): A new data product collection containing all products from
                 the provided `*collections`.
         """
         return cls(elements=list(flatten(chain(c.elements for c in collections))))
-    
+
     @classmethod
-    def collect_from_all_jsons(cls, *dirs: Path, recursive: bool = False, data_products_filename: str|None = '*.json'):
+    def collect_from_all_jsons(
+        cls,
+        *dirs: Path,
+        recursive: bool = False,
+        data_products_filename: str | None = "*.json",
+    ):
         """
-        Loads all products from JSONs in the given list of directories.  
-        If recursive is set to `True`, the directories will be searched recursively 
+        Loads all products from JSONs in the given list of directories.
+        If recursive is set to `True`, the directories will be searched recursively
         (this could lead to double counting if you pass in subdirectories of a parent).
 
         Args:
             dirs (Tuple[Path, ...]): Directories from which to load data product JSON files.
-            recursive (bool): whether or not to search each of the provided directories recursively for 
+            recursive (bool): whether or not to search each of the provided directories recursively for
                 data product json files.
 
         Returns:
-            (Type[Self] | None): Data product collection if JSON files are found.  
+            (Type[Self] | None): Data product collection if JSON files are found.
                 Otherwise, returns None if no product JSON files were found.
         """
         if not recursive:
-            jsons: List[Path] = list(flatten(chain(list(d.glob(data_products_filename)) for d in dirs)))
+            jsons: List[Path] = list(
+                flatten(chain(list(d.glob(data_products_filename)) for d in dirs))
+            )
         else:
-            jsons: List[Path] = list(flatten(chain(list(d.glob(f'**/{data_products_filename}')) for d in dirs)))
+            jsons: List[Path] = list(
+                flatten(
+                    chain(list(d.glob(f"**/{data_products_filename}")) for d in dirs)
+                )
+            )
         if jsons:
             return cls.union(
-                *tuple(
-                    [
-                        cls.model_validate_json(p.read_text())
-                        for p in jsons
-                    ]
-                )
+                *tuple([cls.model_validate_json(p.read_text()) for p in jsons])
             )
         else:
             return None
-    
+
     @classmethod
-    def sort_by_tags(cls, dirs_in: List[Path], dir_out: Path, data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT):
+    def sort_by_tags(
+        cls,
+        dirs_in: List[Path],
+        dir_out: Path,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+    ):
         """
         Loads the data product JSON files from `dirs_in` sorts the products.
         Sorted products are written to smaller files in a nested directory structure under `dir_out`.
@@ -1047,7 +1165,7 @@ class DataProductCollection(BaseModel):
 
         Args:
             dirs_in (List[Path]): Directories from which the data product JSON files are to be loaded.
-            dir_out (Path): Directory to which the sorted data products will be written into a 
+            dir_out (Path): Directory to which the sorted data products will be written into a
                 nested folder structure generated according to the data tags.
             data_products_fname (str): Name of data products file
         """
@@ -1055,11 +1173,18 @@ class DataProductCollection(BaseModel):
         dirs_in.sort()
         len_dirs = len(dirs_in)
         for n, dir_in in enumerate(dirs_in):
-            print(f'Sorting tagged data from dir {n}/{len_dirs}', end=f'\r')
-            cls.sort_by_tags_single_directory(dir_in=dir_in, dir_out=dir_out, data_products_fname=data_products_fname)
+            print(f"Sorting tagged data from dir {n}/{len_dirs}", end=f"\r")
+            cls.sort_by_tags_single_directory(
+                dir_in=dir_in, dir_out=dir_out, data_products_fname=data_products_fname
+            )
 
     @classmethod
-    def sort_by_tags_single_directory(cls, dir_in: Path, dir_out: Path, data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT):
+    def sort_by_tags_single_directory(
+        cls,
+        dir_in: Path,
+        dir_out: Path,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+    ):
         """
         Loads the data product JSON files from `dir_in` and sorts the products.
         Sorted products are written to smaller files in a nested directory structure under `dir_out`.
@@ -1068,36 +1193,40 @@ class DataProductCollection(BaseModel):
 
         Args:
             dir_in (List[Path]): Directories from which the data product JSON files are to be loaded.
-            dir_out (Path): Directory to which the sorted data products will be written into a 
+            dir_out (Path): Directory to which the sorted data products will be written into a
                 nested folder structure generated according to the data tags.
             data_products_fname (str): Name of data products file
         """
         products_file = dir_in.joinpath(data_products_fname)
         if products_file.exists():
-            print(f'Sorting results from {dir_in = }')
-            collection = DataProductCollection.model_validate_json(dir_in.joinpath(data_products_fname).read_text())
+            print(f"Sorting results from {dir_in = }")
+            collection = DataProductCollection.model_validate_json(
+                dir_in.joinpath(data_products_fname).read_text()
+            )
             collection.derived_from = dir_in
             tags = collection.get_tags()
             for tag in tags:
                 sub_collection = collection.get_products(tag=tag)
                 save_dir = dir_out.joinpath(*atleast_1d(tag))
                 save_dir.mkdir(parents=True, exist_ok=True)
-                next_index = get_and_reserve_next_index(save_dir=save_dir, dir_in=dir_in)
-                file = save_dir.joinpath(str(next_index)).with_suffix('.json')
+                next_index = get_and_reserve_next_index(
+                    save_dir=save_dir, dir_in=dir_in
+                )
+                file = save_dir.joinpath(str(next_index)).with_suffix(".json")
                 file.write_text(sub_collection.model_dump_json())
         else:
-            print(f'No results found in {dir_in = }')
+            print(f"No results found in {dir_in = }")
 
     @classmethod
     def process_collection(
-            cls,
-            dir_in: Path,
-            dir_out: Path,
-            no_tables: bool,
-            no_xy_plots: bool,
-            no_histograms: bool,
-            dpi: int,
-        ):
+        cls,
+        dir_in: Path,
+        dir_out: Path,
+        no_tables: bool,
+        no_xy_plots: bool,
+        no_histograms: bool,
+        dpi: int,
+    ):
         """
         Processes collection of elements corresponding to a single tag.
         This method should be called on a directory containing jsons for which the products have been
@@ -1117,33 +1246,39 @@ class DataProductCollection(BaseModel):
         if collection is not None:
 
             for tag in collection.get_tags():
-            # tags = collection.get_tags()
-            # try:
-            #     [tag] = collection.get_tags()
-            # except:
-            #     breakpoint()
+                # tags = collection.get_tags()
+                # try:
+                #     [tag] = collection.get_tags()
+                # except:
+                #     breakpoint()
 
                 if not no_tables:
-                    
-                    table_entries: List[TableEntry] = collection.get_products(tag=tag, object_type=TableEntry).elements
+
+                    table_entries: List[TableEntry] = collection.get_products(
+                        tag=tag, object_type=TableEntry
+                    ).elements
 
                     if table_entries:
-                        print(f'\n\nMaking tables for {tag = }\n')
+                        print(f"\n\nMaking tables for {tag = }\n")
                         TableBuilder.process_table_entries(
-                            tag=tag,
-                            table_entries=table_entries,
-                            out_dir=dir_out
+                            tag=tag, table_entries=table_entries, out_dir=dir_out
                         )
-                        print(f'\nFinished tables for {tag = }\n')
+                        print(f"\nFinished tables for {tag = }\n")
 
                 if not no_xy_plots:
 
-                    traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
-                    points: List[Point2D] = collection.get_products(tag=tag, object_type=Point2D).elements
-                    axlines: List[AxLine] = collection.get_products(tag=tag, object_type=AxLine).elements  # Add this line
+                    traces: List[Trace2D] = collection.get_products(
+                        tag=tag, object_type=Trace2D
+                    ).elements
+                    points: List[Point2D] = collection.get_products(
+                        tag=tag, object_type=Point2D
+                    ).elements
+                    axlines: List[AxLine] = collection.get_products(
+                        tag=tag, object_type=AxLine
+                    ).elements  # Add this line
 
                     if points or traces or axlines:  # Update condition
-                        print(f'\n\nMaking xy plot for {tag = }\n')
+                        print(f"\n\nMaking xy plot for {tag = }\n")
                         XYDataPlotter.handle_points_and_traces(
                             tag=tag,
                             points=points,
@@ -1152,8 +1287,8 @@ class DataProductCollection(BaseModel):
                             dir_out=dir_out,
                             dpi=dpi,
                         )
-                        print(f'\nFinished xy plot for {tag = }\n')
-                        
+                        print(f"\nFinished xy plot for {tag = }\n")
+
                     # traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
                     # points: List[Point2D] = collection.get_products(tag=tag, object_type=Point2D).elements
                     # if points or traces:
@@ -1166,27 +1301,29 @@ class DataProductCollection(BaseModel):
                     #         dpi=dpi,
                     #     )
                     #     print(f'\nFinished xy plot for {tag = }\n')
-                
+
                 if not no_histograms:
-                    histogram_entries: List[HistogramEntry] = collection.get_products(tag=tag, object_type=HistogramEntry).elements
+                    histogram_entries: List[HistogramEntry] = collection.get_products(
+                        tag=tag, object_type=HistogramEntry
+                    ).elements
 
                     if histogram_entries:
-                        print(f'\n\nMaking histogram for {tag = }\n')
+                        print(f"\n\nMaking histogram for {tag = }\n")
                         Histogrammer.handle_histogram_entries(
                             tag=tag,
                             histogram_entries=histogram_entries,
                             dir_out=dir_out,
-                            dpi=dpi
+                            dpi=dpi,
                         )
-                        print(f'\nFinished histogram for {tag = }\n')
+                        print(f"\nFinished histogram for {tag = }\n")
 
     @classmethod
     def make_grafana_panels(
-            cls,
-            dir_in: Path,
-            panel_dir: Path,
-            server_path: str,
-        ):
+        cls,
+        dir_in: Path,
+        panel_dir: Path,
+        server_path: str,
+    ):
         """
         Processes collection of elements corresponding to a single tag.
         This method should be called on a directory containing jsons for which the products have been
@@ -1197,65 +1334,90 @@ class DataProductCollection(BaseModel):
             panel_dir (Path): Where to put the panel information
         """
         import grafana_api as gapi
+
         collection = cls.collect_from_all_jsons(dir_in)
         panel_dir.mkdir(parents=True, exist_ok=True)
 
         if collection is not None:
             for tag in collection.get_tags():
-                dot_tag = '.'.join([str(t) for t in tag]) if should_be_flattened(tag) else tag
-                underscore_tag = '_'.join([str(t) for t in tag]) if should_be_flattened(tag) else tag
+                dot_tag = (
+                    ".".join([str(t) for t in tag]) if should_be_flattened(tag) else tag
+                )
+                underscore_tag = (
+                    "_".join([str(t) for t in tag]) if should_be_flattened(tag) else tag
+                )
 
-                table_entries: List[TableEntry] = collection.get_products(tag=tag, object_type=TableEntry).elements
+                table_entries: List[TableEntry] = collection.get_products(
+                    tag=tag, object_type=TableEntry
+                ).elements
 
                 if table_entries:
-                    print(f'\n\nMaking tables for {tag = }\n')
+                    print(f"\n\nMaking tables for {tag = }\n")
                     panel = gapi.Panel(
-                        title=str(tag).capitalize() if isinstance(tag, str) else ' '.join([str(t).title() for t in tag]),
+                        title=(
+                            str(tag).capitalize()
+                            if isinstance(tag, str)
+                            else " ".join([str(t).title() for t in tag])
+                        ),
                         targets=[
                             gapi.Target(
                                 datasource=gapi.DataSource(),
-                                url='/'.join([server_path.strip('/'), dot_tag, 'TableEntry']),
+                                url="/".join(
+                                    [server_path.strip("/"), dot_tag, "TableEntry"]
+                                ),
                                 uql=UQL_TableEntry,
                             )
                         ],
-                        type='table',
+                        type="table",
                     )
-                    panel_dir.joinpath(underscore_tag + '_table_panel.json').write_text(panel.model_dump_json())
-                    print(f'\nFinished tables for {tag = }\n')
+                    panel_dir.joinpath(underscore_tag + "_table_panel.json").write_text(
+                        panel.model_dump_json()
+                    )
+                    print(f"\nFinished tables for {tag = }\n")
 
-                traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
-                points: List[Point2D] = collection.get_products(tag=tag, object_type=Point2D).elements
+                traces: List[Trace2D] = collection.get_products(
+                    tag=tag, object_type=Trace2D
+                ).elements
+                points: List[Point2D] = collection.get_products(
+                    tag=tag, object_type=Point2D
+                ).elements
 
                 if points or traces:
-                    print(f'\n\nMaking xy chart for {tag = }\n')
+                    print(f"\n\nMaking xy chart for {tag = }\n")
                     panel = gapi.Panel(
                         targets=[
                             gapi.Target(
                                 datasource=gapi.DataSource(),
-                                url='/'.join([server_path.strip('/'), dot_tag, 'Point2D']),
+                                url="/".join(
+                                    [server_path.strip("/"), dot_tag, "Point2D"]
+                                ),
                                 uql=UQL_Point2D,
-                                refId='A',
+                                refId="A",
                             ),
                             gapi.Target(
                                 datasource=gapi.DataSource(),
-                                url='/'.join([server_path.strip('/'), dot_tag, 'Trace2D']),
+                                url="/".join(
+                                    [server_path.strip("/"), dot_tag, "Trace2D"]
+                                ),
                                 uql=UQL_Trace2D,
-                                refId='B',
-                            )
+                                refId="B",
+                            ),
                         ],
                         transformations=[
                             gapi.Merge(),
                             gapi.PartitionByValues.from_fields(
-                                fields='label',
+                                fields="label",
                                 keep_fields=False,
                                 fields_as_labels=False,
-                            )
+                            ),
                         ],
-                        type='xychart',
+                        type="xychart",
                     )
-                    panel_dir.joinpath(underscore_tag + '_xy_panel.json').write_text(panel.model_dump_json())
-                    print(f'\nFinished xy plot for {tag = }\n')
-            
+                    panel_dir.joinpath(underscore_tag + "_xy_panel.json").write_text(
+                        panel.model_dump_json()
+                    )
+                    print(f"\nFinished xy plot for {tag = }\n")
+
                 # histogram_entries: List[HistogramEntry] = collection.get_products(tag=tag, object_type=HistogramEntry).elements
                 # if histogram_entries:
                 #     print(f'\n\nMaking histogram for {tag = }\n')
@@ -1279,6 +1441,7 @@ class DataProductCollection(BaseModel):
                 #     panel.model_dump_json(dir_out.joinpath(underscore_tag + '_xy_panel.json'), indent=4)
                 #     print(f'\nFinished histogram for {tag = }\n')
 
+
 class DataProductGenerator:
     """
     A wrapper for saving the data products generated by a user defined function
@@ -1287,25 +1450,31 @@ class DataProductGenerator:
         processor (ProductGenerator): A callable that receives a working directory
             and returns a list of data products.
     """
+
     def __init__(self, processor: ProductGenerator):
         self._processor = processor
-    
-    def process_and_save(self, workdir: Path, data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT):
+
+    def process_and_save(
+        self, workdir: Path, data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT
+    ):
         """
         Runs the user-defined processor method stored at instantiation.
-        
+
         Saves the returned products to a JSON file in the same directory.
 
         Args:
             workdir (Path): working directory on which to run the processor method.
             data_products_fname (str): Name of data products file
         """
-        
-        print(f'Processing {workdir = } with {self._processor = }')
+
+        print(f"Processing {workdir = } with {self._processor = }")
         collection = DataProductCollection.from_iterable(self._processor(workdir))
         if collection.elements:
             workdir.mkdir(exist_ok=True, parents=True)
-            workdir.joinpath(data_products_fname).write_text(collection.model_dump_json())
+            workdir.joinpath(data_products_fname).write_text(
+                collection.model_dump_json()
+            )
+
 
 class XYDataPlotter:
     """
@@ -1316,25 +1485,26 @@ class XYDataPlotter:
         out_dir (Path): directory to which figure will be output
         dpi (int): Saved image resolution
     """
+
     def __init__(
-            self,
-            in_dirs: List[Path],
-            out_dir: Path,
-            dpi: int = 500,
-        ):
+        self,
+        in_dirs: List[Path],
+        out_dir: Path,
+        dpi: int = 500,
+    ):
         self.in_dirs = in_dirs
         self.out_dir = out_dir
         self.dpi = dpi
 
     def plot(
-            self,  
-            tag: Tag, 
-            data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
-        ):
+        self,
+        tag: Tag,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+    ):
         """
-        - Collects data from json files in stored `self.in_dirs`, 
+        - Collects data from json files in stored `self.in_dirs`,
         - plots the relevant products,
-        - applies labels and formatting, 
+        - applies labels and formatting,
         - saves the figure
         - closes matplotlib figure
 
@@ -1342,13 +1512,19 @@ class XYDataPlotter:
             tag (Tag): data tag for which products are to be collected and plotted.
             data_products_fname (str): Data products file name
         """
-        print(f'Making xy plot for {tag = }')
+        print(f"Making xy plot for {tag = }")
         saf = SingleAxisFigure.new(tag=tag)
 
         for subdir in self.in_dirs:
-            collection = DataProductCollection.model_validate_json(subdir.joinpath(data_products_fname).read_text())
-            traces: List[Trace2D] = collection.get_products(tag=tag, object_type=Trace2D).elements
-            points: List[Point2D] = collection.get_products(tag=tag, object_type=Point2D).elements
+            collection = DataProductCollection.model_validate_json(
+                subdir.joinpath(data_products_fname).read_text()
+            )
+            traces: List[Trace2D] = collection.get_products(
+                tag=tag, object_type=Trace2D
+            ).elements
+            points: List[Point2D] = collection.get_products(
+                tag=tag, object_type=Point2D
+            ).elements
 
             if points or traces:
                 if points:
@@ -1362,31 +1538,37 @@ class XYDataPlotter:
                                 saf.ax.scatter(x, y, **marker.as_scatter_plot_kwargs())
                             else:
                                 saf.ax.scatter(x, y)
-                
+
                 for trace in traces:
                     trace.plot_to_ax(saf.ax)
 
-                formats = list(set([p.format2d for p in points if p.format2d] + [t.format2d for t in traces]) - {None})
+                formats = list(
+                    set(
+                        [p.format2d for p in points if p.format2d]
+                        + [t.format2d for t in traces]
+                    )
+                    - {None}
+                )
                 format2d = Format2D.union_from_iterable(formats)
                 saf.apply_format(format2d)
                 # saf.ax.autoscale(enable=True, axis='both', tight=True)
-        
-        save_path = self.out_dir.joinpath(*tuple(atleast_1d(tag))).with_suffix('.jpg')
+
+        save_path = self.out_dir.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
         save_path.parent.mkdir(exist_ok=True, parents=True)
-        print(f'Saving to {save_path = }')
+        print(f"Saving to {save_path = }")
         saf.savefig(path=save_path, dpi=self.dpi)
         del saf
 
     @classmethod
     def handle_points_and_traces(
-            cls,
-            tag: Tag,
-            points: List[Point2D],
-            traces: List[Trace2D],
-            axlines: List[AxLine],  # Add this parameter
-            dir_out: Path,
-            dpi: int,
-        ):
+        cls,
+        tag: Tag,
+        points: List[Point2D],
+        traces: List[Trace2D],
+        axlines: List[AxLine],  # Add this parameter
+        dir_out: Path,
+        dpi: int,
+    ):
         """
         Plots points, traces, and axlines, formats figure, saves figure, and closes matplotlinb figure.
 
@@ -1409,24 +1591,25 @@ class XYDataPlotter:
                 y = [p.y for p in matching_points]
                 if x and y:
                     saf.ax.scatter(x, y, **marker.as_scatter_plot_kwargs())
-        
+
         for trace in traces:
             trace.plot_to_ax(saf.ax)
 
         # Add plotting of axlines
         for axline in axlines:
             axline.plot_to_ax(saf.ax)
-        
+
         formats = list(set([p.format2d for p in points] + [t.format2d for t in traces]))
         format2d = Format2D.union_from_iterable(formats)
         saf.apply_format(format2d)
         # saf.ax.autoscale(enable=True, axis='both', tight=True)
-        
-        save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix('.jpg')
+
+        save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
         save_path.parent.mkdir(exist_ok=True, parents=True)
-        print(f'Saving to {save_path = }')
+        print(f"Saving to {save_path = }")
         saf.savefig(path=save_path, dpi=dpi)
         del saf
+
 
 class TableBuilder:
     """
@@ -1436,51 +1619,58 @@ class TableBuilder:
         in_dirs (List[Path]): directories from which to load data products
         out_dir (Path): directory in which tables should be saved
     """
+
     def __init__(
-            self,
-            in_dirs: List[Path],
-            out_dir: Path,
-        ):
+        self,
+        in_dirs: List[Path],
+        out_dir: Path,
+    ):
         self.in_dirs = in_dirs
         self.out_dir = out_dir
-    
+
     def load_table(
-            self,
-            tag: Tag,
-            data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
-        ):
+        self,
+        tag: Tag,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+    ):
         """
         Collects table entries from JSON files corresponding to given tag and processes them.
 
         Saves CSV files for the melted data frame, pivot dataframe, and pivot dataframe stats.
 
-        File names will all use the tag with different suffixes 
+        File names will all use the tag with different suffixes
         `'tag_melted.csv'`, `'tag_pivot.csv'`, `'name_stats.csv'`.
 
         Args:
             tag (Tag): product tag for which to collect and process.
         """
-        print(f'Making table for {tag = }')
+        print(f"Making table for {tag = }")
 
         table_entries: List[TableEntry] = []
         for subdir in self.in_dirs:
-            collection = DataProductCollection.model_validate_json(subdir.joinpath(data_products_fname).read_text())
-            table_entries.extend(collection.get_products(tag=tag, object_type=TableEntry).elements)
+            collection = DataProductCollection.model_validate_json(
+                subdir.joinpath(data_products_fname).read_text()
+            )
+            table_entries.extend(
+                collection.get_products(tag=tag, object_type=TableEntry).elements
+            )
 
-        self.process_table_entries(tag=tag, table_entries=table_entries, out_dir=self.out_dir)
-    
+        self.process_table_entries(
+            tag=tag, table_entries=table_entries, out_dir=self.out_dir
+        )
+
     @classmethod
     def process_table_entries(
-            cls,
-            tag: Tag,
-            table_entries: List[TableEntry],
-            out_dir: Path,
-        ):
+        cls,
+        tag: Tag,
+        table_entries: List[TableEntry],
+        out_dir: Path,
+    ):
         """
-        
+
         Saves CSV files for the melted data frame, pivot dataframe, and pivot dataframe stats.
 
-        File names will all use the tag with different suffixes 
+        File names will all use the tag with different suffixes
         `'tag_melted.csv'`, `'tag_pivot.csv'`, `'name_stats.csv'`.
 
         Args:
@@ -1493,25 +1683,40 @@ class TableBuilder:
 
         save_path_partial = out_dir.joinpath(*tuple(atleast_1d(tag)))
         save_path_partial.parent.mkdir(exist_ok=True, parents=True)
-        print(f'Saving to {str(save_path_partial)}_*.csv')
+        print(f"Saving to {str(save_path_partial)}_*.csv")
 
-        melted.to_csv(save_path_partial.with_stem(save_path_partial.stem + '_melted').with_suffix('.csv'), index=False)
-        
+        melted.to_csv(
+            save_path_partial.with_stem(save_path_partial.stem + "_melted").with_suffix(
+                ".csv"
+            ),
+            index=False,
+        )
+
         if pivot is not None:
-            pivot.to_csv(save_path_partial.with_stem(save_path_partial.stem + '_pivot').with_suffix('.csv'), index=True)
-        
+            pivot.to_csv(
+                save_path_partial.with_stem(
+                    save_path_partial.stem + "_pivot"
+                ).with_suffix(".csv"),
+                index=True,
+            )
+
             try:
                 stats = cls.get_stats_table(df=pivot)
                 if not stats.empty and not stats.isna().all().all():
-                    stats.to_csv(save_path_partial.with_stem(save_path_partial.stem + '_stats').with_suffix('.csv'), index=True)
+                    stats.to_csv(
+                        save_path_partial.with_stem(
+                            save_path_partial.stem + "_stats"
+                        ).with_suffix(".csv"),
+                        index=True,
+                    )
             except Exception as e:
-                print(f'Could not generate pivot table for {tag = }. Error: {str(e)}')
-    
+                print(f"Could not generate pivot table for {tag = }. Error: {str(e)}")
+
     @classmethod
     def get_stats_table(
-            cls, 
-            df: pd.DataFrame,
-        ):
+        cls,
+        df: pd.DataFrame,
+    ):
         """
         Computes multiple statistics for each column
 
@@ -1523,17 +1728,18 @@ class TableBuilder:
                 of the input `df`.  The columns of `df` will be the row indices of the stats table.
         """
         # Try to convert to numeric, coerce errors to NaN
-        numeric_df = df.apply(pd.to_numeric, errors='coerce')
-        
+        numeric_df = df.apply(pd.to_numeric, errors="coerce")
+
         stats = {
-            'min': numeric_df.min(axis=0),
-            'mean': numeric_df.mean(axis=0),
-            'max': numeric_df.max(axis=0),
-            'sigma3': numeric_df.std(axis=0)*3,
+            "min": numeric_df.min(axis=0),
+            "mean": numeric_df.mean(axis=0),
+            "max": numeric_df.max(axis=0),
+            "sigma3": numeric_df.std(axis=0) * 3,
         }
         df_stats = pd.DataFrame(stats, index=df.columns)
-        df_stats.index.name = 'Name'
+        df_stats.index.name = "Name"
         return df_stats
+
 
 class Histogrammer:
     """
@@ -1544,35 +1750,40 @@ class Histogrammer:
         out_dir (Path): Directory to which the generated histogram will be stored
         dpi (int): resolution of plot
     """
+
     def __init__(
-            self,
-            in_dirs: List[Path],
-            out_dir: Path,
-            dpi: int,
-        ):
+        self,
+        in_dirs: List[Path],
+        out_dir: Path,
+        dpi: int,
+    ):
         self.in_dirs = in_dirs
         self.out_dir = out_dir
         self.dpi = dpi
-    
+
     def plot(
-            self,
-            tag: Tag,
-            data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
-        ):
+        self,
+        tag: Tag,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+    ):
         """
         Generates a histogram by loading data from stored `in_dirs` and saves the plot to `out_dir` directory.
-        A nested folder structure will be created if the provided `tag` is a tuple.  
+        A nested folder structure will be created if the provided `tag` is a tuple.
         In that case, the last tag item (with an appropriate suffix) will be used for the file name.
 
         Args:
             tag (Tag): Tag used to filter the loaded data products
         """
-        print(f'Making histogram plot for {tag = }')
+        print(f"Making histogram plot for {tag = }")
 
         histogram_entries: List[HistogramEntry] = []
         for directory in self.in_dirs:
-            collection = DataProductCollection.model_validate_json(directory.joinpath(data_products_fname).read_text())
-            histogram_entries.extend(collection.get_products(tag=tag, object_type=HistogramEntry).elements)
+            collection = DataProductCollection.model_validate_json(
+                directory.joinpath(data_products_fname).read_text()
+            )
+            histogram_entries.extend(
+                collection.get_products(tag=tag, object_type=HistogramEntry).elements
+            )
 
         self.handle_histogram_entries(
             tag=tag,
@@ -1583,12 +1794,12 @@ class Histogrammer:
 
     @classmethod
     def handle_histogram_entries(
-            cls, 
-            tag: Tag, 
-            histogram_entries: List[HistogramEntry],
-            dir_out: Path,
-            dpi: int,
-        ):
+        cls,
+        tag: Tag,
+        histogram_entries: List[HistogramEntry],
+        dir_out: Path,
+        dpi: int,
+    ):
         """
         Histograms the provided entries. Formats and saves the figure.  Closes the figure.
 
@@ -1614,22 +1825,26 @@ class Histogrammer:
             [format2d] = format2d_set
             saf.apply_format(format2d=format2d)
         except:
-            print(f'Format not applied to {save_path  = } multiple entries conflict for given tag:\n\t{format2d_set = }')
-        save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix('.jpg')
+            print(
+                f"Format not applied to {save_path  = } multiple entries conflict for given tag:\n\t{format2d_set = }"
+            )
+        save_path = dir_out.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
         save_path.parent.mkdir(exist_ok=True, parents=True)
-        print(f'Saving to {save_path}')
+        print(f"Saving to {save_path}")
         saf.savefig(save_path, dpi=dpi)
         del saf
 
+
 ### Runners
 
+
 def make_include_files(
-        root_dir: Path,
-        local_server_path: str | Path = None,
-        mkdocs_include_dir: str | Path = None,
-        # products_dir_replacement_path: str | Path = None,
-        heading_level: int | None = None,
-    ):
+    root_dir: Path,
+    local_server_path: str | Path = None,
+    mkdocs_include_dir: str | Path = None,
+    # products_dir_replacement_path: str | Path = None,
+    heading_level: int | None = None,
+):
     """
     Makes nested include files for inclusion into an MkDocs site.
 
@@ -1645,10 +1860,10 @@ def make_include_files(
             in order to fix the links for the MkDocs site.  See this repo for an example.
         mkdocs_include_dir (str|Path|None): Path to be used for mkdocs includes.
             This path should correspond to includ dir in `mkdocs.yml` file.  (See `vulcan_srb_sep` repo for example).
-    
+
     Note:
 
-        Here is how to setup `mkdocs.yml` file to have an `include_dir` that can be used to 
+        Here is how to setup `mkdocs.yml` file to have an `include_dir` that can be used to
         include generated markdown files (and the images/CSVs that they reference).
 
         ```
@@ -1659,19 +1874,31 @@ def make_include_files(
 
     """
 
-    INCLUDE = 'include.md'
-    dirs = list(root_dir.glob('**/'))
+    INCLUDE = "include.md"
+    dirs = list(root_dir.glob("**/"))
     dirs.sort()
     if dirs:
         min_len = np.min([len(list(p.parents)) for p in dirs])
         for s in dirs:
-            child_dirs = list(s.glob('*/'))
+            child_dirs = list(s.glob("*/"))
             child_dirs.sort()
-            tables_to_include: List[Path] = [x for x in flatten([list(s.glob(p, case_sensitive=False)) for p in ['*pivot.csv', '*stats.csv']])]
-            figures_to_include: List[Path] = [x for x in flatten([list(s.glob(p, case_sensitive=False)) for p in ['*.jpg', '*.png']])]
+            tables_to_include: List[Path] = [
+                x
+                for x in flatten(
+                    [
+                        list(s.glob(p, case_sensitive=False))
+                        for p in ["*pivot.csv", "*stats.csv"]
+                    ]
+                )
+            ]
+            figures_to_include: List[Path] = [
+                x
+                for x in flatten(
+                    [list(s.glob(p, case_sensitive=False)) for p in ["*.jpg", "*.png"]]
+                )
+            ]
             children_to_include: List[Path] = [
-                c.resolve().joinpath(INCLUDE)
-                for c in child_dirs
+                c.resolve().joinpath(INCLUDE) for c in child_dirs
             ]
             if local_server_path is not None:
                 figures_to_include = [
@@ -1680,48 +1907,48 @@ def make_include_files(
                 ]
             if mkdocs_include_dir is not None:
                 tables_to_include = [
-                    x.relative_to(mkdocs_include_dir.parent)
-                    for x in tables_to_include
+                    x.relative_to(mkdocs_include_dir.parent) for x in tables_to_include
                 ]
                 children_to_include = [
-                    x.relative_to(mkdocs_include_dir)
-                    for x in children_to_include
+                    x.relative_to(mkdocs_include_dir) for x in children_to_include
                 ]
-            
-            bb_open = r'{{'
-            bb_close = r'}}'
-            fig_inclusion_statements = [
-                f'![]({x})' 
-                for x in figures_to_include
-            ]
+
+            bb_open = r"{{"
+            bb_close = r"}}"
+            fig_inclusion_statements = [f"![]({x})" for x in figures_to_include]
             table_inclusion_statements = [
                 f"{bb_open} read_csv('{x}', disable_numparse=True) {bb_close}"
                 for x in tables_to_include
             ]
             child_inclusion_statments = [
-                "{% include '" + str(x) + "' %}"
-                for x in children_to_include
+                "{% include '" + str(x) + "' %}" for x in children_to_include
             ]
             fig_inclusion_statements.sort()
             table_inclusion_statements.sort()
             child_inclusion_statments.sort()
-            inclusions = table_inclusion_statements + fig_inclusion_statements + child_inclusion_statments
-            
-            header = (
-                ''.join(['#']*((len(list(s.parents))-min_len)+heading_level)) + s.name 
-                if heading_level is not None and len(inclusions) > 1
-                else ''
+            inclusions = (
+                table_inclusion_statements
+                + fig_inclusion_statements
+                + child_inclusion_statments
             )
-            text = '\n\n'.join([header] + inclusions)
-            
+
+            header = (
+                "".join(["#"] * ((len(list(s.parents)) - min_len) + heading_level))
+                + s.name
+                if heading_level is not None and len(inclusions) > 1
+                else ""
+            )
+            text = "\n\n".join([header] + inclusions)
+
             s.joinpath(INCLUDE).write_text(text)
 
+
 def map_callable(
-        f: Callable[[Path], DataProductCollection], 
-        *iterables, 
-        n_procs: int=1, 
-        mp_context=None,
-    ):
+    f: Callable[[Path], DataProductCollection],
+    *iterables,
+    n_procs: int = 1,
+    mp_context=None,
+):
     """
     Args:
         f (Callable[[Path], DataProductCollection]): Function to be mapped
@@ -1730,12 +1957,15 @@ def map_callable(
         mp_context (str): Context to use for creating new processes (see `multiprocessing` package documentation)
     """
     if n_procs > 1:
-        with ProcessPoolExecutor(max_workers=n_procs, mp_context=mp_context) as executor:
+        with ProcessPoolExecutor(
+            max_workers=n_procs, mp_context=mp_context
+        ) as executor:
             result = list(executor.map(f, *iterables))
     else:
         result = [f(*arg_tuple) for arg_tuple in zip(*iterables)]
-        
+
     return result
+
 
 def get_sorted_dirs(dirs: List[Path]):
     """
@@ -1753,13 +1983,14 @@ def get_sorted_dirs(dirs: List[Path]):
     except ValueError:
         dirs.sort()
     return dirs
-    
+
+
 def make_products(
-        product_generator: Callable[[Path], DataProductCollection] | None,
-        data_dirs: List[Path],
-        n_procs: int = 1,
-        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
-    ):
+    product_generator: Callable[[Path], DataProductCollection] | None,
+    data_dirs: List[Path],
+    n_procs: int = 1,
+    data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+):
     """
     Maps `product_generator` over `dirs_in` to produce data product JSON files in those directories.
     Sorts the generated data products into a nested file structure starting from `dir_products`.
@@ -1779,23 +2010,24 @@ def make_products(
     sorted_dirs = get_sorted_dirs(dirs=data_dirs)
 
     if product_generator is None:
-        print('No data product generator provided')
+        print("No data product generator provided")
     else:
-        print('\n\n\nGenerating tagged DataProducts and writing to JSON files...\n')
+        print("\n\n\nGenerating tagged DataProducts and writing to JSON files...\n")
         map_callable(
             DataProductGenerator(processor=product_generator).process_and_save,
             sorted_dirs,
-            [data_products_fname]*len(sorted_dirs),
+            [data_products_fname] * len(sorted_dirs),
             n_procs=n_procs,
         )
-        print('\nFinished generating tagged DataProducts and writing to JSON files')
+        print("\nFinished generating tagged DataProducts and writing to JSON files")
+
 
 def sort_products(
-        data_dirs: List[Path],
-        output_dir: Path,
-        n_procs: int = 1,
-        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
-    ):
+    data_dirs: List[Path],
+    output_dir: Path,
+    n_procs: int = 1,
+    data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+):
     """
     Loads the tagged data products from `data_dirs` and sorts them (by tag) into a nested folder structure rooted at `output_dir`.
 
@@ -1806,28 +2038,30 @@ def sort_products(
     """
     sorted_data_dirs = get_sorted_dirs(dirs=data_dirs)
 
-    print('\n\n\nSorting data by tags')
+    print("\n\n\nSorting data by tags")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     map_callable(
         DataProductCollection.sort_by_tags_single_directory,
         sorted_data_dirs,
-        [output_dir]*len(sorted_data_dirs),
-        [data_products_fname]*len(sorted_data_dirs),
+        [output_dir] * len(sorted_data_dirs),
+        [data_products_fname] * len(sorted_data_dirs),
         n_procs=n_procs,
     )
-    
-    print('\nFinished sorting by tags')
+
+    print("\nFinished sorting by tags")
+
 
 def make_grafana_dashboard(
-        products_dir: Path,
-        output_dir: Path,
-        protocol: str,
-        host: str,
-        port: int,
-        n_procs: int = 1,
-    ):
+    products_dir: Path,
+    output_dir: Path,
+    protocol: str,
+    host: str,
+    port: int,
+    n_procs: int = 1,
+):
     import grafana_api as gapi
+
     """
     Makes a JSON file to import to Grafana for displaying tagged data tables, histograms and XY plots.
 
@@ -1839,32 +2073,37 @@ def make_grafana_dashboard(
         host (str): Sever address for providing data to interactive dashboard
         n_procs (int): Number of parallel processes
     """
-    print(f'\n\n\nGenerating Grafana Dashboard JSON Spec in {output_dir} based on products in {products_dir}')
+    print(
+        f"\n\n\nGenerating Grafana Dashboard JSON Spec in {output_dir} based on products in {products_dir}"
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
-    
-    product_dirs = list(products_dir.glob('**/*/'))
-    panel_dir = output_dir.joinpath('panels')
+
+    product_dirs = list(products_dir.glob("**/*/"))
+    panel_dir = output_dir.joinpath("panels")
     map_callable(
         DataProductCollection.make_grafana_panels,
         product_dirs,
         [panel_dir] * len(product_dirs),
-        [f'{protocol}://{host}:{port}'] * len(product_dirs),
+        [f"{protocol}://{host}:{port}"] * len(product_dirs),
         n_procs=n_procs,
     )
-    panels = [gapi.Panel.model_validate_json(p.read_text()) for p in panel_dir.glob('*.json')]
+    panels = [
+        gapi.Panel.model_validate_json(p.read_text()) for p in panel_dir.glob("*.json")
+    ]
     dashboard = gapi.Dashboard(panels=panels)
-    output_dir.joinpath('dashboard.json').write_text(dashboard.model_dump_json())
-    print('\nFinished Generating Grafana Dashboard JSON Spec')
+    output_dir.joinpath("dashboard.json").write_text(dashboard.model_dump_json())
+    print("\nFinished Generating Grafana Dashboard JSON Spec")
+
 
 def make_tables_and_figures(
-        products_dir: Path,
-        output_dir: Path,
-        dpi: int = 500,
-        n_procs: int = 1,
-        no_tables: bool = False,
-        no_xy_plots: bool = False,
-        no_histograms: bool = False,
-    ):
+    products_dir: Path,
+    output_dir: Path,
+    dpi: int = 500,
+    n_procs: int = 1,
+    no_tables: bool = False,
+    no_xy_plots: bool = False,
+    no_histograms: bool = False,
+):
     """
     Makes CSV tables and creates plots (using matplotlib).
 
@@ -1878,45 +2117,46 @@ def make_tables_and_figures(
             processed sequentially (easier for debugging since the full traceback will be provided).
             If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
             be used to load and process directories and/or tags in parallel.
-        dpi (int = 500): Resolution of output plots when using matplotlib 
+        dpi (int = 500): Resolution of output plots when using matplotlib
             (for `make_xy_plots==True` and/or `make_histograms==True`)
-        no_tables (bool): Whether or not to collect the 
+        no_tables (bool): Whether or not to collect the
             [`TableEntry`][trendify.API.TableEntry] products and write them
             to CSV files (`<tag>_melted.csv` with `<tag>_pivot.csv` and `<tag>_stats.csv` when possible).
         no_xy_plots (bool): Whether or not to plot the [`XYData`][trendify.API.XYData] products using matplotlib
-        no_histograms (bool): Whether or not to generate histograms of the 
+        no_histograms (bool): Whether or not to generate histograms of the
             [`HistogramEntry`][trendify.API.HistogramEntry] products
             using matplotlib.
     """
     if not (no_tables and no_xy_plots and no_histograms):
-        product_dirs = list(products_dir.glob('**/*/'))
+        product_dirs = list(products_dir.glob("**/*/"))
         map_callable(
             DataProductCollection.process_collection,
             product_dirs,
-            [output_dir]*len(product_dirs),
-            [no_tables]*len(product_dirs),
-            [no_xy_plots]*len(product_dirs),
-            [no_histograms]*len(product_dirs),
-            [dpi]*len(product_dirs),
+            [output_dir] * len(product_dirs),
+            [no_tables] * len(product_dirs),
+            [no_xy_plots] * len(product_dirs),
+            [no_histograms] * len(product_dirs),
+            [dpi] * len(product_dirs),
             n_procs=n_procs,
         )
 
+
 def make_it_trendy(
-        data_product_generator: ProductGenerator | None,
-        input_dirs: List[Path],
-        output_dir: Path,
-        n_procs: int = 1,
-        dpi_static_plots: int = 500,
-        no_static_tables: bool = False,
-        no_static_xy_plots: bool = False,
-        no_static_histograms: bool = False,
-        no_grafana_dashboard: bool = False,
-        no_include_files: bool = False,
-        protocol: str = 'http',
-        server: str = '0.0.0.0',
-        port: int = 8000,
-        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
-    ):
+    data_product_generator: ProductGenerator | None,
+    input_dirs: List[Path],
+    output_dir: Path,
+    n_procs: int = 1,
+    dpi_static_plots: int = 500,
+    no_static_tables: bool = False,
+    no_static_xy_plots: bool = False,
+    no_static_histograms: bool = False,
+    no_grafana_dashboard: bool = False,
+    no_include_files: bool = False,
+    protocol: str = "http",
+    server: str = "0.0.0.0",
+    port: int = 8000,
+    data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+):
     """
     Maps `data_product_generator` over `dirs_in` to produce data product JSON files in those directories.
     Sorts the generated data products into a nested file structure starting from `dir_products`.
@@ -1932,18 +2172,20 @@ def make_it_trendy(
             processed sequentially (easier for debugging since the full traceback will be provided).
             If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
             be used to load and process directories and/or tags in parallel.
-        dpi_static_plots (int = 500): Resolution of output plots when using matplotlib 
+        dpi_static_plots (int = 500): Resolution of output plots when using matplotlib
             (for `make_xy_plots==True` and/or `make_histograms==True`)
         no_static_tables (bool): Suppresses static assets from the [`TableEntry`][trendify.API.TableEntry] products
-        no_static_xy_plots (bool): Suppresses static assets from the 
-            [`XYData`][trendify.API.XYData] 
+        no_static_xy_plots (bool): Suppresses static assets from the
+            [`XYData`][trendify.API.XYData]
             ([Trace2D][trendify.API.Trace2D] and [Point2D][trendify.API.Point2D]) products
         no_static_histograms (bool): Suppresses static assets from the [`HistogramEntry`][trendify.API.HistogramEntry] products
         no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
         no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
         data_products_fname (str): File name to be used for storing generated data products
     """
-    input_dirs = [Path(p).parent if Path(p).is_file() else Path(p) for p in list(input_dirs)]
+    input_dirs = [
+        Path(p).parent if Path(p).is_file() else Path(p) for p in list(input_dirs)
+    ]
     output_dir = Path(output_dir)
 
     make_products(
@@ -1953,7 +2195,7 @@ def make_it_trendy(
         data_products_fname=data_products_fname,
     )
 
-    products_dir = _mkdir(output_dir.joinpath('products'))
+    products_dir = _mkdir(output_dir.joinpath("products"))
 
     # Sort products
     start = time.time()
@@ -1964,18 +2206,18 @@ def make_it_trendy(
         data_products_fname=data_products_fname,
     )
     end = time.time()
-    print(f'Time to sort = {end - start}')
+    print(f"Time to sort = {end - start}")
 
-    no_static_assets = (no_static_tables and no_static_histograms and no_static_xy_plots)
-    no_interactive_assets = (no_grafana_dashboard)
+    no_static_assets = no_static_tables and no_static_histograms and no_static_xy_plots
+    no_interactive_assets = no_grafana_dashboard
     no_assets = no_static_assets and no_interactive_assets
-    
+
     if not no_assets:
-        assets_dir = output_dir.joinpath('assets')
+        assets_dir = output_dir.joinpath("assets")
         if not no_interactive_assets:
-            interactive_assets_dir = _mkdir(assets_dir.joinpath('interactive'))
+            interactive_assets_dir = _mkdir(assets_dir.joinpath("interactive"))
             if not no_grafana_dashboard:
-                grafana_dir = _mkdir(interactive_assets_dir.joinpath('grafana'))
+                grafana_dir = _mkdir(interactive_assets_dir.joinpath("grafana"))
                 make_grafana_dashboard(
                     products_dir=products_dir,
                     output_dir=grafana_dir,
@@ -1984,9 +2226,9 @@ def make_it_trendy(
                     server=server,
                     port=port,
                 )
-        
+
         if not no_static_assets:
-            static_assets_dir = _mkdir(assets_dir.joinpath('static'))
+            static_assets_dir = _mkdir(assets_dir.joinpath("static"))
             make_tables_and_figures(
                 products_dir=products_dir,
                 output_dir=static_assets_dir,
@@ -2002,21 +2244,23 @@ def make_it_trendy(
                     root_dir=static_assets_dir,
                     heading_level=2,
                 )
-    
+
+
 def serve_products_to_plotly_dashboard(
-        *dirs: Path,
-        title: str = 'Trendify Autodash',
-        host: str = '127.0.0.1',
-        port: int = 8000,
-        debug: bool = False,
-        data_products_filename: str = DATA_PRODUCTS_FNAME_DEFAULT,
-    ):
-    """
-    """
-    collection = DataProductCollection.collect_from_all_jsons(*dirs, data_products_filename=data_products_filename)
+    *dirs: Path,
+    title: str = "Trendify Autodash",
+    host: str = "127.0.0.1",
+    port: int = 8000,
+    debug: bool = False,
+    data_products_filename: str = DATA_PRODUCTS_FNAME_DEFAULT,
+):
+    """ """
+    collection = DataProductCollection.collect_from_all_jsons(
+        *dirs, data_products_filename=data_products_filename
+    )
     collection.serve_plotly_dashboard(
         title=title,
-        debug=debug, 
-        host=host, 
+        debug=debug,
+        host=host,
         port=port,
     )
