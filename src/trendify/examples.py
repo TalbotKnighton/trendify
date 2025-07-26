@@ -124,6 +124,24 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             unit=None,
         ).append_to_list(products)
 
+        trendify.HistogramEntry(
+            tags=["histogram"],
+            value=series.mean(),
+            format2d=trendify.Format2D(
+                title_fig="Idk lol",
+                label_x="Series value",
+                label_y="Counts",
+            ),
+            style=trendify.HistogramStyle(),
+        ).append_to_list(products)
+
+        trendify.AxLine(
+            tags=["histogram"],
+            value=series.min(),
+            orientation=trendify.LineOrientation.VERTICAL,
+            pen=trendify.Pen(color="b"),
+        )
+
     return products
 
 

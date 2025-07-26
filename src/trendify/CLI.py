@@ -117,18 +117,23 @@ class NProcs:
         Returns;
             (int): Number of processes capped to `5*os.cpu_count()`
         """
-        arg = int(arg)
-        max_processes = 5 * os.cpu_count()
-        if arg > max_processes:
+        n_proc = int(arg)
+
+        cpu_count = os.cpu_count()
+        if cpu_count is None:
+            cpu_count = 1
+
+        max_processes = 5 * cpu_count
+        if n_proc > max_processes:
             logger.info(
-                f"User-specified ({arg = }) exceeds ({max_processes = })."
+                f"User-specified ({n_proc = }) exceeds ({max_processes = })."
                 f"Process count will be set to ({max_processes = })"
             )
             # print(
             #     f'User-specified ({arg = }) exceeds ({max_processes = }).'
             #     f'Process count will be set to ({max_processes = })'
             # )
-        return min(arg, max_processes)
+        return min(n_proc, max_processes)
 
 
 class UserMethod:
@@ -187,9 +192,15 @@ class UserMethod:
             module = importlib.import_module(name=module_path)
 
         obj = module
+
+        function_handle = None
+
+        assert isinstance(method_name, str)
         for arg in method_name.split("."):
-            obj = getattr(obj, arg)
-        return obj
+            function_handle = getattr(obj, arg)
+
+        assert function_handle is not None
+        return function_handle
 
 
 class DataProductsFileName:
@@ -217,7 +228,7 @@ class DataProductsFileName:
         )
 
     @staticmethod
-    def process_argument(arg: str) -> API.ProductGenerator:
+    def process_argument(arg: str) -> str:
         """
         Processes input data from command line flag value
 
@@ -225,7 +236,7 @@ class DataProductsFileName:
             arg (str): File name to be type-cast to string
 
         Returns:
-            (Callable): String (file name to be used for generated data products)
+            (str): String (file name to be used for generated data products)
         """
         return str(arg)
 
@@ -308,7 +319,7 @@ class TrendifyDirectory:
             ),
         )
 
-    def process_argument(self, arg: str) -> List[Path]:
+    def process_argument(self, arg: str) -> FileManager:
         """
         Converts CLI input to list of directories over which user-specified data product generator method will be mapped.
 
@@ -318,7 +329,7 @@ class TrendifyDirectory:
         Returns:
             (FileManager): List of directories over which to map the user-specified product generator
         """
-        return FileManager(arg)
+        return FileManager(output_dir=Path(arg).resolve())
 
 
 def trendify(*pargs):

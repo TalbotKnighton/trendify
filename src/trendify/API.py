@@ -38,6 +38,8 @@ from typing import (
 
 try:
     from typing import Self
+    from matplotlib.axes import Axes
+    from matplotlib.figure import Figure
 except:
     from typing_extensions import Self
 import warnings
@@ -208,15 +210,15 @@ class SingleAxisFigure:
     Data class storing a matlab figure and axis.  The stored tag data in this class is so-far unused.
 
     Attributes:
-        ax (plt.Axes): Matplotlib axis to which data will be plotted
-        fig (plt.Figure): Matplotlib figure.
+        ax (Axes): Matplotlib axis to which data will be plotted
+        fig (Figure): Matplotlib figure.
         tag (Tag): Figure tag.  Not yet used.
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
     tag: Tag
-    fig: plt.Figure
-    ax: plt.Axes
+    fig: Figure
+    ax: Axes
 
     @classmethod
     def new(cls, tag: Tag):
@@ -229,8 +231,8 @@ class SingleAxisFigure:
         Returns:
             (Type[Self]): New single axis figure
         """
-        fig: plt.Figure = plt.figure()
-        ax: plt.Axes = fig.add_subplot(1, 1, 1)
+        fig: Figure = plt.figure()
+        ax: Axes = fig.add_subplot(1, 1, 1)
         return cls(
             tag=tag,
             fig=fig,
@@ -678,12 +680,12 @@ class Trace2D(XYData):
             format2d=format2d,
         )
 
-    def plot_to_ax(self, ax: plt.Axes):
+    def plot_to_ax(self, ax: Axes):
         """
         Plots xy data from trace to a matplotlib axes object.
 
         Args:
-            ax (plt.Axes): axes to which xy data should be plotted
+            ax (Axes): axes to which xy data should be plotted
         """
         ax.plot(self.x, self.y, **self.pen.as_scatter_plot_kwargs())
 
@@ -739,12 +741,12 @@ class AxLine(PlottableData2D):
 
     model_config = ConfigDict(extra="forbid")
 
-    def plot_to_ax(self, ax: plt.Axes):
+    def plot_to_ax(self, ax: Axes):
         """
         Plots line to matplotlib axes object.
 
         Args:
-            ax (plt.Axes): axes to which line should be plotted
+            ax (Axes): axes to which line should be plotted
         """
         match self.orientation:
             case LineOrientation.HORIZONTAL:
