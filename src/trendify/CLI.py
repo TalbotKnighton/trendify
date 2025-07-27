@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 # Local
 
-from trendify import API
+from trendify.api import api
+from trendify.api.helpers import DATA_PRODUCTS_FNAME_DEFAULT
 from trendify.local_server import TrendifyProductServerLocal
 
 __all__ = []
@@ -144,7 +145,7 @@ class UserMethod:
     _NAME = "product-generator"
 
     @classmethod
-    def get_from_namespace(cls, namespace: argparse.Namespace) -> API.ProductGenerator:
+    def get_from_namespace(cls, namespace: argparse.Namespace) -> api.ProductGenerator:
         return cls.process_argument(getattr(namespace, cls._NAME.replace("-", "_")))
 
     @classmethod
@@ -170,7 +171,7 @@ class UserMethod:
         )
 
     @staticmethod
-    def process_argument(arg: str) -> API.ProductGenerator:
+    def process_argument(arg: str) -> api.ProductGenerator:
         """
         Imports python method based on user CLI input
 
@@ -221,9 +222,9 @@ class DataProductsFileName:
             "-f",
             f"--{cls._NAME}",
             type=str,
-            default=API.DATA_PRODUCTS_FNAME_DEFAULT,
+            default=DATA_PRODUCTS_FNAME_DEFAULT,
             help=(
-                f"Sepcify the data file name to be used (defaults to {API.DATA_PRODUCTS_FNAME_DEFAULT})"
+                f"Sepcify the data file name to be used (defaults to {DATA_PRODUCTS_FNAME_DEFAULT})"
             ),
         )
 
@@ -470,21 +471,21 @@ def trendify(*pargs):
 
     match args.command:
         case "products-make":
-            API.make_products(
+            api.make_products(
                 product_generator=UserMethod.get_from_namespace(args),
                 data_dirs=InputDirectories.get_from_namespace(args),
                 n_procs=NProcs.get_from_namespace(args),
                 data_products_fname=DataProductsFileName.get_from_namespace(args),
             )
         case "products-sort":
-            API.sort_products(
+            api.sort_products(
                 data_dirs=InputDirectories.get_from_namespace(args),
                 output_dir=output_dir.get_from_namespace(args).products_dir,
                 n_procs=NProcs.get_from_namespace(args),
                 data_products_fname=DataProductsFileName.get_from_namespace(args),
             )
         case "products-serve":
-            API.serve_products_to_plotly_dashboard(
+            api.serve_products_to_plotly_dashboard(
                 *tuple(InputDirectories.get_from_namespace(args)),
                 title=args.title,
                 host=args.host,
@@ -492,7 +493,7 @@ def trendify(*pargs):
                 data_products_filename=DataProductsFileName.get_from_namespace(args),
             )
         case "assets-make-static":
-            API.make_tables_and_figures(
+            api.make_tables_and_figures(
                 products_dir=FileManager(args.trendify_output_directory).products_dir,
                 output_dir=FileManager(
                     args.trendify_output_directory
@@ -511,19 +512,19 @@ def trendify(*pargs):
                     np = NProcs.get_from_namespace(args)
                     td = output_dir.get_from_namespace(args)
                     fn = DataProductsFileName.get_from_namespace(args)
-                    API.make_products(
+                    api.make_products(
                         product_generator=um,
                         data_dirs=ip,
                         n_procs=np,
                         data_products_fname=fn,
                     )
-                    API.sort_products(
+                    api.sort_products(
                         data_dirs=ip,
                         output_dir=td.products_dir,
                         n_procs=np,
                         data_products_fname=fn,
                     )
-                    API.make_tables_and_figures(
+                    api.make_tables_and_figures(
                         products_dir=td.products_dir,
                         output_dir=td.static_assets_dir,
                         n_procs=np,
@@ -538,13 +539,13 @@ def trendify(*pargs):
                     np = NProcs.get_from_namespace(args)
                     # td = output_dir.get_from_namespace(args)
                     fn = DataProductsFileName.get_from_namespace(args)
-                    API.make_products(
+                    api.make_products(
                         product_generator=um,
                         data_dirs=ip,
                         n_procs=np,
                         data_products_fname=fn,
                     )
-                    API.serve_products_to_plotly_dashboard(
+                    api.serve_products_to_plotly_dashboard(
                         *tuple(ip),
                         title=args.title,
                         host=args.host,

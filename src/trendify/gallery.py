@@ -9,7 +9,7 @@ import subprocess
 import sys
 import numpy as np
 from pathlib import Path
-from trendify.API import (
+from trendify import (
     Trace2D,
     Point2D,
     TableEntry,

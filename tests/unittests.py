@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import json
 import matplotlib.pyplot as plt
-from trendify.API import (
+from trendify.api.api import (
     Trace2D, Point2D, TableEntry, HistogramEntry, AxLine,
     Pen, Marker, Format2D, LineOrientation,
     DataProductCollection

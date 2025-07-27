@@ -11,17 +11,24 @@ from flask import Flask
 from waitress import serve
 
 # Local imports
-from trendify.API import (
-    # Collection
-    DataProductCollection,
-    # DataProduct types
-    DataProduct,
-    XYData,
-    Trace2D,
-    Point2D,
-    TableEntry,
-    HistogramEntry,
-)
+# from trendify.api.API import (
+#     # Collection
+#     DataProductCollection,
+#     # DataProduct types
+#     # DataProduct,
+#     # XYData,
+#     # Trace2D,
+#     # Point2D,
+#     # TableEntry,
+#     # HistogramEntry,
+# )
+from trendify.api.data_product import DataProduct
+from trendify.api.data_product_collection import DataProductCollection
+from trendify.api.plottable_data.histogram import HistogramEntry
+from trendify.api.plottable_data.plottable_data import XYData
+from trendify.api.plottable_data.point import Point2D
+from trendify.api.plottable_data.trace import Trace2D
+from trendify.api.table import TableEntry
 
 valid_product_types = [
     DataProduct,

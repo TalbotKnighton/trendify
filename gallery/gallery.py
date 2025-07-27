@@ -9,7 +9,7 @@ import subprocess
 import sys
 import numpy as np
 from pathlib import Path
-from trendify.API import (
+from trendify.api.api import (
     Trace2D, Point2D, TableEntry, HistogramEntry, AxLine,
     Pen, Marker, Format2D, LineOrientation, HistogramStyle,
     DataProductCollection
