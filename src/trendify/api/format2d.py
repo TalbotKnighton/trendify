@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum, auto
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Tuple, Union
 import logging
 
 import numpy as np
@@ -35,7 +35,7 @@ class GridAxis(HashableBase):
 
     show: bool = False
     color: Optional[str] = "gray"
-    linestyle: Optional[str] = "-"
+    linestyle: Optional[Union[str, Tuple[int, Tuple[int, ...]]]] = "-"
     linewidth: Optional[float] = 0.75
     alpha: Optional[float] = 1.0
 
@@ -69,7 +69,6 @@ class Grid(HashableBase):
                 major=GridAxis(
                     show=True,
                     color="#b0b0b0",
-                    # linestyle="-.",
                     linestyle="-",
                     linewidth=0.8,
                     alpha=0.35,
