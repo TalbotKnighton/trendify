@@ -76,7 +76,7 @@ class Grid(HashableBase):
                 minor=GridAxis(
                     show=True,
                     color="#b0b0b0",
-                    linestyle="-.",
+                    linestyle=(0, (3, 1, 1, 1)),
                     linewidth=0.6,
                     alpha=0.25,
                 ),
