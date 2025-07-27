@@ -3,6 +3,7 @@ from __future__ import annotations
 # Standard imports
 from dataclasses import dataclass
 from pathlib import Path
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from typing import Union
 import warnings
@@ -17,7 +18,7 @@ from pydantic import ConfigDict
 
 from trendify.api.data_product import DataProduct
 from trendify.api.helpers import HashableBase, Tag
-from trendify.api.format2d import Format2D
+from trendify.api.format2d import Format2D, Grid, GridAxis
 
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
@@ -81,7 +82,9 @@ class SingleAxisFigure:
             by_label = dict(zip(labels, handles))
             if by_label:
                 self.ax.legend(
-                    by_label.values(), by_label.keys(), title=format2d.title_legend
+                    by_label.values(),
+                    by_label.keys(),
+                    title=format2d.title_legend,
                 )
 
         if format2d.label_x is not None:
@@ -92,8 +95,63 @@ class SingleAxisFigure:
         self.ax.set_xlim(left=format2d.lim_x_min, right=format2d.lim_x_max)
         self.ax.set_ylim(bottom=format2d.lim_y_min, top=format2d.lim_y_max)
 
+        # breakpoint()
+        if format2d.grid is not None:
+            self.apply_grid(format2d.grid)
+
+        # artists_by_zorder = {}
+        # for artist in self.ax.get_children():
+        #     if hasattr(artist, "get_zorder"):
+        #         zorder = artist.get_zorder()
+        #         if zorder not in artists_by_zorder:
+        #             artists_by_zorder[zorder] = []
+        #         artists_by_zorder[zorder].append(artist)
+
+        # # Loop through zorders in ascending order
+        # for zorder in sorted(artists_by_zorder.keys()):
+        #     print(f"Zorder: {zorder}")
+        #     for artist in artists_by_zorder[zorder]:
+        #         print(f"  - Artist type: {type(artist).__name__}")
+
+        # breakpoint()
         self.fig.tight_layout(rect=(0, 0.03, 1, 0.95))
         return self
+
+    def apply_grid(self, grid: Grid):
+        self.ax.set_axisbelow(True)
+
+        # Major grid
+        if grid.major.show:
+            self.ax.grid(
+                True,
+                which="major",
+                color=grid.major.color,
+                linestyle=grid.major.linestyle,
+                linewidth=grid.major.linewidth,
+                alpha=grid.major.alpha,
+                zorder=grid.zorder,
+            )
+        else:
+            self.ax.grid(False, which="major")
+
+        # Minor ticks and grid
+        if grid.enable_minor_ticks:
+            self.ax.minorticks_on()
+        else:
+            self.ax.minorticks_off()
+
+        if grid.minor.show:
+            self.ax.grid(
+                True,
+                which="minor",
+                color=grid.minor.color,
+                linestyle=grid.minor.linestyle,
+                linewidth=grid.minor.linewidth,
+                alpha=grid.minor.alpha,
+                zorder=grid.zorder,
+            )
+        else:
+            self.ax.grid(False, which="minor")
 
     def savefig(self, path: Path, dpi: int = 500):
         """

@@ -13,11 +13,7 @@ except:
 
 import dash
 from filelock import FileLock
-from pydantic import (
-    BaseModel,
-    InstanceOf,
-    SerializeAsAny,
-)
+from pydantic import BaseModel
 
 from trendify.api.format2d import Format2D
 from trendify.api.generator.histogrammer import Histogrammer

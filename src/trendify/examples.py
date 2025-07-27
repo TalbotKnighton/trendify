@@ -97,7 +97,10 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             y=df[col].values,
             tags=["trace_plot"],
             pen=trendify.Pen(label=col, color=colors[list(Channels).index(col)]),
-            format2d=trendify.Format2D(title_legend="Column"),
+            format2d=trendify.Format2D(
+                title_legend="Column",
+                grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
+            ),
         ).append_to_list(products)
         for col in df.columns
     ]
@@ -131,15 +134,16 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 title_fig="Idk lol",
                 label_x="Series value",
                 label_y="Counts",
+                grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
             ),
-            style=trendify.HistogramStyle(),
+            style=trendify.HistogramStyle(alpha_face=1),
         ).append_to_list(products)
 
         trendify.AxLine(
             tags=["histogram"],
             value=series.mean(),
             orientation=trendify.LineOrientation.VERTICAL,
-            pen=trendify.Pen(color="b", label="mean"),
+            pen=trendify.Pen(color="r", label="mean"),
         ).append_to_list(products)
 
     return products
