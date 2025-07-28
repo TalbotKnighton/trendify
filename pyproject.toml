@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-license-file = "LICENSE"
+license-files = ["LICENSE"]
 dependencies = [
   "dash",
   "filelock",
@@ -21,15 +21,18 @@ dependencies = [
   "waitress",
   "plotly",
   "dash",
+  "grafana_api",
 ]
 name = "trendify"
 version = "1.1.0"
 requires-python = ">= 3.9"
 authors = [
-  {name = "Talbot Knighton", email = "talbotknighton@gmail.org"},
+  { name = "Talbot Knighton", email = "talbotknighton@gmail.org" },
+  { name = "David Gable", email = "david@david-gable.com" },
 ]
 maintainers = [
-  {name = "Talbot Knighton", email = "talbotknighton@gmail.org"},
+  { name = "Talbot Knighton", email = "talbotknighton@gmail.org" },
+  { name = "David Gable", email = "david@david-gable.com" },
 ]
 description = "Tools for generating data products, storing, and interacting with them"
 readme = "README.md"

@@ -14,7 +14,7 @@ project_root = Path(__file__).parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from trendify.API import (
+from trendify.api.api import (
     DataProductCollection,
     Tags,
     Point2D,

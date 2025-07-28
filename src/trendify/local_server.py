@@ -13,7 +13,7 @@ from flask import Flask
 from waitress import serve
 
 # Local imports
-from trendify import API
+from trendify.api import api
 
 from flask import Flask
 
@@ -31,8 +31,8 @@ def _to_product_type(type_name: str) -> Type:
         (Type): Class type corresponding to given `type_name`
     """
     # breakpoint()
-    product_type = API.ProductType[type_name]
-    return getattr(API, product_type.name, None)
+    product_type = api.ProductType[type_name]
+    return getattr(api, product_type.name, None)
 
 
 def _status_check():
@@ -81,7 +81,7 @@ class ProductGetter:
         # Interpret Product Type
         product_type = _to_product_type(type_name=str(product_type_name))
         if product_type is None:
-            return f"{product_type_name = } is invalid. Should be one of {[type_name.value for type_name in API.ProductType]}."
+            return f"{product_type_name = } is invalid. Should be one of {[type_name.value for type_name in api.ProductType]}."
 
         # Interpret Tag
         tag_path_components = str(tag).split(".") if "." in str(tag) else [tag]
@@ -93,8 +93,8 @@ class ProductGetter:
         collection_dir = self.trendy_dir.joinpath(*tuple(tag_path_components)).resolve()
 
         # Load product collection
-        product_collection: API.DataProductCollection = (
-            API.DataProductCollection.collect_from_all_jsons(collection_dir)
+        product_collection: api.DataProductCollection = (
+            api.DataProductCollection.collect_from_all_jsons(collection_dir)
         )
         if product_collection is None:
             return f"Did not find data product jsons in {collection_dir}"

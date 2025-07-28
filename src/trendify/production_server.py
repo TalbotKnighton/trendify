@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from typing import Optional, Union
 
-from trendify.API import DataProductCollection
+from trendify.api.api import DataProductCollection
 
 
 def run_production_server(
@@ -79,7 +79,7 @@ def serve_from_data_dir(
         title: Optional title for the dashboard. If None, will use the directory name
         tag: Optional tag to filter data products by
     """
-    from trendify.API import DataProductCollection
+    from trendify.api.api import DataProductCollection
 
     data_dir = Path(data_dir)
     if not data_dir.exists():
