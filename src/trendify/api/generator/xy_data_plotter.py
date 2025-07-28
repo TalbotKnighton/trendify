@@ -4,7 +4,10 @@ from pathlib import Path
 from typing import List
 import logging
 
-from trendify.api.generator.data_product_collection import DataProductCollection, atleast_1d
+from trendify.api.generator.data_product_collection import (
+    DataProductCollection,
+    atleast_1d,
+)
 from trendify.api.formats.format2d import Format2D
 from trendify.api.base.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
 from trendify.api.plotting.plotting import SingleAxisFigure
@@ -53,7 +56,7 @@ class XYDataPlotter:
             tag (Tag): data tag for which products are to be collected and plotted.
             data_products_fname (str): Data products file name
         """
-        print(f"Making xy plot for {tag = }")
+        logger.info(f"Making xy plot for {tag = }")
         saf = SingleAxisFigure.new(tag=tag)
 
         for subdir in self.in_dirs:
@@ -96,7 +99,7 @@ class XYDataPlotter:
 
         save_path = self.out_dir.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
         save_path.parent.mkdir(exist_ok=True, parents=True)
-        print(f"Saving to {save_path = }")
+        logger.critical(f"Saving to {save_path = }")
         saf.savefig(path=save_path, dpi=self.dpi)
         del saf
 

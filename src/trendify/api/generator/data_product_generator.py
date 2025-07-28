@@ -37,7 +37,7 @@ class DataProductGenerator:
             data_products_fname (str): Name of data products file
         """
 
-        print(f"Processing {workdir = } with {self._processor = }")
+        logger.info(f"Processing {workdir = } with {self._processor = }")
         collection = DataProductCollection.from_iterable(self._processor(workdir))
         if collection.elements:
             workdir.mkdir(exist_ok=True, parents=True)

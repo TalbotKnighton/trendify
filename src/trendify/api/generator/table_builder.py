@@ -51,7 +51,7 @@ class TableBuilder:
         Args:
             tag (Tag): product tag for which to collect and process.
         """
-        print(f"Making table for {tag = }")
+        logger.info(f"Making table for {tag = }")
 
         table_entries: List[TableEntry] = []
         for subdir in self.in_dirs:
@@ -90,7 +90,7 @@ class TableBuilder:
 
         save_path_partial = out_dir.joinpath(*tuple(atleast_1d(tag)))
         save_path_partial.parent.mkdir(exist_ok=True, parents=True)
-        print(f"Saving to {str(save_path_partial)}_*.csv")
+        logger.critical(f"Saving to {str(save_path_partial)}_*.csv")
 
         melted.to_csv(
             save_path_partial.with_stem(save_path_partial.stem + "_melted").with_suffix(
@@ -117,7 +117,9 @@ class TableBuilder:
                         index=True,
                     )
             except Exception as e:
-                print(f"Could not generate pivot table for {tag = }. Error: {str(e)}")
+                logger.error(
+                    f"Could not generate pivot table for {tag = }. Error: {str(e)}"
+                )
 
     @classmethod
     def get_stats_table(

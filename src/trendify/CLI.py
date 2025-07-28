@@ -17,6 +17,8 @@ import sys
 from typing import List, Iterable
 import logging
 
+import matplotlib.pyplot as plt
+
 logger = logging.getLogger(__name__)
 
 # Local
@@ -351,6 +353,14 @@ def trendify(*pargs):
     )
     actions = parser.add_subparsers(title="Sub Commands", dest="command", metavar="")
 
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Increase verbosity (-v, -vv for more detail)",
+    )
+
     short_flag = "o"
     full_flag = "output-directory"
     output_dir = TrendifyDirectory(short_flag, full_flag)
@@ -467,7 +477,27 @@ def trendify(*pargs):
     else:
         args = parser.parse_args()
 
-    logger.info(f"Running `trendify` with {args = }")
+    # Map verbosity to logging level
+    level = logging.WARNING  # default
+    if args.verbose == 1:
+        level = logging.INFO
+    elif args.verbose >= 2:
+        level = logging.DEBUG
+
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%SZ",
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            logging.FileHandler("trendify.log", mode="a"),
+        ],
+    )
+    plt.set_loglevel("WARNING")
+
+    logger = logging.getLogger(__name__)
+
+    logger.critical(f"Running `trendify` with {args = }")
 
     match args.command:
         case "products-make":

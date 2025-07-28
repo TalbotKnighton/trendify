@@ -22,7 +22,10 @@ import logging
 import numpy as np
 
 from trendify.api.base.data_product import ProductGenerator
-from trendify.api.generator.data_product_collection import DataProductCollection, flatten
+from trendify.api.generator.data_product_collection import (
+    DataProductCollection,
+    flatten,
+)
 from trendify.api.base.helpers import DATA_PRODUCTS_FNAME_DEFAULT
 from trendify.api.generator.data_product_generator import DataProductGenerator
 
@@ -219,16 +222,18 @@ def make_products(
     sorted_dirs = get_sorted_dirs(dirs=data_dirs)
 
     if product_generator is None:
-        print("No data product generator provided")
+        logger.critical("No data product generator provided")
     else:
-        print("\n\n\nGenerating tagged DataProducts and writing to JSON files...\n")
+        logger.critical("Generating tagged DataProducts and writing to JSON files...")
         map_callable(
             DataProductGenerator(processor=product_generator).process_and_save,
             sorted_dirs,
             [data_products_fname] * len(sorted_dirs),
             n_procs=n_procs,
         )
-        print("\nFinished generating tagged DataProducts and writing to JSON files")
+        logger.critical(
+            "Finished generating tagged DataProducts and writing to JSON files"
+        )
 
 
 def sort_products(
@@ -247,7 +252,7 @@ def sort_products(
     """
     sorted_data_dirs = get_sorted_dirs(dirs=data_dirs)
 
-    print("\n\n\nSorting data by tags")
+    logger.critical(f"Sorting data by tags")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     map_callable(
@@ -258,7 +263,7 @@ def sort_products(
         n_procs=n_procs,
     )
 
-    print("\nFinished sorting by tags")
+    logger.critical(f"Finished sorting by tags")
 
 
 # def make_grafana_dashboard(
@@ -422,7 +427,7 @@ def make_it_trendy(
         data_products_fname=data_products_fname,
     )
     end = time.time()
-    print(f"Time to sort = {end - start}")
+    logger.critical(f"Time to sort = {end - start}")
 
     no_static_assets = no_static_tables and no_static_histograms and no_static_xy_plots
     no_interactive_assets = no_grafana_dashboard

@@ -228,17 +228,16 @@ class DataProductCollection(BaseModel):
                 os.environ["FLASK_ENV"] = (
                     "production"  # This reduces some of the output
                 )
-                print(
+                logger.critical(
                     f"Starting production server with waitress on http://{host}:{port}"
                 )
                 waitress.serve(app.server, host=host, port=port)
             except ImportError:
                 # Fall back to development server with a message about installing waitress
-                print(
-                    "Warning: 'waitress' package not found. For production use, install it with:"
+                logger.warning(
+                    "'waitress' package not found. For production use, install it with:\npip install waitress"
                 )
-                print("pip install waitress")
-                print(f"Starting development server on {host}:{port}")
+                logger.critical(f"Starting development server on {host}:{port}")
                 app.run_server(debug=debug, host=host, port=port)
         else:
             # Use Flask development server
@@ -421,7 +420,7 @@ class DataProductCollection(BaseModel):
         dirs_in.sort()
         len_dirs = len(dirs_in)
         for n, dir_in in enumerate(dirs_in):
-            print(f"Sorting tagged data from dir {n}/{len_dirs}", end=f"\r")
+            logger.info(f"Sorting tagged data from dir {n}/{len_dirs}")  # , end=f"\r")
             cls.sort_by_tags_single_directory(
                 dir_in=dir_in, dir_out=dir_out, data_products_fname=data_products_fname
             )
@@ -447,7 +446,7 @@ class DataProductCollection(BaseModel):
         """
         products_file = dir_in.joinpath(data_products_fname)
         if products_file.exists():
-            print(f"Sorting results from {dir_in = }")
+            logger.info(f"Sorting results from {dir_in = }")
             collection = DataProductCollection.model_validate_json(
                 dir_in.joinpath(data_products_fname).read_text()
             )
@@ -463,7 +462,7 @@ class DataProductCollection(BaseModel):
                 file = save_dir.joinpath(str(next_index)).with_suffix(".json")
                 file.write_text(sub_collection.model_dump_json())
         else:
-            print(f"No results found in {dir_in = }")
+            logger.info(f"No results found in {dir_in = }")
 
     @classmethod
     def process_collection(
@@ -511,13 +510,13 @@ class DataProductCollection(BaseModel):
                     if table_entries:
                         from trendify.api.generator.table_builder import TableBuilder
 
-                        print(f"\n\nMaking tables for {tag = }\n")
+                        logger.info(f"Making tables for {tag = }")
                         TableBuilder.process_table_entries(
                             tag=tag,
                             table_entries=table_entries,
                             out_dir=dir_out,
                         )
-                        print(f"\nFinished tables for {tag = }\n")
+                        logger.info(f"Finished tables for {tag = }")
 
                 if not no_xy_plots:
                     traces: List[Trace2D] = collection.get_products(
@@ -536,7 +535,7 @@ class DataProductCollection(BaseModel):
                     if points or traces or axlines:  # Update condition
                         from trendify.api.generator.xy_data_plotter import XYDataPlotter
 
-                        print(f"\n\nMaking xy plot for {tag = }\n")
+                        logger.info(f"Making xy plot for {tag = }")
                         saf = XYDataPlotter.handle_points_and_traces(
                             tag=tag,
                             points=points,
@@ -562,7 +561,7 @@ class DataProductCollection(BaseModel):
                             for a in axlines
                             if isinstance(a.format2d, Format2D)
                         ]
-                        print(f"\nFinished xy plot for {tag = }\n")
+                        logger.info(f"Finished xy plot for {tag = }")
 
                 if not no_histograms:
                     histogram_entries: List[HistogramEntry] = collection.get_products(
@@ -571,7 +570,7 @@ class DataProductCollection(BaseModel):
                     ).elements
 
                     if histogram_entries:
-                        print(f"\n\nMaking histogram for {tag = }\n")
+                        logger.info(f"Making histogram for {tag = }")
                         saf = Histogrammer.handle_histogram_entries(
                             tag=tag,
                             histogram_entries=histogram_entries,
@@ -585,7 +584,7 @@ class DataProductCollection(BaseModel):
                             for h in histogram_entries
                             if isinstance(h.format2d, Format2D)
                         ]
-                        print(f"\nFinished histogram for {tag = }\n")
+                        logger.info(f"Finished histogram for {tag = }")
 
                 if isinstance(saf, SingleAxisFigure):
                     formats = list(set(format_2ds))
@@ -596,7 +595,7 @@ class DataProductCollection(BaseModel):
                         ".jpg"
                     )
                     save_path.parent.mkdir(exist_ok=True, parents=True)
-                    print(f"Saving to {save_path}")
+                    logger.critical(f"Saving to {save_path}")
                     saf.savefig(save_path, dpi=dpi)
                     del saf
 
