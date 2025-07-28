@@ -64,7 +64,12 @@ def make_example_data(workdir: Path, n_folders: int = 10):
         inputs.update(a_inputs)
         pd.Series(inputs).to_csv(subdir.joinpath("stdin.csv"), header=False)
 
-        d = [t] + [a * np.sin(t * (2 * np.pi / p)) for p, a in zip(periods, amplitudes)]
+        rng = np.random.default_rng(seed=42)
+        noise_level = 0.05
+        d = [t] + [
+            a * np.sin(t * (2 * np.pi / p)) + noise_level * rng.normal(size=len(t))
+            for p, a in zip(periods, amplitudes)
+        ]
         df = pd.DataFrame(np.array(d).transpose(), columns=[e.name for e in Channels])
         df.to_csv(subdir.joinpath("results.csv"), index=False)
 
@@ -90,19 +95,24 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
     df = df.set_index(Channels.time.name, drop=True)
 
     colors = list(plt.rcParams["axes.prop_cycle"].by_key()["color"])
+    linestyles = ["-", ":", (0, (3, 1, 1, 1))]
 
     traces = [
         trendify.Trace2D.from_xy(
             x=df.index,
             y=df[col].values,
             tags=["trace_plot"],
-            pen=trendify.Pen(label=col, color=colors[list(Channels).index(col)]),
+            pen=trendify.Pen(
+                label=col,
+                color=colors[list(Channels).index(col)],
+                linestyle=linestyles[i % len(linestyles)],
+            ),
             format2d=trendify.Format2D(
                 title_legend="Column",
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
             ),
         ).append_to_list(products)
-        for col in df.columns
+        for i, col in enumerate(df.columns)
     ]
 
     for trace in traces:
@@ -143,7 +153,7 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=["histogram"],
             value=series.mean(),
             orientation=trendify.LineOrientation.VERTICAL,
-            pen=trendify.Pen(color="r", label="mean"),
+            pen=trendify.Pen(color="r", label="mean", zorder=2),
         ).append_to_list(products)
 
     return products

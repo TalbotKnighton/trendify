@@ -6,7 +6,8 @@ import logging
 from matplotlib.axes import Axes
 from pydantic import ConfigDict
 
-from trendify.api.plottable_data.plottable_data import Pen, PlottableData2D
+from trendify.api.formats.format2d import PlottableData2D
+from trendify.api.base.pen import Pen
 
 __all__ = ["LineOrientation", "AxLine"]
 

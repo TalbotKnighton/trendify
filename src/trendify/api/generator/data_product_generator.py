@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 import logging
 
-from trendify.api.data_product import ProductGenerator
-from trendify.api.data_product_collection import DataProductCollection
-from trendify.api.helpers import DATA_PRODUCTS_FNAME_DEFAULT
+from trendify.api.base.data_product import ProductGenerator
+from trendify.api.generator.data_product_collection import DataProductCollection
+from trendify.api.base.helpers import DATA_PRODUCTS_FNAME_DEFAULT
 
 __all__ = ["DataProductGenerator"]
 

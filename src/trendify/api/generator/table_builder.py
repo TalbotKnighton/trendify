@@ -6,12 +6,12 @@ import logging
 
 import pandas as pd
 
-from trendify.api.data_product_collection import (
+from trendify.api.generator.data_product_collection import (
     DataProductCollection,
     atleast_1d,
 )
-from trendify.api.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
-from trendify.api.table import TableEntry
+from trendify.api.base.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
+from trendify.api.formats.table import TableEntry
 
 __all__ = ["TableBuilder"]
 

@@ -7,7 +7,7 @@ import logging
 import pandas as pd
 from pydantic import ConfigDict
 
-from trendify.api.data_product import DataProduct
+from trendify.api.base.data_product import DataProduct
 
 logger = logging.getLogger(__name__)
 

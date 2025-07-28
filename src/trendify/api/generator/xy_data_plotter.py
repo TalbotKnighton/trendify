@@ -4,13 +4,13 @@ from pathlib import Path
 from typing import List
 import logging
 
-from trendify.api.data_product_collection import DataProductCollection, atleast_1d
-from trendify.api.format2d import Format2D
-from trendify.api.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
-from trendify.api.plottable_data.plottable_data import SingleAxisFigure
-from trendify.api.plottable_data.point import Point2D
-from trendify.api.plottable_data.trace import Trace2D
-from trendify.api.plottable_data.axline import AxLine
+from trendify.api.generator.data_product_collection import DataProductCollection, atleast_1d
+from trendify.api.formats.format2d import Format2D
+from trendify.api.base.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
+from trendify.api.plotting.plotting import SingleAxisFigure
+from trendify.api.plotting.point import Point2D
+from trendify.api.plotting.trace import Trace2D
+from trendify.api.plotting.axline import AxLine
 
 __all__ = ["XYDataPlotter"]
 

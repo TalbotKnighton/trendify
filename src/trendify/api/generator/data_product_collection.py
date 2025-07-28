@@ -15,16 +15,16 @@ import dash
 from filelock import FileLock
 from pydantic import BaseModel
 
-from trendify.api.format2d import Format2D
+from trendify.api.formats.format2d import Format2D
 from trendify.api.generator.histogrammer import Histogrammer
-from trendify.api.helpers import Tag, R, DATA_PRODUCTS_FNAME_DEFAULT
-from trendify.api.data_product import DataProduct, ProductList
-from trendify.api.plottable_data.plottable_data import SingleAxisFigure
-from trendify.api.plottable_data.histogram import HistogramEntry
-from trendify.api.plottable_data.point import Point2D
-from trendify.api.plottable_data.trace import Trace2D
-from trendify.api.plottable_data.axline import AxLine
-from trendify.api.table import TableEntry
+from trendify.api.base.helpers import Tag, R, DATA_PRODUCTS_FNAME_DEFAULT
+from trendify.api.base.data_product import DataProduct, ProductList
+from trendify.api.plotting.plotting import SingleAxisFigure
+from trendify.api.plotting.histogram import HistogramEntry
+from trendify.api.plotting.point import Point2D
+from trendify.api.plotting.trace import Trace2D
+from trendify.api.plotting.axline import AxLine
+from trendify.api.formats.table import TableEntry
 
 logger = logging.getLogger(__name__)
 

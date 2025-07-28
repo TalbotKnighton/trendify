@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Local
 
 from trendify.api import api
-from trendify.api.helpers import DATA_PRODUCTS_FNAME_DEFAULT
+from trendify.api.base.helpers import DATA_PRODUCTS_FNAME_DEFAULT
 from trendify.local_server import TrendifyProductServerLocal
 
 __all__ = []

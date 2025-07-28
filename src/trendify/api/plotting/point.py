@@ -4,8 +4,10 @@ import logging
 
 from pydantic import ConfigDict
 
-from trendify.api.plottable_data.marker import Marker
-from trendify.api.plottable_data.plottable_data import XYData
+from trendify.api.styling.marker import Marker
+
+# from trendify.api.plotting.plotting import XYData
+from trendify.api.formats.format2d import XYData
 
 __all__ = ["Point2D"]
 

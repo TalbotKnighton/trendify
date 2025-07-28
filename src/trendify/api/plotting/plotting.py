@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-# Standard imports
 from dataclasses import dataclass
 from pathlib import Path
-from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
-from typing import Union
 import warnings
 import logging
 
@@ -16,16 +13,16 @@ except:
 
 from pydantic import ConfigDict
 
-from trendify.api.data_product import DataProduct
-from trendify.api.helpers import HashableBase, Tag
-from trendify.api.format2d import Format2D, Grid, GridAxis
+from trendify.api.base.data_product import DataProduct
+from trendify.api.base.helpers import HashableBase, Tag
 
 if TYPE_CHECKING:
+    from trendify.api.formats.format2d import Format2D, Grid
     from matplotlib.axes import Axes
     from matplotlib.figure import Figure
 
 
-__all__ = ["SingleAxisFigure", "Pen", "PlottableData2D", "XYData"]
+__all__ = ["SingleAxisFigure"]
 
 logger = logging.getLogger(__name__)
 
@@ -95,25 +92,9 @@ class SingleAxisFigure:
         self.ax.set_xlim(left=format2d.lim_x_min, right=format2d.lim_x_max)
         self.ax.set_ylim(bottom=format2d.lim_y_min, top=format2d.lim_y_max)
 
-        # breakpoint()
         if format2d.grid is not None:
             self.apply_grid(format2d.grid)
 
-        # artists_by_zorder = {}
-        # for artist in self.ax.get_children():
-        #     if hasattr(artist, "get_zorder"):
-        #         zorder = artist.get_zorder()
-        #         if zorder not in artists_by_zorder:
-        #             artists_by_zorder[zorder] = []
-        #         artists_by_zorder[zorder].append(artist)
-
-        # # Loop through zorders in ascending order
-        # for zorder in sorted(artists_by_zorder.keys()):
-        #     print(f"Zorder: {zorder}")
-        #     for artist in artists_by_zorder[zorder]:
-        #         print(f"  - Artist type: {type(artist).__name__}")
-
-        # breakpoint()
         self.fig.tight_layout(rect=(0, 0.03, 1, 0.95))
         return self
 
@@ -123,16 +104,16 @@ class SingleAxisFigure:
         # Major grid
         if grid.major.show:
             self.ax.grid(
-                True,
+                visible=True,
                 which="major",
-                color=grid.major.color,
-                linestyle=grid.major.linestyle,
-                linewidth=grid.major.linewidth,
-                alpha=grid.major.alpha,
+                color=grid.major.pen.color,
+                linestyle=grid.major.pen.linestyle,
+                linewidth=grid.major.pen.size,
+                alpha=grid.major.pen.alpha,
                 zorder=grid.zorder,
             )
         else:
-            self.ax.grid(False, which="major")
+            self.ax.grid(visible=False, which="major")
 
         # Minor ticks and grid
         if grid.enable_minor_ticks:
@@ -142,16 +123,16 @@ class SingleAxisFigure:
 
         if grid.minor.show:
             self.ax.grid(
-                True,
+                visible=True,
                 which="minor",
-                color=grid.minor.color,
-                linestyle=grid.minor.linestyle,
-                linewidth=grid.minor.linewidth,
-                alpha=grid.minor.alpha,
+                color=grid.minor.pen.color,
+                linestyle=grid.minor.pen.linestyle,
+                linewidth=grid.minor.pen.size,
+                alpha=grid.minor.pen.alpha,
                 zorder=grid.zorder,
             )
         else:
-            self.ax.grid(False, which="minor")
+            self.ax.grid(visible=False, which="minor")
 
     def savefig(self, path: Path, dpi: int = 500):
         """
@@ -168,55 +149,3 @@ class SingleAxisFigure:
         Closes stored matplotlib figure before deleting reference to object.
         """
         plt.close(self.fig)
-
-
-class Pen(HashableBase):
-    """
-    Defines the pen drawing to matplotlib.
-
-    Attributes:
-        color (str): Color of line
-        size (float): Line width
-        alpha (float): Opacity from 0 to 1 (inclusive)
-        zorder (float): Prioritization
-        label (Union[str, None]): Legend label
-    """
-
-    color: str = "k"
-    size: float = 1
-    alpha: float = 1
-    zorder: float = 0
-    label: Union[str, None] = None
-
-    model_config = ConfigDict(extra="forbid")
-
-    def as_scatter_plot_kwargs(self):
-        """
-        Returns kwargs dictionary for passing to [matplotlib plot][matplotlib.axes.Axes.plot] method
-        """
-        return {
-            "color": self.color,
-            "linewidth": self.size,
-            "alpha": self.alpha,
-            "zorder": self.zorder,
-            "label": self.label,
-        }
-
-
-class PlottableData2D(DataProduct):
-    """
-    Base class for children of DataProduct to be plotted ax xy data on a 2D plot
-
-    Attributes:
-        format2d (Format2D|None): Format to apply to plot
-        tags (Tags): Tags to be used for sorting data.
-        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
-    """
-
-    format2d: Format2D | None = None
-
-
-class XYData(PlottableData2D):
-    """
-    Base class for children of DataProduct to be plotted ax xy data on a 2D plot
-    """

@@ -6,8 +6,8 @@ import logging
 from numpydantic import NDArray, Shape
 from pydantic import ConfigDict, Field
 
-from trendify.api.plottable_data.plottable_data import PlottableData2D
-from trendify.api.helpers import HashableBase, Tags
+from trendify.api.formats.format2d import PlottableData2D
+from trendify.api.base.helpers import HashableBase, Tags
 
 __all__ = ["HistogramStyle", "HistogramEntry"]
 

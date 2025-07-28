@@ -22,13 +22,13 @@ from waitress import serve
 #     # TableEntry,
 #     # HistogramEntry,
 # )
-from trendify.api.data_product import DataProduct
-from trendify.api.data_product_collection import DataProductCollection
-from trendify.api.plottable_data.histogram import HistogramEntry
-from trendify.api.plottable_data.plottable_data import XYData
-from trendify.api.plottable_data.point import Point2D
-from trendify.api.plottable_data.trace import Trace2D
-from trendify.api.table import TableEntry
+from trendify.api.base.data_product import DataProduct
+from trendify.api.generator.data_product_collection import DataProductCollection
+from trendify.api.plotting.histogram import HistogramEntry
+from trendify.api.formats.format2d import XYData
+from trendify.api.plotting.point import Point2D
+from trendify.api.plotting.trace import Trace2D
+from trendify.api.formats.table import TableEntry
 
 valid_product_types = [
     DataProduct,

@@ -13,7 +13,7 @@ from pydantic import (
     model_validator,
 )
 
-from trendify.api.helpers import Tags
+from trendify.api.base.helpers import Tags
 
 
 logger = logging.getLogger(__name__)

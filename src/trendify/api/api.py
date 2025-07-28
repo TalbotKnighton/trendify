@@ -21,9 +21,9 @@ import logging
 
 import numpy as np
 
-from trendify.api.data_product import ProductGenerator
-from trendify.api.data_product_collection import DataProductCollection, flatten
-from trendify.api.helpers import DATA_PRODUCTS_FNAME_DEFAULT
+from trendify.api.base.data_product import ProductGenerator
+from trendify.api.generator.data_product_collection import DataProductCollection, flatten
+from trendify.api.base.helpers import DATA_PRODUCTS_FNAME_DEFAULT
 from trendify.api.generator.data_product_generator import DataProductGenerator
 
 

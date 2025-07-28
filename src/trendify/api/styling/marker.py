@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 import logging
 
 from pydantic import ConfigDict
 
-from trendify.api.helpers import HashableBase
-from trendify.api.plottable_data.plottable_data import Pen
+from trendify.api.base.helpers import HashableBase
+from trendify.api.base.pen import Pen
 
 __all__ = ["Marker"]
 
 logger = logging.getLogger(__name__)
+
 
 class Marker(HashableBase):
     """
@@ -38,7 +41,7 @@ class Marker(HashableBase):
         """
         Converts Pen to marker with the option to specify a symbol
         """
-        return cls(symbol=symbol, **pen.model_dump())
+        return cls(symbol=symbol, **pen.model_dump().pop("linestyle"))
 
     model_config = ConfigDict(extra="forbid")
 

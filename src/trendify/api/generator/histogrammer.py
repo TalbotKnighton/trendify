@@ -5,9 +5,9 @@ from typing import List
 import logging
 
 # from trendify.api.data_product_collection import DataProductCollection
-from trendify.api.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
-from trendify.api.plottable_data.histogram import HistogramEntry
-from trendify.api.plottable_data.plottable_data import SingleAxisFigure
+from trendify.api.base.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
+from trendify.api.plotting.histogram import HistogramEntry
+from trendify.api.plotting.plotting import SingleAxisFigure
 
 __all__ = ["Histogrammer"]
 

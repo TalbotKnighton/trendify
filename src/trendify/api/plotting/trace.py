@@ -12,13 +12,15 @@ import numpy as np
 from numpydantic import NDArray, Shape
 from pydantic import ConfigDict
 
-from trendify.api.plottable_data.plottable_data import Pen, XYData
-from trendify.api.format2d import Format2D
-from trendify.api.helpers import Tags
-from trendify.api.plottable_data.marker import Marker
-from trendify.api.plottable_data.point import Point2D
+# from trendify.api.plotting.plotting import XYData
+from trendify.api.formats.format2d import XYData
+from trendify.api.base.pen import Pen
+from trendify.api.base.helpers import Tags
+from trendify.api.styling.marker import Marker
+from trendify.api.plotting.point import Point2D
 
 if TYPE_CHECKING:
+    from trendify.api.formats.format2d import Format2D
     from matplotlib.axes import Axes
 
 __all__ = ["Trace2D"]
@@ -93,7 +95,7 @@ class Trace2D(XYData):
         x: NDArray[Shape["*"], float],
         y: NDArray[Shape["*"], float],
         pen: Pen = Pen(),
-        format2d: Format2D = Format2D(),
+        format2d: Format2D | None = None,
     ):
         """
         Creates a list of [Point2D][trendify.API.Point2D]s from xy data and returns a new [Trace2D][trendify.API.Trace2D] product.
@@ -103,8 +105,9 @@ class Trace2D(XYData):
             x (NDArray[Shape["*"], float]): x values
             y (NDArray[Shape["*"], float]): y values
             pen (Pen): Style and label for trace
-            format2d (Format2D): Format to apply to plot
+            format2d (Format2D | None): Format to apply to plot
         """
+
         return cls(
             tags=tags,
             points=[
