@@ -1,0 +1,59 @@
+{
+  "items": [
+    {
+      "tag": "waveforms",
+      "title": "Sine and Cosine Waves",
+      "x_label": "X",
+      "y_label": "Amplitude",
+      "x_lim": [
+        0.0,
+        10.0
+      ],
+      "y_lim": [
+        -1.5,
+        1.5
+      ],
+      "type_info": {
+        "module_spec": "trendify.asset_specs",
+        "base_name": "AxesSpec",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tag": "scatter",
+      "title": "Scatter Plot",
+      "x_label": "X",
+      "y_label": "Y",
+      "x_lim": [
+        0.0,
+        10.0
+      ],
+      "y_lim": [
+        -1.5,
+        1.5
+      ],
+      "type_info": {
+        "module_spec": "trendify.asset_specs",
+        "base_name": "AxesSpec",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    }
+  ],
+  "type_info": {
+    "module_spec": "typeflow.serialization.model_collections",
+    "base_name": "SerializableCollection",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "tags": [
+    "test",
+    "serialization"
+  ],
+  "metadata": {},
+  "value": 0.5,
+  "direction": "horizontal",
+  "pen": {
+    "color": "k",
+    "size": 1.0,
+    "alpha": 1.0,
+    "zorder": 0.0,
+    "label": null,
+    "type_info": {
+      "module_spec": "trendify.core",
+      "base_name": "Pen",
+      "type_params": null,
+      "version": null,
+      "alias": null,
+      "extra_args": null,
+      "use_cache": true
+    }
+  },
+  "type_info": {
+    "module_spec": "trendify.core",
+    "base_name": "AxLine",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

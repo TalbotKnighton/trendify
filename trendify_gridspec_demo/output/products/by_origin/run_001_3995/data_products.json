@@ -1,0 +1,582 @@
+{
+  "metadata": {
+    "origin_id": "run_001_3995",
+    "original_dir": "trendify_gridspec_demo/data/run_001",
+    "product_count": 36,
+    "creation_timestamp": "2025-05-01T11:07:54.414463",
+    "product_type_counts": {
+      "Trace2D": 2,
+      "Point2D": 30,
+      "TableEntry": 4
+    },
+    "tag_counts": {
+      "waveforms": 2,
+      "sine": 1,
+      "cosine": 1,
+      "scatter": 30,
+      "metrics": 4
+    },
+    "type_info": {
+      "module_spec": "trendify.core",
+      "base_name": "ProductMetadata",
+      "type_params": null,
+      "version": null,
+      "alias": null,
+      "extra_args": null,
+      "use_cache": true
+    }
+  },
+  "products": [
+    {
+      "tags": [
+        "waveforms",
+        "sine"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Trace2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "waveforms",
+        "cosine"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Trace2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "scatter"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "metrics"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "TableEntry",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "metrics"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "TableEntry",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "metrics"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "TableEntry",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        "metrics"
+      ],
+      "metadata": {},
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "TableEntry",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    }
+  ],
+  "type_info": {
+    "module_spec": "trendify.core",
+    "base_name": "ProductsModel",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

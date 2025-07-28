@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "tag": "waveforms",
+      "title": "Wave Comparison",
+      "size": [
+        12.0,
+        8.0
+      ],
+      "dpi": 200,
+      "type_info": {
+        "module_spec": "trendify.asset_specs",
+        "base_name": "FigureSpec",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    }
+  ],
+  "type_info": {
+    "module_spec": "typeflow.serialization.model_collections",
+    "base_name": "SerializableCollection",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

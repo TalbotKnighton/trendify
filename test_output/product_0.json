@@ -1,0 +1,35 @@
+{
+  "tags": [
+    "test",
+    "serialization"
+  ],
+  "metadata": {},
+  "x": 1.0,
+  "y": 2.0,
+  "marker": {
+    "color": "red",
+    "size": 5.0,
+    "alpha": 1.0,
+    "zorder": 0.0,
+    "label": null,
+    "symbol": ".",
+    "type_info": {
+      "module_spec": "trendify.core",
+      "base_name": "Marker",
+      "type_params": null,
+      "version": null,
+      "alias": null,
+      "extra_args": null,
+      "use_cache": true
+    }
+  },
+  "type_info": {
+    "module_spec": "trendify.core",
+    "base_name": "Point2D",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

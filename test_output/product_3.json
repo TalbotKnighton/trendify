@@ -1,0 +1,20 @@
+{
+  "tags": [
+    "test",
+    "serialization"
+  ],
+  "metadata": {},
+  "row": "Test",
+  "col": "Value",
+  "value": 42.0,
+  "unit": null,
+  "type_info": {
+    "module_spec": "trendify.core",
+    "base_name": "TableEntry",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

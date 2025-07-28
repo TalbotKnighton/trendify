@@ -1,0 +1,47 @@
+{
+  "items": [
+    {
+      "tag": "complex_layout",
+      "row": 0,
+      "col": 1,
+      "rowspan": 1,
+      "colspan": 1,
+      "axes_spec_tag": "scatter",
+      "type_info": {
+        "module_spec": "trendify.asset_specs",
+        "base_name": "PlotSpec",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tag": "complex_layout",
+      "row": 0,
+      "col": 1,
+      "rowspan": 1,
+      "colspan": 1,
+      "axes_spec_tag": "scatter",
+      "type_info": {
+        "module_spec": "trendify.asset_specs",
+        "base_name": "PlotSpec",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    }
+  ],
+  "type_info": {
+    "module_spec": "typeflow.serialization.model_collections",
+    "base_name": "SerializableCollection",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "items": [
+    {
+      "tag": "complex_layout",
+      "rows": 2,
+      "cols": 2,
+      "width_ratios": [
+        2.0,
+        1.0
+      ],
+      "height_ratios": [
+        1.0,
+        1.0
+      ],
+      "type_info": {
+        "module_spec": "trendify.asset_specs",
+        "base_name": "GridSpec",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    }
+  ],
+  "type_info": {
+    "module_spec": "typeflow.serialization.model_collections",
+    "base_name": "SerializableCollection",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

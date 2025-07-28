@@ -1,0 +1,88 @@
+{
+  "tags": [
+    "test",
+    "serialization"
+  ],
+  "metadata": {},
+  "points": [
+    {
+      "tags": [
+        null
+      ],
+      "metadata": {},
+      "x": 1.0,
+      "y": 4.0,
+      "marker": null,
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        null
+      ],
+      "metadata": {},
+      "x": 2.0,
+      "y": 5.0,
+      "marker": null,
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    },
+    {
+      "tags": [
+        null
+      ],
+      "metadata": {},
+      "x": 3.0,
+      "y": 6.0,
+      "marker": null,
+      "type_info": {
+        "module_spec": "trendify.core",
+        "base_name": "Point2D",
+        "type_params": null,
+        "version": null,
+        "alias": null,
+        "extra_args": null,
+        "use_cache": true
+      }
+    }
+  ],
+  "pen": {
+    "color": "blue",
+    "size": 1.0,
+    "alpha": 1.0,
+    "zorder": 0.0,
+    "label": null,
+    "type_info": {
+      "module_spec": "trendify.core",
+      "base_name": "Pen",
+      "type_params": null,
+      "version": null,
+      "alias": null,
+      "extra_args": null,
+      "use_cache": true
+    }
+  },
+  "type_info": {
+    "module_spec": "trendify.core",
+    "base_name": "Trace2D",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}

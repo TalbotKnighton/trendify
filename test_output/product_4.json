@@ -1,0 +1,35 @@
+{
+  "tags": [
+    "test",
+    "serialization"
+  ],
+  "metadata": {},
+  "value": 3.14,
+  "style": {
+    "color": "green",
+    "label": null,
+    "histtype": "stepfilled",
+    "alpha_edge": 1.0,
+    "alpha_face": 0.3,
+    "linewidth": 2.0,
+    "bins": null,
+    "type_info": {
+      "module_spec": "trendify.core",
+      "base_name": "HistogramStyle",
+      "type_params": null,
+      "version": null,
+      "alias": null,
+      "extra_args": null,
+      "use_cache": true
+    }
+  },
+  "type_info": {
+    "module_spec": "trendify.core",
+    "base_name": "HistogramEntry",
+    "type_params": null,
+    "version": null,
+    "alias": null,
+    "extra_args": null,
+    "use_cache": true
+  }
+}
