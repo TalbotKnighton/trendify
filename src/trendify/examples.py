@@ -136,7 +136,11 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 linestyle=linestyles[i % len(linestyles)],
             ),
             format2d=trendify.Format2D(
-                legend=trendify.Legend(title="Column", framon=False, framealpha=0),
+                legend=trendify.Legend(
+                    title="example",
+                    loc=trendify.LegendLocation.CENTER_RIGHT,
+                    framealpha=0,
+                ),
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
                 scale_x=trendify.AxisScale.LINEAR,
                 scale_y=trendify.AxisScale.LOG,
@@ -156,7 +160,12 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 linestyle=linestyles[i % len(linestyles)],
             ),
             format2d=trendify.Format2D(
-                legend=trendify.Legend(fancybox=False, framon=True, framealpha=1),
+                legend=trendify.Legend(
+                    fancybox=False,
+                    loc=trendify.LegendLocation.CENTER,
+                    edgecolor="red",
+                    framealpha=1,
+                ),
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
                 scale_x=trendify.AxisScale.LOG,
                 scale_y=trendify.AxisScale.LOG,
@@ -178,6 +187,8 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             format2d=trendify.Format2D(
                 legend=trendify.Legend(visible=False),
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
+                scale_x=trendify.AxisScale.LOG,
+                scale_y=trendify.AxisScale.LINEAR,
             ),
         ).append_to_list(products)
         for i, col in enumerate(df.columns)
@@ -210,6 +221,10 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             value=series.mean(),
             format2d=trendify.Format2D(
                 title_fig="Idk lol",
+                legend=trendify.Legend(
+                    loc=trendify.LegendLocation.UPPER_LEFT,
+                    bbox_to_anchor=(1.05, 1),
+                ),
                 label_x="Series value",
                 label_y="Counts",
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),

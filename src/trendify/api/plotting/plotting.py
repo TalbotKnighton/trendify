@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import warnings
 import logging
 
+
 try:
     from typing import Self, TYPE_CHECKING
 except:
@@ -74,15 +75,26 @@ class SingleAxisFigure:
         if format2d.title_fig is not None:
             self.fig.suptitle(format2d.title_fig)
 
-        with warnings.catch_warnings(action="ignore", category=UserWarning):
-            handles, labels = self.ax.get_legend_handles_labels()
-            by_label = dict(zip(labels, handles))
-            if by_label:
-                self.ax.legend(
-                    by_label.values(),
-                    by_label.keys(),
-                    title=format2d.title_legend,
-                )
+        leg = None
+        if format2d.legend is not None:
+            with warnings.catch_warnings(action="ignore", category=UserWarning):
+                handles, labels = self.ax.get_legend_handles_labels()
+                by_label = dict(zip(labels, handles))
+                if by_label:
+                    sorted_items = sorted(by_label.items(), key=lambda item: item[0])
+                    labels_sorted, handles_sorted = zip(*sorted_items)
+
+                    kwargs = format2d.legend.to_kwargs()
+
+                    leg = self.ax.legend(
+                        handles=handles_sorted,
+                        labels=labels_sorted,
+                        bbox_to_anchor=format2d.legend.bbox_to_anchor,
+                        **kwargs,
+                    )
+
+                    if leg is not None and format2d.legend.edgecolor:
+                        leg.get_frame().set_edgecolor(format2d.legend.edgecolor)
 
         if format2d.label_x is not None:
             self.ax.set_xlabel(xlabel=format2d.label_x)
