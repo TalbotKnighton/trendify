@@ -95,6 +95,9 @@ class SingleAxisFigure:
         if format2d.grid is not None:
             self.apply_grid(format2d.grid)
 
+        self.ax.set_xscale(format2d.scale_x.value)
+        self.ax.set_yscale(format2d.scale_y.value)
+
         self.fig.tight_layout(rect=(0, 0.03, 1, 0.95))
         return self
 

@@ -82,6 +82,15 @@ def make_example_data(workdir: Path, n_folders: int = 10):
         input_series.append(series)
 
 
+def transform(data: np.ndarray, scale: trendify.AxisScale) -> np.ndarray:
+    if scale == trendify.AxisScale.LINEAR:
+        return data
+    elif scale == trendify.AxisScale.LOG:
+        return np.exp(data)  # ensures positivity and preserves shape
+    else:
+        raise ValueError(f"Unsupported scale: {scale}")
+
+
 def example_data_product_generator(workdir: Path) -> trendify.ProductList:
     """
     Processes the generated sample data in given workdir returning several types of data products.
@@ -108,7 +117,66 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 linestyle=linestyles[i % len(linestyles)],
             ),
             format2d=trendify.Format2D(
-                title_legend="Column",
+                grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
+                scale_x=trendify.AxisScale.LINEAR,
+                scale_y=trendify.AxisScale.LINEAR,
+            ),
+        ).append_to_list(products)
+        for i, col in enumerate(df.columns)
+    ]
+
+    traces = [
+        trendify.Trace2D.from_xy(
+            x=df.index,
+            y=transform(df[col].values, trendify.AxisScale.LOG),
+            tags=["trace_plot_log_y"],
+            pen=trendify.Pen(
+                label=col,
+                color=colors[list(Channels).index(col)],
+                linestyle=linestyles[i % len(linestyles)],
+            ),
+            format2d=trendify.Format2D(
+                legend=trendify.Legend(title="Column", framon=False, framealpha=0),
+                grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
+                scale_x=trendify.AxisScale.LINEAR,
+                scale_y=trendify.AxisScale.LOG,
+            ),
+        ).append_to_list(products)
+        for i, col in enumerate(df.columns)
+    ]
+
+    traces = [
+        trendify.Trace2D.from_xy(
+            x=transform(df.index, trendify.AxisScale.LOG),
+            y=transform(df[col].values, trendify.AxisScale.LOG),
+            tags=["trace_plot_log_xy"],
+            pen=trendify.Pen(
+                label=col,
+                color=colors[list(Channels).index(col)],
+                linestyle=linestyles[i % len(linestyles)],
+            ),
+            format2d=trendify.Format2D(
+                legend=trendify.Legend(fancybox=False, framon=True, framealpha=1),
+                grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
+                scale_x=trendify.AxisScale.LOG,
+                scale_y=trendify.AxisScale.LOG,
+            ),
+        ).append_to_list(products)
+        for i, col in enumerate(df.columns)
+    ]
+
+    traces = [
+        trendify.Trace2D.from_xy(
+            x=transform(df.index, trendify.AxisScale.LOG),
+            y=df[col].values,
+            tags=["trace_plot_log_x"],
+            pen=trendify.Pen(
+                label=col,
+                color=colors[list(Channels).index(col)],
+                linestyle=linestyles[i % len(linestyles)],
+            ),
+            format2d=trendify.Format2D(
+                legend=trendify.Legend(visible=False),
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
             ),
         ).append_to_list(products)

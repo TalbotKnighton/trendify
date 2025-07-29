@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import StrEnum
 from typing import Iterable, Optional
 import logging
 
@@ -13,7 +14,12 @@ from trendify.api.styling.grid import Grid
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["Format2D", "PlottableData2D", "XYData"]
+__all__ = ["Format2D", "PlottableData2D", "XYData", "AxisScale"]
+
+
+class AxisScale(StrEnum):
+    LINEAR = "linear"
+    LOG = "log"
 
 
 class Format2D(HashableBase):
@@ -31,6 +37,8 @@ class Format2D(HashableBase):
         lim_y_min (float | None): Sets [y-axis lower bound][matplotlib.axes.Axes.set_ylim]
         lim_y_max (float | None): Sets [y-axis upper bound][matplotlib.axes.Axes.set_ylim]
         grid (Grid | None): Sets the [grid][matplotlib.pyplot.grid]
+        scale_x (AxisScale): Sets the x axis scale to an option from [AxisScale][trendify.api.formats.format2d.AxisScale]
+        scale_y (AxisScale): Sets the y axis scale to an option from [AxisScale][trendify.api.formats.format2d.AxisScale]
     """
 
     title_fig: Optional[str] | None = None
@@ -43,6 +51,8 @@ class Format2D(HashableBase):
     lim_y_min: float | None = None
     lim_y_max: float | None = None
     grid: Grid | None = None
+    scale_x: AxisScale = AxisScale.LINEAR
+    scale_y: AxisScale = AxisScale.LINEAR
 
     model_config = ConfigDict(extra="forbid")
 
@@ -78,6 +88,9 @@ class Format2D(HashableBase):
 
         grid = Grid.union_from_iterable(f.grid for f in formats if f.grid is not None)
 
+        [scale_x] = set(i.scale_x for i in formats)
+        [scale_y] = set(i.scale_y for i in formats)
+
         return cls(
             title_fig=title_fig,
             title_legend=title_legend,
@@ -89,6 +102,8 @@ class Format2D(HashableBase):
             lim_y_min=lim_y_min,
             lim_y_max=lim_y_max,
             grid=grid,
+            scale_x=scale_x,
+            scale_y=scale_y,
         )
 
 
