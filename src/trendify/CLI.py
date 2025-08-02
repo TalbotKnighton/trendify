@@ -487,7 +487,7 @@ def trendify(*pargs):
     logging.basicConfig(
         level=level,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        datefmt="%Y-%m-%dT%H:%M:%SZ",
+        datefmt="%Y-%m-%d %H:%M:%S",
         handlers=[
             logging.StreamHandler(sys.stdout),
             logging.FileHandler("trendify.log", mode="a"),
