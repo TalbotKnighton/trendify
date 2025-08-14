@@ -24,7 +24,7 @@ dependencies = [
   "grafana_api",
 ]
 name = "trendify"
-version = "1.1.9"
+version = "1.1.10"
 requires-python = ">= 3.9"
 authors = [
   { name = "Talbot Knighton", email = "talbotknighton@gmail.org" },
