@@ -199,8 +199,10 @@ class UserMethod:
         function_handle = None
 
         assert isinstance(method_name, str)
+
+        function_handle = obj
         for arg in method_name.split("."):
-            function_handle = getattr(obj, arg)
+            function_handle = getattr(function_handle, arg)
 
         assert function_handle is not None
         return function_handle
