@@ -22,7 +22,7 @@ class Pen(HashableBase):
         label (Union[str, None]): Legend label
     """
 
-    color: str = "k"
+    color: Tuple[float, float, float] | Tuple[float, float, float, float] | str = "k"
     size: float = 1
     alpha: float = 1
     zorder: float = 0
