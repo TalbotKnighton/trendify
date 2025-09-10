@@ -83,7 +83,7 @@ class ProductIndexMap(BaseModel):
             raise ValueError(f"{save_dir} is not a directory")
         lock_file = save_dir.joinpath("reserving_index.lock")
         with FileLock(lock_file):
-            index_map_file = save_dir.joinpath("index_map.json")
+            index_map_file = save_dir.joinpath("index_map")
             if not index_map_file.exists():
                 index_map = ProductIndexMap()
             else:
