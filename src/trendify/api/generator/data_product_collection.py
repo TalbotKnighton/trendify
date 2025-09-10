@@ -59,7 +59,7 @@ parse-json
 
 
 class ProductEntryMetadata(BaseModel):
-    source_dir: Path
+    source: Path
 
     def __hash__(self):
         return hash(self.model_dump_json())
@@ -97,34 +97,6 @@ class ProductIndexMap(BaseModel):
                 index_map.entries[index_to_use] = metadata
             index_map_file.write_text(index_map.model_dump_json())
         return index_to_use
-
-
-# BUG: DAG - Should these be moved to helpers.py or maybe data_product.py?
-### Asset producers
-def _get_and_reserve_index(save_dir: Path, dir_in: Path):
-    """
-    Reserves next available file index during trendify sorting phase.
-    Saves data to index map file.
-
-    Args:
-        save_dir (Path): Directory for which the next available file index is needed
-        dir_in (Path): Directory from which data is being pulled for sorting
-    """
-    assert save_dir.is_dir()
-    lock_file = save_dir.joinpath("reserving_index.lock")
-    with FileLock(lock_file):
-        index_map = save_dir.joinpath("index_map.json")
-        breakpoint()
-        if not index_map.exists():
-            index_map = ProductIndexMap()
-        else:
-            index_map = ProductIndexMap.model_validate_json(index_map.read_text())
-
-        # index = int(index_list[-1].split(",")[0]) + 1 if index_list else 0
-        # index_list.append(f"{index},{dir_in}")
-        # index_map.write_text("\n".join(index_list))
-        index_map.write_text(index.model_dump_json)
-    return index
 
 
 def _should_be_flattened(obj: Any):
@@ -498,7 +470,7 @@ class DataProductCollection(BaseModel):
         if products_file.exists():
             logger.info(f"Sorting results from {dir_in = }")
             collection = DataProductCollection.model_validate_json(
-                dir_in.joinpath(data_products_fname).read_text()
+                products_file.read_text()
             )
             collection.derived_from = dir_in
             tags = collection.get_tags()
@@ -509,7 +481,9 @@ class DataProductCollection(BaseModel):
                 # next_index = _get_and_reserve_index(save_dir=save_dir, dir_in=dir_in)
                 next_index = ProductIndexMap.get_index(
                     save_dir=save_dir,
-                    metadata=ProductEntryMetadata(source_dir=dir_in),
+                    metadata=ProductEntryMetadata(
+                        source=products_file.resolve(),
+                    ),
                 )
                 file = save_dir.joinpath(str(next_index)).with_suffix(".json")
                 file.write_text(sub_collection.model_dump_json())
