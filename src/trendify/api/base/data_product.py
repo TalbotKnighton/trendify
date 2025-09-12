@@ -29,7 +29,7 @@ class DataProduct(BaseModel):
 
     Attributes:
         product_type (str): Product type should be the same as the class name.
-            The product type is used to search for products from a [DataProductCollection][trendify.API.DataProductCollection].
+            The product type is used to search for products from a [DataProductCollection][trendify.api.DataProductCollection].
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
     """
@@ -60,14 +60,14 @@ class DataProduct(BaseModel):
         Returns:
             (str): Product type should be the same as the class name.
                 The product type is used to search for products from a
-                [DataProductCollection][trendify.API.DataProductCollection].
+                [DataProductCollection][trendify.api.DataProductCollection].
         """
         return type(self).__name__
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
         Registers child subclasses to be able to parse them from JSON file using the
-        [deserialize_child_classes][trendify.API.DataProduct.deserialize_child_classes] method
+        [deserialize_child_classes][trendify.api.DataProduct.deserialize_child_classes] method
         """
         super().__init_subclass__(**kwargs)
         _data_product_subclass_registry[cls.__name__] = cls
@@ -108,7 +108,7 @@ class DataProduct(BaseModel):
 
 
 ProductList = List[SerializeAsAny[InstanceOf[DataProduct]]]
-"""List of serializable [DataProduct][trendify.API.DataProduct] or child classes thereof"""
+"""List of serializable [DataProduct][trendify.api.DataProduct] or child classes thereof"""
 
 ProductGenerator = Callable[[Path], ProductList]
 """

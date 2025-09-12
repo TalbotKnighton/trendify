@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # Motivation
 
 This page explains the motivation for the Trendify package in hopes that the reader will better understand what benefit it provides, how to use it, and what features to expect in the future.

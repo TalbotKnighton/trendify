@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class Histogrammer:
     """
-    Class for loading data products and histogramming the [`HistogramEntry`][trendify.API.HistogramEntry]s
+    Class for loading data products and histogramming the [`HistogramEntry`][trendify.api.HistogramEntry]s
 
     Args:
         in_dirs (List[Path]): Directories from which the data products are to be loaded.
@@ -79,7 +79,7 @@ class Histogrammer:
 
         Args:
             tag (Tag): Tag used to filter the loaded data products
-            histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendify.API.HistogramEntry]s
+            histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendify.api.HistogramEntry]s
             dir_out (Path): Directory to which the generated histogram will be stored
             dpi (int): resolution of plot
         """

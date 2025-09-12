@@ -231,9 +231,7 @@ def make_products(
             [data_products_fname] * len(sorted_dirs),
             n_procs=n_procs,
         )
-        logger.info(
-            "Finished generating tagged DataProducts and writing to JSON files"
-        )
+        logger.info("Finished generating tagged DataProducts and writing to JSON files")
 
 
 def sort_products(
@@ -335,11 +333,11 @@ def make_tables_and_figures(
         dpi (int = 500): Resolution of output plots when using matplotlib
             (for `make_xy_plots==True` and/or `make_histograms==True`)
         no_tables (bool): Whether or not to collect the
-            [`TableEntry`][trendify.API.TableEntry] products and write them
+            [`TableEntry`][trendify.api.TableEntry] products and write them
             to CSV files (`<tag>_melted.csv` with `<tag>_pivot.csv` and `<tag>_stats.csv` when possible).
-        no_xy_plots (bool): Whether or not to plot the [`XYData`][trendify.API.XYData] products using matplotlib
+        no_xy_plots (bool): Whether or not to plot the [`XYData`][trendify.api.XYData] products using matplotlib
         no_histograms (bool): Whether or not to generate histograms of the
-            [`HistogramEntry`][trendify.API.HistogramEntry] products
+            [`HistogramEntry`][trendify.api.HistogramEntry] products
             using matplotlib.
     """
 
@@ -395,11 +393,11 @@ def make_it_trendy(
             be used to load and process directories and/or tags in parallel.
         dpi_static_plots (int = 500): Resolution of output plots when using matplotlib
             (for `make_xy_plots==True` and/or `make_histograms==True`)
-        no_static_tables (bool): Suppresses static assets from the [`TableEntry`][trendify.API.TableEntry] products
+        no_static_tables (bool): Suppresses static assets from the [`TableEntry`][trendify.api.TableEntry] products
         no_static_xy_plots (bool): Suppresses static assets from the
-            [`XYData`][trendify.API.XYData]
-            ([Trace2D][trendify.API.Trace2D] and [Point2D][trendify.API.Point2D]) products
-        no_static_histograms (bool): Suppresses static assets from the [`HistogramEntry`][trendify.API.HistogramEntry] products
+            [`XYData`][trendify.api.XYData]
+            ([Trace2D][trendify.api.Trace2D] and [Point2D][trendify.api.Point2D]) products
+        no_static_histograms (bool): Suppresses static assets from the [`HistogramEntry`][trendify.api.HistogramEntry] products
         no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
         no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
         data_products_fname (str): File name to be used for storing generated data products

@@ -8,6 +8,8 @@ repo_url: https://github.com/TalbotKnighton/trendify
 
 theme:
   name: material
+  logo: assets/logo_pink_white_bg.svg
+  favicon: assets/logo_pink_white_bg.svg
   features:
     # - header.autohide
     - search.suggest
@@ -49,9 +51,9 @@ theme:
 nav:
   - Welcome: index.md
   - Motivation: motivation.md
-  - Examples: 
-    - Basic: example.md
-    - More: more_examples.md
+  - Examples:
+      - Basic: example.md
+      - More: more_examples.md
   - Recipe: recipe.md
   - API and CLI: api_and_cli.md
   - Code Reference: reference/
@@ -65,6 +67,7 @@ extra:
 extra_css:
   - css/code_select.css
   - css/mkdocstrings.css
+  - css/logo.css
 
 # exclude_docs: |
 #   *.py
@@ -94,7 +97,7 @@ markdown_extensions:
   - mkdocs-click
   #
   - pymdownx.snippets:
-      base_path: 'docs/'
+      base_path: "docs/"
       auto_append:
         - includes/abbreviations.md
   - pymdownx.superfences:
@@ -136,7 +139,7 @@ plugins:
   - glightbox
   - gen-files:
       scripts:
-      - scripts/gen_ref_pages.py
+        - scripts/gen_ref_pages.py
   - section-index
   - autorefs
   - literate-nav:
@@ -146,18 +149,18 @@ plugins:
       handlers:
         python:
           import:
-          # https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
-          - https://docs.python.org/3/objects.inv
-          - https://matplotlib.org/objects.inv
-          - https://numpy.org/doc/stable/objects.inv
-          - https://pandas.pydata.org/docs/objects.inv
-          - https://docs.scipy.org/doc/scipy/objects.inv
-          - https://numpydantic.readthedocs.io/en/latest/objects.inv
-          - https://docs.pydantic.dev/latest/objects.inv
+            # https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
+            - https://docs.python.org/3/objects.inv
+            - https://matplotlib.org/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
+            - https://pandas.pydata.org/docs/objects.inv
+            - https://docs.scipy.org/doc/scipy/objects.inv
+            - https://numpydantic.readthedocs.io/en/latest/objects.inv
+            - https://docs.pydantic.dev/latest/objects.inv
           options:
             extensions:
-            - griffe_pydantic:
-                schema: true
+              - griffe_pydantic:
+                  schema: true
             docstring_style: google
             docstring_section_style: table
             members_order: alphabetical
@@ -180,9 +183,9 @@ plugins:
             show_submodules: false
             show_docstring_classes: true
             docstring_options:
-                ignore_init_summary: false
+              ignore_init_summary: false
           paths: [src]
-  # 
+  #
   - exclude:
       glob:
         - snippets/*

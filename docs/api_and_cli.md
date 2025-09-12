@@ -1,3 +1,7 @@
+---
+hide:
+  - navigation
+---
 
 # API and CLI
 
@@ -5,20 +9,19 @@
 
 The `trendify` package 
 
-- Maps a user-defined function over given directories to produce JSON serialized [Data Products][trendify.API.DataProduct].
-- Sorts [Data Products][trendify.API.DataProduct] according to user-specified [Tags][trendify.API.Tags]
+- Maps a user-defined function over given directories to produce JSON serialized [Data Products][trendify.api.base.data_product.DataProduct].
+- Sorts [Data Products][trendify.api.base.data_product.DataProduct] according to user-specified [Tags][trendify.api.base.helpers.Tags]
 - Writes collected products to CSV files or static images (via [matplotlib][matplotlib] backend)
 - Generates nested `include.md` files for importing generated assets into markdown reports (or MkDocs web page)
-- _In Progress:_ Generates a Grafana dashboard with panels for each data [Tag][trendify.API.Tag]
+- _In Progress:_ Generates a Grafana dashboard with panels for each data [Tag][trendify.api.base.helpers.Tag]
 - _Future Work:_ Generates nested `include.tex` files for nested assets
 
-Trendify sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the [make_it_trendy][trendify.API.make_it_trendy] method.  This method is a convenient wrapper on multiple individual steps:
+Trendify sorts products and outputs them as CSV and JPG files to an assets directory or prepares them for display in Grafana via the [make_it_trendy][trendify.api.api.make_it_trendy] method.  This method is a convenient wrapper on multiple individual steps:
 
-- [make_products][trendify.API.make_products]
-- [sort_products][trendify.API.sort_products]
-- [make_grafana_dashboard][trendify.API.make_grafana_dashboard]
-- [make_tables_and_figures][trendify.API.make_tables_and_figures]
-- [make_include_files][trendify.API.make_include_files]
+- [make_products][trendify.api.api.make_products]
+- [sort_products][trendify.api.api.sort_products]
+- [make_tables_and_figures][trendify.api.api.make_tables_and_figures]
+- [make_include_files][trendify.api.api.make_include_files]
 
 Each step can be mapped in parallel as part of a process pool by providing an integer argument `n_procs` greater than 1.  Parllel excecution greatly speeds up processing times for computationally expensive data product generators or for plotting large numbers data products.
 
@@ -28,20 +31,20 @@ Each step can be mapped in parallel as part of a process pool by providing an in
 The user specifies a function that takes in a `Path` and returns a list holding instances of the following children of
 [DataProduct][trendify.DataProduct]: 
 
-- [`Trace2D`][trendify.API.Trace2D]
-- [`Point2D`][trendify.API.Point2D]
-- [`TableEntry`][trendify.API.TableEntry]
-- [`HistogramEntry`][trendify.API.HistogramEntry]
+- [`Trace2D`][trendify.api.plotting.trace.Trace2D]
+- [`Point2D`][trendify.api.plotting.point.Point2D]
+- [`TableEntry`][trendify.api.formats.table.TableEntry]
+- [`HistogramEntry`][trendify.api.plotting.histogram.HistogramEntry]
 
 All [Data Products][trendify.DataProduct] inherit type checking and JSON serialization from PyDantic [BaseModel][pydantic.BaseModel].  
 
-[XYData][trendify.API.XYData] product inputs include:
+[XYData][trendify.api.formats.format2d.XYData] product inputs include:
 
-- [Tags][trendify.API.Tags] used to sort and collect the products
-- [Pen][trendify.API.Pen] defines the line style and legend label for [`Trace2D`][trendify.API.Trace2D]
-- [Marker][trendify.API.Marker] defines the symbol style and legend label for [`Point2D`][trendify.API.Point2D]
+- [Tags][trendify.api.base.helpers.Tags] used to sort and collect the products
+- [Pen][trendify.api.base.pen.Pen] defines the line style and legend label for [`Trace2D`][trendify.api.plotting.trace.Trace2D]
+- [Marker][trendify.api.styling.marker.Marker] defines the symbol style and legend label for [`Point2D`][trendify.api.plotting.point.Point2D]
 
-[`TableEntry`][trendify.API.TableEntry] inputs include 
+[`TableEntry`][trendify.api.formats.table.TableEntry] inputs include 
 
 - `row` and `column` used to generate a pivot table if possible (so long as the `row`,`col` index pair is not repeated in a collected set)
 - `value`
@@ -52,11 +55,10 @@ down to a unique set.  Use unique pen label, marker label, histogram style label
 
 Trendify is easiest to run from the CLI which is a wrapper on the following methods.  These can also be run via a Python script:
 
-- [make_products][trendify.API.make_products]
-- [sort_products][trendify.API.sort_products]
-- [make_tables_and_figures][trendify.API.make_tables_and_figures]
-- [make_grafana_dashboard][trendify.API.make_grafana_dashboard]
-- [make_it_trendy][trendify.API.make_it_trendy]
+- [make_products][trendify.api.api.make_products]
+- [sort_products][trendify.api.api.sort_products]
+- [make_tables_and_figures][trendify.api.api.make_tables_and_figures]
+- [make_it_trendy][trendify.api.api.make_it_trendy]
 
 
 

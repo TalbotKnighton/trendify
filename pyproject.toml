@@ -19,9 +19,8 @@ dependencies = [
   "strenum",
   "supervisor",
   "waitress",
-  "plotly",
-  "dash",
   "grafana_api",
+  "streamlit",
 ]
 name = "trendify"
 version = "1.1.16"
@@ -48,6 +47,29 @@ classifiers = [
   # Specify the Python versions you support here.
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mkdocs",
+  "black",
+  "pymdown-extensions",
+  "mkdocs-material",
+  "markdown-callouts",
+  "mdx-gh-links",
+  "mkdocs-click",
+  "markdown_include",
+  "mkdocs-glighbox",
+  "mkdocs-gen-files",
+  "mkdocs-section-index",
+  "mkdocs-autorefs",
+  "mkdocs-literate-nav",
+  "mkdocstrings",
+  "mkdocs-exclude",
+  "mkdocs-snippets",
+  "mkdocsstrings_handlers",
+  "mkdocstrings-python",
+  "griffe-pydantic",
 ]
 
 # [project.urls]
