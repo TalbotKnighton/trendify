@@ -250,7 +250,7 @@ class DataProductCollection(BaseModel):
                 os.environ["FLASK_ENV"] = (
                     "production"  # This reduces some of the output
                 )
-                logger.critical(
+                logger.info(
                     f"Starting production server with waitress on http://{host}:{port}"
                 )
                 waitress.serve(app.server, host=host, port=port)
@@ -259,7 +259,7 @@ class DataProductCollection(BaseModel):
                 logger.warning(
                     "'waitress' package not found. For production use, install it with:\npip install waitress"
                 )
-                logger.critical(f"Starting development server on {host}:{port}")
+                logger.info(f"Starting development server on {host}:{port}")
                 app.run_server(debug=debug, host=host, port=port)
         else:
             # Use Flask development server
@@ -621,7 +621,7 @@ class DataProductCollection(BaseModel):
                         ".jpg"
                     )
                     save_path.parent.mkdir(exist_ok=True, parents=True)
-                    logger.critical(f"Saving to {save_path}")
+                    logger.info(f"Saving to {save_path}")
                     saf.savefig(save_path, dpi=dpi)
                     del saf
 

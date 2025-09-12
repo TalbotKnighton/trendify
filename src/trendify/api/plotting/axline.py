@@ -57,4 +57,4 @@ class AxLine(PlottableData2D):
             case LineOrientation.VERTICAL:
                 ax.axvline(x=self.value, **self.pen.as_scatter_plot_kwargs())
             case _:
-                logger.critical(f"Unrecognized line orientation {self.orientation}")
+                logger.error(f"Unrecognized line orientation {self.orientation}")

@@ -222,16 +222,16 @@ def make_products(
     sorted_dirs = get_sorted_dirs(dirs=data_dirs)
 
     if product_generator is None:
-        logger.critical("No data product generator provided")
+        logger.error("No data product generator provided")
     else:
-        logger.critical("Generating tagged DataProducts and writing to JSON files...")
+        logger.info("Generating tagged DataProducts and writing to JSON files...")
         map_callable(
             DataProductGenerator(processor=product_generator).process_and_save,
             sorted_dirs,
             [data_products_fname] * len(sorted_dirs),
             n_procs=n_procs,
         )
-        logger.critical(
+        logger.info(
             "Finished generating tagged DataProducts and writing to JSON files"
         )
 
@@ -252,7 +252,7 @@ def sort_products(
     """
     sorted_data_dirs = get_sorted_dirs(dirs=data_dirs)
 
-    logger.critical(f"Sorting data by tags")
+    logger.info(f"Sorting data by tags")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     map_callable(
@@ -263,7 +263,7 @@ def sort_products(
         n_procs=n_procs,
     )
 
-    logger.critical(f"Finished sorting by tags")
+    logger.info(f"Finished sorting by tags")
 
 
 # def make_grafana_dashboard(
@@ -427,7 +427,7 @@ def make_it_trendy(
         data_products_fname=data_products_fname,
     )
     end = time.time()
-    logger.critical(f"Time to sort = {end - start}")
+    logger.info(f"Time to sort = {end - start}")
 
     no_static_assets = no_static_tables and no_static_histograms and no_static_xy_plots
     no_interactive_assets = no_grafana_dashboard
