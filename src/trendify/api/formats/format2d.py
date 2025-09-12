@@ -20,7 +20,9 @@ __all__ = ["Format2D", "PlottableData2D", "XYData", "AxisScale"]
 
 class AxisScale(StrEnum):
     LINEAR = "linear"
+    """Format axis as linear"""
     LOG = "log"
+    """Format axis with log base 10"""
 
 
 class Format2D(HashableBase):

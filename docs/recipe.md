@@ -1,16 +1,20 @@
+---
+hide:
+  - navigation
+---
 
 # Recipe
 
 ## Defining a Data Product Generator
 
-Define a [Data Product Generator][trendify.API.DataProductGenerator] to ingest data and return a list of `trendify` data products.  Valid products are listed in the vocabulary table above and reproduced in the smaller table here.  See the code reference for class constructor inputs.  The `trendify` framework will map this method over a set of results directories, save and sort the returned products, and produce assets.  Each product will need to have a list of [tags][trendify.API.Tag] assigned (the list can be length 1).  You can also provide labels to be used for generating a legend.
+Define a [Data Product Generator][trendify.api.generator.data_product_generator.DataProductGenerator] to ingest data and return a list of `trendify` data products.  Valid products are listed in the vocabulary table above and reproduced in the smaller table here.  See the code reference for class constructor inputs.  The `trendify` framework will map this method over a set of results directories, save and sort the returned products, and produce assets.  Each product will need to have a list of [tags][trendify.api.base.helpers.Tag] assigned (the list can be length 1).  You can also provide labels to be used for generating a legend.
 
 | Valid Data Products | Resulting Asseet |
 | ---- | ------- |
-| [HistogramEntry][trendify.API.HistogramEntry] | Tagged, labeled data point to be counted and histogrammed |
-| [Point2D][trendify.API.Point2D] | Tagged, labeled [XYData][trendify.API.XYData] defining a point to be scattered on xy graph |
-| [TableEntry][trendify.API.TableEntry] | Tagged data point to be collected into a table, pivoted, and statistically analyzed |
-| [Trace2D][trendify.API.Trace2D] | Tagged, labeled [XYData][trendify.API.XYData] defining a line to be plotted on xy graph |
+| [HistogramEntry][trendify.api.plotting.histogram.HistogramEntry] | Tagged, labeled data point to be counted and histogrammed |
+| [Point2D][trendify.api.plotting.point.Point2D] | Tagged, labeled [XYData][trendify.api.formats.format2d.XYData] defining a point to be scattered on xy graph |
+| [TableEntry][trendify.api.formats.table.TableEntry] | Tagged data point to be collected into a table, pivoted, and statistically analyzed |
+| [Trace2D][trendify.api.plotting.trace.Trace2D] | Tagged, labeled [XYData][trendify.api.formats.format2d.XYData] defining a line to be plotted on xy graph |
 
 ```python
 from pathlib import Path
@@ -36,11 +40,10 @@ def user_defined_data_product_generator(workdir: Path) -> trendify.ProductList:
 
 Run the folling command in a terminal (with trendify installed to the active python environment) [command line interface (CLI)][cli] to 
 
-- [make data products][trendify.API.make_products]
-- [sort data products][trendify.API.sort_products]
-- [make static assets][trendify.API.make_tables_and_figures]
-- [make static asset include files][trendify.API.make_include_files]
-- [make interactive Grafana dashboard][trendify.API.make_grafana_dashboard]
+- [make data products][trendify.api.api.make_products]
+- [sort data products][trendify.api.api.sort_products]
+- [make static assets][trendify.api.api.make_tables_and_figures]
+- [make static asset include files][trendify.api.api.make_include_files]
 
 ``` bash
 workdir=./workdir

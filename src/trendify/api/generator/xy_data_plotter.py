@@ -99,7 +99,7 @@ class XYDataPlotter:
 
         save_path = self.out_dir.joinpath(*tuple(atleast_1d(tag))).with_suffix(".jpg")
         save_path.parent.mkdir(exist_ok=True, parents=True)
-        logger.critical(f"Saving to {save_path = }")
+        logger.info(f"Saving to {save_path = }")
         saf.savefig(path=save_path, dpi=self.dpi)
         del saf
 

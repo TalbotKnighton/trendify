@@ -90,7 +90,7 @@ class TableBuilder:
 
         save_path_partial = out_dir.joinpath(*tuple(atleast_1d(tag)))
         save_path_partial.parent.mkdir(exist_ok=True, parents=True)
-        logger.critical(f"Saving to {str(save_path_partial)}_*.csv")
+        logger.info(f"Saving to {str(save_path_partial)}_*.csv")
 
         melted.to_csv(
             save_path_partial.with_stem(save_path_partial.stem + "_melted").with_suffix(

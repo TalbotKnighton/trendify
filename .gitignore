@@ -6,6 +6,7 @@
 **/*.pyo
 **/*.pyd
 **/*.pyz
+**/*.code-workspace
 dist/
 build/
 trendify.log

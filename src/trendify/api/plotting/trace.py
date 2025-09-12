@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 class Trace2D(XYData):
     """
     A collection of points comprising a trace.
-    Use the [Trace2D.from_xy][trendify.API.Trace2D.from_xy] constructor.
+    Use the [Trace2D.from_xy][trendify.api.Trace2D.from_xy] constructor.
 
     Attributes:
         points (List[Point2D]): List of points.  Usually the points would have null values
@@ -98,7 +98,7 @@ class Trace2D(XYData):
         format2d: Format2D | None = None,
     ):
         """
-        Creates a list of [Point2D][trendify.API.Point2D]s from xy data and returns a new [Trace2D][trendify.API.Trace2D] product.
+        Creates a list of [Point2D][trendify.api.plotting.point.Point2D]s from xy data and returns a new [Trace2D][trendify.api.plotting.Trace2D] product.
 
         Args:
             tags (Tags): Tags used to sort data products

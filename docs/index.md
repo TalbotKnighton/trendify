@@ -1,4 +1,13 @@
-## Welcome to Trendify
+---
+hide:
+  - navigation
+---
+
+<figure markdown="1">
+![logo](assets/logo_pink.svg){ width="200" }
+</figure>
+
+# Welcome to Trendify
 
 ### Description
 
@@ -66,13 +75,13 @@ The following is a table of important trendify objects / vocabulary sorted alpha
 | API | Application programming interface: Definition of valid objects for processing within `trendify` framework |
 | Asset | An asset to be used in a report (such as static CSV or JPG files) or interacted with (such as a Grafana dashboard) |
 | CLI | Command line interface: `trendify` script installed with package used to run the framework |
-| [DataProduct][trendify.API.DataProduct] | Base class for [tagged][trendify.API.Tag] products to be sorted and displayed in static or interactive assets.|
-| [DataProductGenerator][trendify.API.DataProductGenerator] | A [Callable][typing.Callable] to be mapped over raw data directories.  Given the [Path][pathlib.Path] to a working directory, the method returns a [ProductList][trendify.API.ProductList] (i.e. a list of instances of [DataProduct][trendify.API.DataProduct] instances): [`Trace2D`][trendify.API.Trace2D], [`Point2D`][trendify.API.Point2D], [`TableEntry`][trendify.API.TableEntry], [`HistogramEntry`][trendify.API.HistogramEntry], etc. |
-| [HistogramEntry][trendify.API.HistogramEntry] | Tagged, labeled data point to be counted and histogrammed |
-| [Point2D][trendify.API.Point2D] | Tagged, labeled [XYData][trendify.API.XYData] defining a point to be scattered on xy graph |
-| [Product List][trendify.API.ProductList] | List of [DataProduct][trendify.API.TableEntry] instances |
+| [DataProduct][trendify.api.base.data_product.DataProduct] | Base class for [tagged][trendify.api.base.helpers.Tag] products to be sorted and displayed in static or interactive assets.|
+| [DataProductGenerator][trendify.api.generator.data_product_generator.DataProductGenerator] | A [Callable][typing.Callable] to be mapped over raw data directories.  Given the [Path][pathlib.Path] to a working directory, the method returns a [ProductList][trendify.api.base.data_product.ProductList] (i.e. a list of instances of [DataProduct][trendify.api.base.data_product.DataProduct] instances): [`Trace2D`][trendify.api.plotting.trace.Trace2D], [`Point2D`][trendify.api.plotting.point.Point2D], [`TableEntry`][trendify.api.formats.table.TableEntry], [`HistogramEntry`][trendify.api.plotting.histogram.HistogramEntry], etc. |
+| [HistogramEntry][trendify.api.plotting.histogram.HistogramEntry] | Tagged, labeled data point to be counted and histogrammed |
+| [Point2D][trendify.api.plotting.point.Point2D] | Tagged, labeled [XYData][trendify.api.formats.format2d.XYData] defining a point to be scattered on xy graph |
+| [Product List][trendify.api.base.data_product.ProductList] | List of [DataProduct][trendify.api.formats.table.TableEntry] instances |
 | Raw Data | Data from some batch process or individual runs (with results from each run stored in separate subdirectories) |
-| [TableEntry][trendify.API.TableEntry] | Tagged data point to be collected into a table, pivoted, and statistically analyzed |
-| [Tag][trendify.API.Tag] | Hashable tag used for sorting and collection of [DataProduct][trendify.API.DataProduct] instances |
-| [Trace2D][trendify.API.Trace2D] | Tagged, labeled [XYData][trendify.API.XYData] defining a line to be plotted on xy graph |
-| [XYData][trendify.API.XYData] | Base class for products to be plotted on an xy graph |
+| [TableEntry][trendify.api.formats.table.TableEntry] | Tagged data point to be collected into a table, pivoted, and statistically analyzed |
+| [Tag][trendify.api.base.helpers.Tag] | Hashable tag used for sorting and collection of [DataProduct][trendify.api.base.data_product.DataProduct] instances |
+| [Trace2D][trendify.api.plotting.trace.Trace2D] | Tagged, labeled [XYData][trendify.api.formats.format2d.XYData] defining a line to be plotted on xy graph |
+| [XYData][trendify.api.formats.format2d.XYData] | Base class for products to be plotted on an xy graph |

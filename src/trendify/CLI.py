@@ -480,9 +480,9 @@ def trendify(*pargs):
         args = parser.parse_args()
 
     # Map verbosity to logging level
-    level = logging.WARNING  # default
+    level = logging.INFO  # default
     if args.verbose == 1:
-        level = logging.INFO
+        level = logging.DEBUG
     elif args.verbose >= 2:
         level = logging.DEBUG
 
@@ -499,7 +499,7 @@ def trendify(*pargs):
 
     logger = logging.getLogger(__name__)
 
-    logger.critical(f"Running `trendify` with {args = }")
+    logger.info(f"Running `trendify` with {args = }")
 
     match args.command:
         case "products-make":
