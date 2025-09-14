@@ -83,3 +83,9 @@ dev = [
 trendify_make_sample_data = "trendify.examples:make_sample_data"
 trendify = "trendify.CLI:trendify"
 # trendify_server = "trendify.CLI:serve"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"trendify.assets" = ["*.svg"]

@@ -110,7 +110,26 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
         trendify.Trace2D.from_xy(
             x=df.index,
             y=df[col].values,
-            tags=["trace_plot"],
+            tags=[("an_xy_plot", "trace_plot")],
+            pen=trendify.Pen(
+                label=col,
+                color=colors[list(Channels).index(col)],
+                linestyle=linestyles[i % len(linestyles)],
+            ),
+            format2d=trendify.Format2D(
+                grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
+                scale_x=trendify.AxisScale.LINEAR,
+                scale_y=trendify.AxisScale.LINEAR,
+            ),
+        ).append_to_list(products)
+        for i, col in enumerate(df.columns)
+    ]
+
+    traces = [
+        trendify.Trace2D.from_xy(
+            x=df.index,
+            y=df[col].values,
+            tags=[("an_xy_plot", "another_trace_plot")],
             pen=trendify.Pen(
                 label=col,
                 color=colors[list(Channels).index(col)],
