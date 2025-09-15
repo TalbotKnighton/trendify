@@ -23,7 +23,7 @@ dependencies = [
   "streamlit",
 ]
 name = "trendify"
-version = "1.1.16"
+version = "1.2.0"
 requires-python = ">= 3.9"
 authors = [
   { name = "Talbot Knighton", email = "talbotknighton@gmail.org" },

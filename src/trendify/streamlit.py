@@ -30,6 +30,33 @@ gatherUsageStats = false
     theme_dir.joinpath("config.toml").write_text(toml)
 
 
+def make_streamlit(trendify_dir: Path):
+    trendify_dir = trendify_dir.resolve()
+    save_location = trendify_dir.joinpath("assets", "dashboard", "streamlit_run.py")
+    run_command = f"streamlit run {save_location}"
+    to_write = f"""'''To run use:
+
+{run_command}
+'''
+import trendify.streamlit as trendy_stream
+from pathlib import Path
+
+trendify_dir = Path("{trendify_dir}")
+
+trendy_stream.make_theme()
+trendy_stream.make_dashboard(trendify_dir=trendify_dir)
+"""
+
+    save_location.parent.mkdir(parents=True, exist_ok=True)
+    save_location.write_text(to_write)
+    print(
+        f"""To run use
+
+{run_command}
+    """
+    )
+
+
 def get_index_map_path(trendify_dir: Path, tag: Tuple[str, ...]) -> Path:
     products_dir = trendify_dir.joinpath("products")
     return products_dir.joinpath(*tag, "index_map")
