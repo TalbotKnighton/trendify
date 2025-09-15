@@ -106,6 +106,8 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
     colors = list(plt.rcParams["axes.prop_cycle"].by_key()["color"])
     linestyles = ["-", ":", (0, (3, 1, 1, 1))]
 
+    run_num = workdir.name
+
     traces = [
         trendify.Trace2D.from_xy(
             x=df.index,
@@ -121,7 +123,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 scale_x=trendify.AxisScale.LINEAR,
                 scale_y=trendify.AxisScale.LINEAR,
             ),
-        ).append_to_list(products)
+        )
+        .append_to_list(products)
+        .set_metadata({"run_num": run_num})
         for i, col in enumerate(df.columns)
     ]
 
@@ -140,7 +144,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 scale_x=trendify.AxisScale.LINEAR,
                 scale_y=trendify.AxisScale.LINEAR,
             ),
-        ).append_to_list(products)
+        )
+        .append_to_list(products)
+        .set_metadata({"run_num": run_num})
         for i, col in enumerate(df.columns)
     ]
 
@@ -164,7 +170,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 scale_x=trendify.AxisScale.LINEAR,
                 scale_y=trendify.AxisScale.LOG,
             ),
-        ).append_to_list(products)
+        )
+        .append_to_list(products)
+        .set_metadata({"run_num": run_num})
         for i, col in enumerate(df.columns)
     ]
 
@@ -189,7 +197,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 scale_x=trendify.AxisScale.LOG,
                 scale_y=trendify.AxisScale.LOG,
             ),
-        ).append_to_list(products)
+        )
+        .append_to_list(products)
+        .set_metadata({"run_num": run_num})
         for i, col in enumerate(df.columns)
     ]
 
@@ -209,11 +219,13 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 scale_x=trendify.AxisScale.LOG,
                 scale_y=trendify.AxisScale.LINEAR,
             ),
-        ).append_to_list(products)
+        )
+        .append_to_list(products)
+        .set_metadata({"run_num": run_num})
         for i, col in enumerate(df.columns)
     ]
 
-    for trace in traces:
+    for i, trace in enumerate(traces):
         trendify.Point2D(
             x=workdir.name,
             y=len(trace.y),
@@ -224,7 +236,7 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             ),
             format2d=trendify.Format2D(title_fig="N Points"),
             tags=["scatter_plot"],
-        ).append_to_list(products)
+        ).append_to_list(products).set_metadata({"run_num": run_num})
 
     for name, series in df.items():
         trendify.TableEntry(

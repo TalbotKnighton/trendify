@@ -10,7 +10,8 @@ from trendify.api.generator.data_product_collection import (
 )
 from trendify.api.formats.format2d import Format2D
 from trendify.api.base.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
-from trendify.api.plotting.plotting import SingleAxisFigure
+from trendify.api.plotting.histogram import HistogramEntry
+from trendify.api.plotting.plotting import PlotlyFigure, SingleAxisFigure
 from trendify.api.plotting.point import Point2D
 from trendify.api.plotting.trace import Trace2D
 from trendify.api.plotting.axline import AxLine
@@ -164,3 +165,28 @@ class XYDataPlotter:
         # del saf
 
         return saf
+
+    @classmethod
+    def plotly_handle_points_and_traces(
+        cls,
+        tag: Tag,
+        points: List[Point2D],
+        traces: List[Trace2D],
+        axlines: List[AxLine],
+        hist_entries: List[HistogramEntry],
+        plotly_figure: PlotlyFigure | None = None,
+    ) -> PlotlyFigure:
+        if plotly_figure is None:
+            plotly_figure = PlotlyFigure.new(tag=tag)
+
+        # Add all data products
+        for point in points:
+            point.add_to_plotly(plotly_figure=plotly_figure)
+        for trace in traces:
+            trace.add_to_plotly(plotly_figure=plotly_figure)
+        for axline in axlines:
+            axline.add_to_plotly(plotly_figure=plotly_figure)
+        for h in hist_entries:
+            h.add_to_plotly(plotly_figure=plotly_figure)
+
+        return plotly_figure

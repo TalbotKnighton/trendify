@@ -4,10 +4,15 @@ from pathlib import Path
 import time
 from typing import List, Sequence, Tuple
 
+import pandas as pd
 import streamlit as st
 
-from trendify.api.base.helpers import DATA_PRODUCTS_FNAME_DEFAULT, Tag, Tags
 from trendify.api.generator.data_product_collection import DataProductCollection
+from trendify.api.plotting.plotting import PlotlyFigure
+
+# from trendify.api.generator.data_product_collection import (
+#     ProductIndexMap,
+# )
 
 
 def make_theme():
@@ -16,14 +21,22 @@ def make_theme():
     theme_dir.joinpath(".gitignore").write_text("*")
 
     toml = """[theme]
-base="dark"
+base="light"
 primaryColor="#e92063"
+
+[browser]
+gatherUsageStats = false
 """
     theme_dir.joinpath("config.toml").write_text(toml)
 
 
-def get_tags(workdir: Path) -> Sequence[Tuple[str, ...]]:
-    products_dir = workdir.joinpath("products")
+def get_index_map_path(trendify_dir: Path, tag: Tuple[str, ...]) -> Path:
+    products_dir = trendify_dir.joinpath("products")
+    return products_dir.joinpath(*tag, "index_map")
+
+
+def get_tags(trendify_dir: Path) -> Sequence[Tuple[str, ...]]:
+    products_dir = trendify_dir.joinpath("products")
     return [
         p.parent.relative_to(products_dir).parts
         for p in products_dir.rglob("*")
@@ -135,14 +148,14 @@ def render_nested_expanders(
     return st.session_state.get("selected_tags", None)
 
 
-def make_sidebar(workdir: Path):
+def make_sidebar(trendify_dir: Path) -> Tuple[str, ...] | None:
     st.title(f"Trendify (v{version("trendify")})")
-    st.caption(f"Viewing assets for {workdir}")
+    st.caption(f"Viewing assets for {trendify_dir}")
 
-    products_dir = workdir.joinpath("products")
+    products_dir = trendify_dir.joinpath("products")
     product_dirs = list(products_dir.glob("**/*/"))
 
-    tags = get_tags(workdir=workdir)
+    tags = get_tags(trendify_dir=trendify_dir)
 
     st.caption(f"Located {len(tags)} assets")
 
@@ -150,49 +163,55 @@ def make_sidebar(workdir: Path):
         st.session_state.selected_tags = None
 
     selected_tags = st.session_state.selected_tags
-    st.info("Select an Asset")
     selected_tags = render_nested_expanders(tags=tags, selected_tags=selected_tags)
 
-    st.write(st.session_state.selected_tags)
-    # level 1 tags
-
-    # top_key = st.selectbox("Top level key", options=["key1", "key2", "key3"])
-    # if top_key == "key2":
-    #     middle_key = st.selectbox("Second level key", options=["key11", "key22"])
-
-    #     if middle_key == "key11":
-    #         st.selectbox("Third level key", options=["key111"])
-
-    st.write(tags)
+    return selected_tags
 
 
-def make_main_page():
-    if "form_action" not in st.session_state:
-        st.session_state.form_action = None
+@st.cache_data(show_time=True)
+def process_tag(tag: Tuple[str, ...], trendify_dir: Path):
+    products_paths = list(
+        trendify_dir.joinpath("products").joinpath(*tag).glob("*.json")
+    )
 
-    with st.expander("", expanded=True):
-        col1, col2, col3 = st.columns([1, 1, 1])
-
-        with st.form("figure_configuration_form"):
-            with col1:
-                tooltip = st.selectbox("Tooltip", [])
-
-            with col3:
-                if st.form_submit_button("🔄"):
-                    st.session_state.form_action = "refresh"
-
-    if st.session_state.form_action == "refresh":
-        # draw plot
-        st.session_state.form_action = None
+    return DataProductCollection.process_tag_for_streamlit(products_paths, tag=tag)
 
 
-def make_dashboard(
-    workdir: str | Path,
-    data_products_filename: str = DATA_PRODUCTS_FNAME_DEFAULT,
-):
+def make_main_page(tag: Tuple[str, ...], trendify_dir: Path):
+    """Display the main page content for the selected tag"""
+
+    st.title(f"{tag} Asset")
+
+    # Process the tag for tables and plots
+    proccessed_tag = process_tag(tag=tag, trendify_dir=trendify_dir)
+
+    # Display Plotly figures if available
+    if isinstance(proccessed_tag, PlotlyFigure):
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            height = st.slider(
+                label="Figure Height",
+                min_value=100,
+                value=600,
+                max_value=2000,
+                step=100,
+                help="Set the height of the rendered plot (in pixels)",
+            )
+        proccessed_tag.fig.update_layout(
+            height=height,
+            margin=dict(pad=4, t=25, b=25),
+        )  # Padding between the plot area and the margin))
+        st.plotly_chart(proccessed_tag.fig)
+
+    else:
+        msg = f"Product with {tag=} does not have a display method for streamlit"
+        st.warning(msg)
+
+
+def make_dashboard(trendify_dir: str | Path):
     start = time.perf_counter()
 
-    workdir = Path(workdir).resolve()
+    trendify_dir = Path(trendify_dir).resolve()
 
     with importlib.resources.path("trendify.assets", "logo.svg") as data_path:
         logo = data_path
@@ -231,9 +250,12 @@ def make_dashboard(
     )
 
     with st.sidebar:
-        make_sidebar(workdir=workdir)
+        selected_tag = make_sidebar(trendify_dir=trendify_dir)
 
-    # make_main_page()
+    if selected_tag is None:
+        st.info("Select an Asset to Display")
+    else:
+        make_main_page(tag=selected_tag, trendify_dir=trendify_dir)
 
     with st.sidebar:
         st.caption(f"Site built in {time.perf_counter()-start:.2f} seconds")
@@ -245,10 +267,7 @@ def main():
     streamlit run src/trendify/streamlit.py
     """
     make_theme()
-    make_dashboard(
-        workdir=Path("sample_data/trendify"),
-        data_products_filename="data_products.json",
-    )
+    make_dashboard(trendify_dir=Path("sample_data/trendify"))
 
 
 if __name__ == "__main__":

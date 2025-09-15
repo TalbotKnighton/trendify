@@ -8,6 +8,7 @@ from pydantic import ConfigDict
 
 from trendify.api.formats.format2d import PlottableData2D
 from trendify.api.base.pen import Pen
+from trendify.api.plotting.plotting import PlotlyFigure
 
 __all__ = ["LineOrientation", "AxLine"]
 
@@ -58,3 +59,42 @@ class AxLine(PlottableData2D):
                 ax.axvline(x=self.value, **self.pen.as_scatter_plot_kwargs())
             case _:
                 logger.error(f"Unrecognized line orientation {self.orientation}")
+
+    def add_to_plotly(self, plotly_figure: PlotlyFigure) -> PlotlyFigure:
+        """Add axis line to plotly figure without showing it in the legend"""
+        match self.orientation:
+            case LineOrientation.HORIZONTAL:
+                plotly_figure.fig.add_hline(
+                    y=self.value,
+                    line=dict(
+                        color=self.pen.rgba if self.pen else None,
+                        width=self.pen.size if self.pen else None,
+                        dash=(
+                            self.pen._convert_linestyle_to_plotly()
+                            if self.pen
+                            else None
+                        ),
+                    ),
+                    showlegend=False,  # Do not show in the legend
+                    opacity=self.pen.alpha if self.pen else None,
+                )
+            case LineOrientation.VERTICAL:
+                plotly_figure.fig.add_vline(
+                    x=self.value,
+                    line=dict(
+                        color=self.pen.rgba if self.pen else None,
+                        width=self.pen.size if self.pen else None,
+                        dash=(
+                            self.pen._convert_linestyle_to_plotly()
+                            if self.pen
+                            else None
+                        ),
+                    ),
+                    showlegend=False,  # Do not show in the legend
+                    opacity=self.pen.alpha if self.pen else None,
+                )
+            case _:
+                logger.error(f"Unrecognized line orientation {self.orientation}")
+                return plotly_figure
+
+        return plotly_figure

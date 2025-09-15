@@ -106,6 +106,10 @@ class DataProduct(BaseModel):
                     duck_type = _data_product_subclass_registry[product_type]
                     kwargs[key][index] = duck_type(**duck_info)
 
+    def set_metadata(self, new: dict[str, str]):
+        self.metadata = new
+        return self
+
 
 ProductList = List[SerializeAsAny[InstanceOf[DataProduct]]]
 """List of serializable [DataProduct][trendify.api.DataProduct] or child classes thereof"""

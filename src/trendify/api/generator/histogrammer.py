@@ -7,7 +7,7 @@ import logging
 # from trendify.api.data_product_collection import DataProductCollection
 from trendify.api.base.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
 from trendify.api.plotting.histogram import HistogramEntry
-from trendify.api.plotting.plotting import SingleAxisFigure
+from trendify.api.plotting.plotting import SingleAxisFigure, PlotlyFigure
 
 __all__ = ["Histogrammer"]
 
@@ -111,3 +111,15 @@ class Histogrammer:
         # del saf
 
         return saf
+
+    @classmethod
+    def plotly_histogram(
+        cls,
+        tag: Tag,
+        histogram_entries: List[HistogramEntry],
+        plotly_figure: PlotlyFigure | None = None,
+    ) -> PlotlyFigure:
+        if plotly_figure is None:
+            plotly_figure = PlotlyFigure.new(tag=tag)
+        raise NotImplementedError()
+        return plotly_figure

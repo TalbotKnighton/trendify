@@ -3,8 +3,10 @@ from __future__ import annotations
 import os
 from itertools import chain
 from pathlib import Path
-from typing import Union, List, Iterable, Any, Callable, Tuple, Type
+from typing import TYPE_CHECKING, Union, List, Iterable, Any, Callable, Tuple, Type
 import logging
+
+import pandas as pd
 
 try:
     from typing import Self
@@ -19,12 +21,15 @@ from trendify.api.formats.format2d import Format2D
 from trendify.api.generator.histogrammer import Histogrammer
 from trendify.api.base.helpers import Tag, R, DATA_PRODUCTS_FNAME_DEFAULT
 from trendify.api.base.data_product import DataProduct, ProductList
-from trendify.api.plotting.plotting import SingleAxisFigure
+from trendify.api.plotting.plotting import SingleAxisFigure, PlotlyFigure
 from trendify.api.plotting.histogram import HistogramEntry
 from trendify.api.plotting.point import Point2D
 from trendify.api.plotting.trace import Trace2D
 from trendify.api.plotting.axline import AxLine
 from trendify.api.formats.table import TableEntry
+
+if TYPE_CHECKING:
+    from trendify.api.generator.table_builder import TableBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -537,11 +542,16 @@ class DataProductCollection(BaseModel):
                         from trendify.api.generator.table_builder import TableBuilder
 
                         logger.info(f"Making tables for {tag = }")
-                        TableBuilder.process_table_entries(
-                            tag=tag,
-                            table_entries=table_entries,
-                            out_dir=dir_out,
+                        table_builder = TableBuilder(
+                            in_dirs=[dir_in],  # Input directory
+                            out_dir=dir_out,  # Output directory
                         )
+
+                        # Build tables for the given tag
+                        table_builder.build_tables(tag=tag)
+
+                        # Save the generated tables
+                        table_builder.save_tables(tag=tag)
                         logger.info(f"Finished tables for {tag = }")
 
                 if not no_xy_plots:
@@ -624,6 +634,104 @@ class DataProductCollection(BaseModel):
                     logger.info(f"Saving to {save_path}")
                     saf.savefig(save_path, dpi=dpi)
                     del saf
+
+    def process_tables_for_tag(
+        self,
+        tag: Tag,
+        in_dirs: List[Path],
+        out_dir: Path,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+    ) -> TableBuilder:
+        """
+        Process tables for a given tag using TableBuilder.
+
+        Args:
+            tag (Tag): The tag for which to process tables.
+            in_dirs (List[Path]): Input directories containing data products.
+            out_dir (Path): Output directory for saving tables.
+            data_products_fname (str): Name of the data products file.
+
+        Returns:
+            TableBuilder: The TableBuilder instance with generated tables.
+        """
+        from trendify.api.generator.table_builder import TableBuilder
+
+        logger.info(f"Processing tables for {tag = }")
+        table_builder = TableBuilder(in_dirs=in_dirs, out_dir=out_dir)
+        table_builder.build_tables(tag=tag, data_products_fname=data_products_fname)
+        return table_builder
+
+    @classmethod
+    def process_tag_for_streamlit(
+        cls, jsons: List[Path], tag: Tag
+    ) -> PlotlyFigure | None:
+        collection = cls.union(
+            *tuple([cls.model_validate_json(p.read_text()) for p in jsons])
+        )
+
+        if collection is not None:
+
+            plotly_figure: PlotlyFigure | None = None
+            format_2ds: list[Format2D] = []
+
+            traces = collection.get_products(tag=tag, object_type=Trace2D).elements
+            points = collection.get_products(tag=tag, object_type=Point2D).elements
+            axlines = collection.get_products(tag=tag, object_type=AxLine).elements
+            hist_entries = collection.get_products(
+                tag=tag, object_type=HistogramEntry
+            ).elements
+
+            traces: List[Trace2D]
+            points: List[Point2D]
+            axlines: List[AxLine]
+            hist_entries: List[HistogramEntry]
+
+            traces = [e for e in collection.elements if isinstance(e, Trace2D)]
+            points = [e for e in collection.elements if isinstance(e, Point2D)]
+            axlines = [e for e in collection.elements if isinstance(e, AxLine)]
+            hist_entries = [
+                e for e in collection.elements if isinstance(e, HistogramEntry)
+            ]
+
+            if points or traces or axlines or hist_entries:
+                from trendify.api.generator.xy_data_plotter import XYDataPlotter
+
+                logger.info(f"Making xy plot for {tag = }")
+                plotly_figure = XYDataPlotter.plotly_handle_points_and_traces(
+                    tag=tag,
+                    points=points,
+                    traces=traces,
+                    axlines=axlines,
+                    hist_entries=hist_entries,
+                    plotly_figure=plotly_figure,
+                )
+
+                format_2ds += [
+                    p.format2d for p in points if isinstance(p.format2d, Format2D)
+                ]
+                format_2ds += [
+                    t.format2d for t in traces if isinstance(t.format2d, Format2D)
+                ]
+                format_2ds += [
+                    a.format2d for a in axlines if isinstance(a.format2d, Format2D)
+                ]
+
+                format_2ds += [
+                    h.format2d for h in hist_entries if isinstance(h.format2d, Format2D)
+                ]
+
+                if format_2ds:
+                    combined_format = Format2D.union_from_iterable(format_2ds)
+                    plotly_figure.apply_format(combined_format)
+
+                logger.info(f"Finished plotly for {tag = }")
+
+                return plotly_figure
+
+        return None
+        msg = f"Tag {tag} does not have a generator implemented"
+        logger.critical(msg)
+        raise NotImplementedError(msg)
 
     # @classmethod
     # def make_grafana_panels(

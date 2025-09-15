@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import matplotlib.pyplot as plt
 import warnings
 import logging
 
 import plotly.graph_objects as go
+
+from trendify.api.formats.format2d import PlottableData2D
 
 try:
     from typing import Self, TYPE_CHECKING
@@ -24,7 +26,7 @@ if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
 
-__all__ = ["SingleAxisFigure"]
+__all__ = ["SingleAxisFigure", "PlotlyFigure"]
 
 logger = logging.getLogger(__name__)
 
@@ -172,6 +174,7 @@ class PlotlyFigure:
     model_config = ConfigDict(arbitrary_types_allowed=True)
     tag: Tag
     fig: go.Figure
+    legend_groups: set[str] = field(default_factory=set)
 
     @classmethod
     def new(cls, tag: Tag):
@@ -230,24 +233,13 @@ class PlotlyFigure:
 
         # Set legend
         if format2d.legend is not None:
-            legend_kwargs = format2d.legend.to_kwargs()
-            layout_updates["showlegend"] = True
-            layout_updates["legend"] = {
-                "x": (
-                    format2d.legend.bbox_to_anchor[0]
-                    if format2d.legend.bbox_to_anchor
-                    else None
-                ),
-                "y": (
-                    format2d.legend.bbox_to_anchor[1]
-                    if format2d.legend.bbox_to_anchor
-                    else None
-                ),
-                "bordercolor": (
-                    format2d.legend.edgecolor if format2d.legend.edgecolor else None
-                ),
-                **legend_kwargs,
-            }
+
+            layout_updates["showlegend"] = format2d.legend.visible
+            layout_updates["legend"] = dict(
+                title=format2d.legend.title,
+                bordercolor=format2d.legend.edgecolor,
+                **format2d.legend.plotly_location,
+            )
 
         # Apply grid if specified
         if format2d.grid is not None:
@@ -265,40 +257,51 @@ class PlotlyFigure:
             grid (Grid): Grid configuration to apply
         """
         # Major grid
+
         xaxis_updates = {
             "showgrid": grid.major.show,
-            "gridcolor": grid.major.pen.color if grid.major.show else None,
+            "gridcolor": grid.major.pen.rgba if grid.major.show else None,
             "gridwidth": grid.major.pen.size if grid.major.show else None,
             "griddash": "solid" if grid.major.pen.linestyle == "-" else "dash",
             "gridwidth": grid.major.pen.size if grid.major.show else None,
-            "opacity": grid.major.pen.alpha if grid.major.show else None,
         }
 
         yaxis_updates = {
             "showgrid": grid.major.show,
-            "gridcolor": grid.major.pen.color if grid.major.show else None,
+            "gridcolor": grid.major.pen.rgba if grid.major.show else None,
             "gridwidth": grid.major.pen.size if grid.major.show else None,
             "griddash": "solid" if grid.major.pen.linestyle == "-" else "dash",
             "gridwidth": grid.major.pen.size if grid.major.show else None,
-            "opacity": grid.major.pen.alpha if grid.major.show else None,
         }
 
         # Minor ticks and grid
         if grid.enable_minor_ticks:
             xaxis_updates["minor"] = {
                 "showgrid": grid.minor.show,
-                "gridcolor": grid.minor.pen.color if grid.minor.show else None,
+                "gridcolor": grid.minor.pen.rgba if grid.minor.show else None,
                 "gridwidth": grid.minor.pen.size if grid.minor.show else None,
                 "griddash": "solid" if grid.minor.pen.linestyle == "-" else "dash",
-                "opacity": grid.minor.pen.alpha if grid.minor.show else None,
             }
             yaxis_updates["minor"] = {
                 "showgrid": grid.minor.show,
-                "gridcolor": grid.minor.pen.color if grid.minor.show else None,
+                "gridcolor": grid.minor.pen.rgba if grid.minor.show else None,
                 "gridwidth": grid.minor.pen.size if grid.minor.show else None,
                 "griddash": "solid" if grid.minor.pen.linestyle == "-" else "dash",
-                "opacity": grid.minor.pen.alpha if grid.minor.show else None,
             }
 
         self.fig.update_xaxes(**xaxis_updates)
         self.fig.update_yaxes(**yaxis_updates)
+
+    def add_data_product(self, product: PlottableData2D) -> Self:
+        """Add a data product to the figure
+
+        Args:
+            product (PlottableData2D): Data product to add to figure
+
+        Returns:
+            Self: Returns self for method chaining
+        """
+        raise NotImplementedError()
+
+        product.add_to_plotly(self.fig)
+        return self

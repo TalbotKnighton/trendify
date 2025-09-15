@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from typing import Tuple
 import logging
+from matplotlib.colors import to_rgba
+import plotly.graph_objects as go
 
 from numpydantic import NDArray, Shape
 from pydantic import ConfigDict, Field
 
 from trendify.api.formats.format2d import PlottableData2D
 from trendify.api.base.helpers import HashableBase, Tags
+from trendify.api.plotting.plotting import PlotlyFigure
 
 __all__ = ["HistogramStyle", "HistogramEntry"]
 
@@ -50,6 +53,58 @@ class HistogramStyle(HashableBase):
             "bins": self.bins,
         }
 
+    @property
+    def rgba_face(self) -> str:
+        """
+        Convert the pen's color to rgba string format.
+
+        Returns:
+            str: Color in 'rgba(r,g,b,a)' format where r,g,b are 0-255 and a is 0-1
+        """
+        # Handle different color input formats
+        if isinstance(self.color, tuple):
+            if len(self.color) == 3:  # RGB tuple
+                r, g, b = self.color
+                a = self.alpha_face
+            else:  # RGBA tuple
+                r, g, b, a = self.color
+            # Convert 0-1 range to 0-255 for RGB
+            r, g, b = int(r * 255), int(g * 255), int(b * 255)
+        else:  # String color (name or hex)
+            # Use matplotlib's color converter
+            rgba_vals = to_rgba(self.color, self.alpha_face)
+            # Convert 0-1 range to 0-255 for RGB
+            r, g, b = [int(x * 255) for x in rgba_vals[:3]]
+            a = rgba_vals[3]
+
+        return f"rgba({r}, {g}, {b}, {a})"
+
+    @property
+    def rgba_edge(self) -> str:
+        """
+        Convert the pen's color to rgba string format.
+
+        Returns:
+            str: Color in 'rgba(r,g,b,a)' format where r,g,b are 0-255 and a is 0-1
+        """
+        # Handle different color input formats
+        if isinstance(self.color, tuple):
+            if len(self.color) == 3:  # RGB tuple
+                r, g, b = self.color
+                a = self.alpha_edge
+            else:  # RGBA tuple
+                r, g, b, a = self.color
+            # Convert 0-1 range to 0-255 for RGB
+            r, g, b = int(r * 255), int(g * 255), int(b * 255)
+        else:  # String color (name or hex)
+            # Use matplotlib's color converter
+            rgba_vals = to_rgba(self.color, self.alpha_edge)
+            # Convert 0-1 range to 0-255 for RGB
+            r, g, b = [int(x * 255) for x in rgba_vals[:3]]
+            a = rgba_vals[3]
+
+        return f"rgba({r}, {g}, {b}, {a})"
+
 
 class HistogramEntry(PlottableData2D):
     """
@@ -66,3 +121,47 @@ class HistogramEntry(PlottableData2D):
     style: HistogramStyle | None = Field(default_factory=HistogramStyle)
 
     model_config = ConfigDict(extra="forbid")
+
+    def add_to_plotly(self, plotly_figure: PlotlyFigure):
+        """Add histogram entry to plotly figure, merging with existing traces if possible"""
+        if not self.style:
+            logger.error("HistogramEntry style is not defined.")
+            return plotly_figure
+
+        # Create legend group key based on the label and color
+        legend_key = (
+            f"{self.style.label}_{self.style.rgba_face}" if self.style.label else None
+        )
+
+        # Check if a trace with the same legend group already exists
+        for trace in plotly_figure.fig.data:
+            if trace.legendgroup == legend_key:
+                # Append the value to the existing trace's x data
+                trace.x = list(trace.x) + [self.value]
+                return plotly_figure
+
+        # If no existing trace, add a new one
+        plotly_figure.fig.add_trace(
+            go.Histogram(
+                x=[self.value],
+                name=self.style.label,  # Legend label
+                marker=dict(
+                    color=self.style.rgba_face,
+                    line=dict(
+                        color=self.style.rgba_edge,
+                        width=self.style.linewidth,
+                    ),
+                ),
+                nbinsx=self.style.bins if isinstance(self.style.bins, int) else None,
+                legendgroup=legend_key,  # Group histograms with the same label and color
+                showlegend=(
+                    True if self.style.label is not None else False
+                ),  # Always show legend for the first trace
+            )
+        )
+
+        # Track the legend group to avoid duplicate legend entries
+        if legend_key and legend_key not in plotly_figure.legend_groups:
+            plotly_figure.legend_groups.add(legend_key)
+
+        return plotly_figure

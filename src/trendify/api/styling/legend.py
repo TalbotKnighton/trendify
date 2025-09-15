@@ -84,3 +84,120 @@ class Legend(HashableBase):
             "ncol": self.ncol,
             "fancybox": self.fancybox,
         }
+
+    @property
+    def plotly_location(self) -> dict:
+        """
+        Convert matplotlib legend location to Plotly legend position parameters.
+
+        Returns:
+            dict: Dictionary containing Plotly legend position parameters (x, y, xanchor, yanchor)
+        """
+        # Default position mappings for standard locations
+        location_map = {
+            LegendLocation.BEST: {
+                "x": 1.02,
+                "y": 1,
+                "xanchor": "left",
+                "yanchor": "top",
+            },
+            LegendLocation.UPPER_RIGHT: {
+                "x": 0.98,
+                "y": 0.98,
+                "xanchor": "right",
+                "yanchor": "top",
+            },
+            LegendLocation.UPPER_LEFT: {
+                "x": 0.02,
+                "y": 0.98,
+                "xanchor": "left",
+                "yanchor": "top",
+            },
+            LegendLocation.LOWER_LEFT: {
+                "x": 0.02,
+                "y": 0.02,
+                "xanchor": "left",
+                "yanchor": "bottom",
+            },
+            LegendLocation.LOWER_RIGHT: {
+                "x": 0.98,
+                "y": 0.02,
+                "xanchor": "right",
+                "yanchor": "bottom",
+            },
+            LegendLocation.RIGHT: {
+                "x": 1.02,
+                "y": 0.5,
+                "xanchor": "left",
+                "yanchor": "middle",
+            },
+            LegendLocation.CENTER_LEFT: {
+                "x": -0.02,
+                "y": 0.5,
+                "xanchor": "right",
+                "yanchor": "middle",
+            },
+            LegendLocation.CENTER_RIGHT: {
+                "x": 1.02,
+                "y": 0.5,
+                "xanchor": "left",
+                "yanchor": "middle",
+            },
+            LegendLocation.LOWER_CENTER: {
+                "x": 0.5,
+                "y": 0.02,
+                "xanchor": "center",
+                "yanchor": "bottom",
+            },
+            LegendLocation.UPPER_CENTER: {
+                "x": 0.5,
+                "y": 0.98,
+                "xanchor": "center",
+                "yanchor": "top",
+            },
+            LegendLocation.CENTER: {
+                "x": 0.5,
+                "y": 0.5,
+                "xanchor": "center",
+                "yanchor": "middle",
+            },
+        }
+
+        # If bbox_to_anchor is provided, use it to override the position
+        if self.bbox_to_anchor is not None:
+            x, y = self.bbox_to_anchor
+            # Determine anchors based on location
+            if self.loc in [
+                LegendLocation.CENTER_LEFT,
+                LegendLocation.UPPER_LEFT,
+                LegendLocation.LOWER_LEFT,
+            ]:
+                xanchor = "right"
+            elif self.loc in [
+                LegendLocation.CENTER_RIGHT,
+                LegendLocation.UPPER_RIGHT,
+                LegendLocation.LOWER_RIGHT,
+            ]:
+                xanchor = "left"
+            else:
+                xanchor = "center"
+
+            if self.loc in [
+                LegendLocation.UPPER_RIGHT,
+                LegendLocation.UPPER_LEFT,
+                LegendLocation.UPPER_CENTER,
+            ]:
+                yanchor = "top"
+            elif self.loc in [
+                LegendLocation.LOWER_RIGHT,
+                LegendLocation.LOWER_LEFT,
+                LegendLocation.LOWER_CENTER,
+            ]:
+                yanchor = "bottom"
+            else:
+                yanchor = "middle"
+
+            return {"x": x, "y": y, "xanchor": xanchor, "yanchor": yanchor}
+
+        # Use predefined mapping if no bbox_to_anchor
+        return location_map[self.loc]
