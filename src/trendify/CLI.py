@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 from trendify.api import api
 from trendify.api.base.helpers import DATA_PRODUCTS_FNAME_DEFAULT
 from trendify.local_server import TrendifyProductServerLocal
+from trendify.streamlit import make_streamlit
 
 __all__ = []
 
@@ -385,13 +386,10 @@ def trendify(*pargs):
     DataProductsFileName.add_argument(make_static)
     # Dashboard (after making products and sorting them)
     make_dashboard = make_actions.add_parser(
-        "dashboard", help="Makes products and generates interactive dashboard"
+        "dashboard",
+        help="Generates products and prepares the Streamlit dashboard",
     )
-    InputDirectories.add_argument(make_dashboard)
-    UserMethod.add_argument(make_dashboard)
-    NProcs.add_argument(make_dashboard)
-    # output_dir.add_argument(make_static)
-    DataProductsFileName.add_argument(make_dashboard)
+    output_dir.add_argument(make_dashboard)
     # Gallery
     make_gallery = make_actions.add_parser(
         "gallery", help="Generates a gallery of examples"
@@ -480,9 +478,9 @@ def trendify(*pargs):
         args = parser.parse_args()
 
     # Map verbosity to logging level
-    level = logging.WARNING  # default
+    level = logging.INFO  # default
     if args.verbose == 1:
-        level = logging.INFO
+        level = logging.DEBUG
     elif args.verbose >= 2:
         level = logging.DEBUG
 
@@ -499,7 +497,7 @@ def trendify(*pargs):
 
     logger = logging.getLogger(__name__)
 
-    logger.critical(f"Running `trendify` with {args = }")
+    logger.info(f"Running `trendify` with {args = }")
 
     match args.command:
         case "products-make":
@@ -561,6 +559,14 @@ def trendify(*pargs):
                         output_dir=td.static_assets_dir,
                         n_procs=np,
                     )
+                case "dashboard":
+                    # Get the output directory from the CLI arguments
+                    td = output_dir.get_from_namespace(args)
+
+                    # Call the make_streamlit function with the output directory
+                    make_streamlit(trendify_dir=td.output_dir)
+
+                    logger.info(f"Streamlit dashboard prepared in {td.output_dir}")
                 case _:
                     raise NotImplementedError()
         case "serve":

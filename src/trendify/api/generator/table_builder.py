@@ -27,6 +27,10 @@ class TableBuilder:
         out_dir (Path): directory in which tables should be saved
     """
 
+    stats: pd.DataFrame | None = None
+    melted: pd.DataFrame | None = None
+    pivot: pd.DataFrame | None = None
+
     def __init__(
         self,
         in_dirs: List[Path],
@@ -34,6 +38,60 @@ class TableBuilder:
     ):
         self.in_dirs = in_dirs
         self.out_dir = out_dir
+
+    def build_tables(
+        self,
+        tag: Tag,
+        data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
+    ):
+        """
+        Builds the melted, pivot, and stats dataframes and sets them as class attributes.
+
+        Args:
+            tag (Tag): product tag for which to collect and process.
+            data_products_fname (str): Name of the data products file to load.
+        """
+        logger.info(f"Building tables for {tag = }")
+
+        # Collect table entries
+        table_entries: List[TableEntry] = []
+        for subdir in self.in_dirs:
+            products_file = subdir.joinpath(data_products_fname)
+            if not products_file.exists():
+                logger.warning(f"Data products file not found: {products_file}")
+                continue  # Skip this directory if the file doesn't exist
+
+            collection = DataProductCollection.model_validate_json(
+                products_file.read_text()
+            )
+            table_entries.extend(
+                collection.get_products(tag=tag, object_type=TableEntry).elements
+            )
+
+        if not table_entries:
+            logger.warning(
+                f"No table entries found for {tag = } in the provided directories."
+            )
+            self.melted = None
+            self.pivot = None
+            self.stats = None
+            return
+
+        # Build melted dataframe
+        self.melted = pd.DataFrame([t.get_entry_dict() for t in table_entries])
+
+        # Build pivot dataframe
+        self.pivot = TableEntry.pivot_table(melted=self.melted)
+
+        # Build stats dataframe
+        if self.pivot is not None:
+            try:
+                self.stats = self.get_stats_table(df=self.pivot)
+            except Exception as e:
+                logger.error(
+                    f"Could not generate stats table for {tag = }. Error: {str(e)}"
+                )
+                self.stats = None
 
     def load_table(
         self,
@@ -53,73 +111,46 @@ class TableBuilder:
         """
         logger.info(f"Making table for {tag = }")
 
-        table_entries: List[TableEntry] = []
-        for subdir in self.in_dirs:
-            collection = DataProductCollection.model_validate_json(
-                subdir.joinpath(data_products_fname).read_text()
-            )
-            table_entries.extend(
-                collection.get_products(tag=tag, object_type=TableEntry).elements
-            )
+        # Build the tables and set attributes
+        self.build_tables(tag=tag, data_products_fname=data_products_fname)
 
-        self.process_table_entries(
-            tag=tag, table_entries=table_entries, out_dir=self.out_dir
-        )
+        # Save the tables to CSV
+        self.save_tables(tag=tag)
 
-    @classmethod
-    def process_table_entries(
-        cls,
-        tag: Tag,
-        table_entries: List[TableEntry],
-        out_dir: Path,
-    ):
+    def save_tables(self, tag: Tag):
         """
-
-        Saves CSV files for the melted data frame, pivot dataframe, and pivot dataframe stats.
-
-        File names will all use the tag with different suffixes
-        `'tag_melted.csv'`, `'tag_pivot.csv'`, `'name_stats.csv'`.
+        Saves the melted, pivot, and stats dataframes to CSV files.
 
         Args:
-            tag (Tag): product tag for which to collect and process.
-            table_entries (List[TableEntry]): List of table entries
-            out_dir (Path): Directory to which table CSV files should be saved
+            tag (Tag): product tag for which to save the tables.
         """
-        melted = pd.DataFrame([t.get_entry_dict() for t in table_entries])
-        pivot = TableEntry.pivot_table(melted=melted)
-
-        save_path_partial = out_dir.joinpath(*tuple(atleast_1d(tag)))
+        save_path_partial = self.out_dir.joinpath(*tuple(atleast_1d(tag)))
         save_path_partial.parent.mkdir(exist_ok=True, parents=True)
-        logger.critical(f"Saving to {str(save_path_partial)}_*.csv")
+        logger.info(f"Saving to {str(save_path_partial)}_*.csv")
 
-        melted.to_csv(
-            save_path_partial.with_stem(save_path_partial.stem + "_melted").with_suffix(
-                ".csv"
-            ),
-            index=False,
-        )
+        if self.melted is not None:
+            self.melted.to_csv(
+                save_path_partial.with_stem(
+                    save_path_partial.stem + "_melted"
+                ).with_suffix(".csv"),
+                index=False,
+            )
 
-        if pivot is not None:
-            pivot.to_csv(
+        if self.pivot is not None:
+            self.pivot.to_csv(
                 save_path_partial.with_stem(
                     save_path_partial.stem + "_pivot"
                 ).with_suffix(".csv"),
                 index=True,
             )
 
-            try:
-                stats = cls.get_stats_table(df=pivot)
-                if not stats.empty and not stats.isna().all().all():
-                    stats.to_csv(
-                        save_path_partial.with_stem(
-                            save_path_partial.stem + "_stats"
-                        ).with_suffix(".csv"),
-                        index=True,
-                    )
-            except Exception as e:
-                logger.error(
-                    f"Could not generate pivot table for {tag = }. Error: {str(e)}"
-                )
+        if self.stats is not None and not self.stats.empty:
+            self.stats.to_csv(
+                save_path_partial.with_stem(
+                    save_path_partial.stem + "_stats"
+                ).with_suffix(".csv"),
+                index=True,
+            )
 
     @classmethod
     def get_stats_table(
@@ -127,14 +158,14 @@ class TableBuilder:
         df: pd.DataFrame,
     ):
         """
-        Computes multiple statistics for each column
+        Computes multiple statistics for each column.
 
         Args:
             df (pd.DataFrame): DataFrame for which the column statistics are to be calculated.
 
         Returns:
             (pd.DataFrame): Dataframe having statistics (column headers) for each of the columns
-                of the input `df`.  The columns of `df` will be the row indices of the stats table.
+                of the input `df`. The columns of `df` will be the row indices of the stats table.
         """
         # Try to convert to numeric, coerce errors to NaN
         numeric_df = df.apply(pd.to_numeric, errors="coerce")

@@ -3,7 +3,9 @@ from __future__ import annotations
 import logging
 
 from pydantic import ConfigDict
+import plotly.graph_objects as go
 
+from trendify.api.plotting.plotting import PlotlyFigure
 from trendify.api.styling.marker import Marker
 
 # from trendify.api.plotting.plotting import XYData
@@ -33,3 +35,50 @@ class Point2D(XYData):
     marker: Marker | None = Marker()
 
     model_config = ConfigDict(extra="forbid")
+
+    def add_to_plotly(self, plotly_figure: PlotlyFigure) -> PlotlyFigure:
+        """Add point to plotly figure with legendgroup support"""
+        legend_key = (
+            f"{self.marker.label}_{self.marker.color}_{self.marker.symbol}"
+            if self.marker
+            else None
+        )
+        # Prepare metadata for the tooltip
+        metadata_html = (
+            "<br>".join([f"{key}: {value}" for key, value in self.metadata.items()])
+            if self.metadata
+            else ""
+        )
+
+        # Define hovertemplate for the tooltip
+        hovertemplate = "x: %{x}<br>" "y: %{y}<br>" f"{metadata_html}<extra></extra>"
+
+        plotly_figure.fig.add_trace(
+            go.Scatter(
+                x=[self.x],
+                y=[self.y],
+                name=self.marker.label if self.marker else None,
+                mode="markers",
+                marker=dict(
+                    color=self.marker.color if self.marker else None,
+                    size=self.marker.size if self.marker else None,
+                    symbol=self.marker.plotly_symbol if self.marker else None,
+                ),
+                legendgroup=legend_key,
+                hovertemplate=hovertemplate,
+                hoverlabel=dict(
+                    bgcolor=(self.marker.color if self.marker else None),
+                    font=dict(
+                        color=self.marker.get_contrast_color() if self.marker else None
+                    ),
+                ),
+                showlegend=(
+                    True if legend_key not in plotly_figure.legend_groups else False
+                ),
+            )
+        )
+
+        if legend_key and legend_key not in plotly_figure.legend_groups:
+            plotly_figure.legend_groups.add(legend_key)
+
+        return plotly_figure

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Iterable, Optional
+from typing import TYPE_CHECKING, Iterable, Optional
 import logging
 
 import numpy as np
@@ -12,7 +12,8 @@ from trendify.api.base.helpers import HashableBase
 from trendify.api.styling.grid import Grid
 from trendify.api.styling.legend import Legend
 
-
+if TYPE_CHECKING:
+    from trendify.api.plotting.plotting import PlotlyFigure
 logger = logging.getLogger(__name__)
 
 __all__ = ["Format2D", "PlottableData2D", "XYData", "AxisScale"]
@@ -20,7 +21,9 @@ __all__ = ["Format2D", "PlottableData2D", "XYData", "AxisScale"]
 
 class AxisScale(StrEnum):
     LINEAR = "linear"
+    """Format axis as linear"""
     LOG = "log"
+    """Format axis with log base 10"""
 
 
 class Format2D(HashableBase):
@@ -119,6 +122,14 @@ class PlottableData2D(DataProduct):
     """
 
     format2d: Format2D | None = None
+
+    def add_to_plotly(self, plotly_figure: PlotlyFigure):
+        """Add this data product to a plotly figure
+
+        Args:
+            plotly_figure (PlotlyFigure): Plotly figure to add data to
+        """
+        raise NotImplementedError("Subclasses must implement add_to_plotly")
 
 
 class XYData(PlottableData2D):

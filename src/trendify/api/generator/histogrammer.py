@@ -7,7 +7,7 @@ import logging
 # from trendify.api.data_product_collection import DataProductCollection
 from trendify.api.base.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
 from trendify.api.plotting.histogram import HistogramEntry
-from trendify.api.plotting.plotting import SingleAxisFigure
+from trendify.api.plotting.plotting import SingleAxisFigure, PlotlyFigure
 
 __all__ = ["Histogrammer"]
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class Histogrammer:
     """
-    Class for loading data products and histogramming the [`HistogramEntry`][trendify.API.HistogramEntry]s
+    Class for loading data products and histogramming the [`HistogramEntry`][trendify.api.HistogramEntry]s
 
     Args:
         in_dirs (List[Path]): Directories from which the data products are to be loaded.
@@ -79,7 +79,7 @@ class Histogrammer:
 
         Args:
             tag (Tag): Tag used to filter the loaded data products
-            histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendify.API.HistogramEntry]s
+            histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendify.api.HistogramEntry]s
             dir_out (Path): Directory to which the generated histogram will be stored
             dpi (int): resolution of plot
         """
@@ -111,3 +111,15 @@ class Histogrammer:
         # del saf
 
         return saf
+
+    @classmethod
+    def plotly_histogram(
+        cls,
+        tag: Tag,
+        histogram_entries: List[HistogramEntry],
+        plotly_figure: PlotlyFigure | None = None,
+    ) -> PlotlyFigure:
+        if plotly_figure is None:
+            plotly_figure = PlotlyFigure.new(tag=tag)
+        raise NotImplementedError()
+        return plotly_figure

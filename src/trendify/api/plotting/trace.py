@@ -3,6 +3,9 @@ from __future__ import annotations
 from typing import List
 import logging
 
+import plotly.graph_objects as go
+from trendify.api.plotting.plotting import PlotlyFigure
+
 try:
     from typing import Self, TYPE_CHECKING
 except:
@@ -31,7 +34,7 @@ logger = logging.getLogger(__name__)
 class Trace2D(XYData):
     """
     A collection of points comprising a trace.
-    Use the [Trace2D.from_xy][trendify.API.Trace2D.from_xy] constructor.
+    Use the [Trace2D.from_xy][trendify.api.Trace2D.from_xy] constructor.
 
     Attributes:
         points (List[Point2D]): List of points.  Usually the points would have null values
@@ -98,7 +101,7 @@ class Trace2D(XYData):
         format2d: Format2D | None = None,
     ):
         """
-        Creates a list of [Point2D][trendify.API.Point2D]s from xy data and returns a new [Trace2D][trendify.API.Trace2D] product.
+        Creates a list of [Point2D][trendify.api.plotting.point.Point2D]s from xy data and returns a new [Trace2D][trendify.api.plotting.Trace2D] product.
 
         Args:
             tags (Tags): Tags used to sort data products
@@ -132,3 +135,54 @@ class Trace2D(XYData):
             ax (Axes): axes to which xy data should be plotted
         """
         ax.plot(self.x, self.y, **self.pen.as_scatter_plot_kwargs())
+
+    def add_to_plotly(self, plotly_figure: PlotlyFigure) -> PlotlyFigure:
+        legend_key = (
+            f"{self.pen.label}_{self.pen.color}_{self.pen._convert_linestyle_to_plotly()}"
+            if self.pen
+            else None
+        )
+        # Prepare metadata for the tooltip
+        metadata_html = (
+            "<br>".join([f"{key}: {value}" for key, value in self.metadata.items()])
+            if self.metadata
+            else ""
+        )
+
+        # Define hovertemplate for the tooltip
+        hovertemplate = (
+            f"<b>{self.pen.label if self.pen else ''}</b><br>"
+            "x: %{x}<br>"
+            "y: %{y}<br>"
+            f"{metadata_html}<extra></extra>"
+        )
+
+        plotly_figure.fig.add_trace(
+            go.Scatter(
+                x=[p.x for p in self.points],
+                y=[p.y for p in self.points],
+                name=self.pen.label if self.pen else None,
+                mode="lines",
+                line=dict(
+                    color=self.pen.rgba if self.pen else None,
+                    width=self.pen.size if self.pen else None,
+                    dash=self.pen._convert_linestyle_to_plotly() if self.pen else None,
+                ),
+                marker=dict(
+                    color=self.pen.rgba if self.pen else None,  # Marker color
+                ),
+                hovertemplate=hovertemplate,
+                hoverlabel=dict(
+                    bgcolor=(self.pen.rgba if self.pen else None),
+                    font=dict(color=self.pen.get_contrast_color()),
+                ),
+                legendgroup=legend_key,
+                showlegend=(
+                    True if legend_key not in plotly_figure.legend_groups else False
+                ),
+            )
+        )
+
+        if legend_key and legend_key not in plotly_figure.legend_groups:
+            plotly_figure.legend_groups.add(legend_key)
+        return plotly_figure
