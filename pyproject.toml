@@ -59,7 +59,7 @@ dev = [
   "mdx-gh-links",
   "mkdocs-click",
   "markdown_include",
-  "mkdocs-glighbox",
+  "mkdocs-glightbox",
   "mkdocs-gen-files",
   "mkdocs-section-index",
   "mkdocs-autorefs",
