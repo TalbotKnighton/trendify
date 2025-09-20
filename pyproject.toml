@@ -67,7 +67,6 @@ dev = [
   "mkdocstrings",
   "mkdocs-exclude",
   "mkdocs-snippets",
-  "mkdocstrings_handlers",
   "mkdocstrings-python",
   "griffe-pydantic",
 ]
