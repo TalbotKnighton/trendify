@@ -1,0 +1,95 @@
+# # .github/workflows/docs.yml
+# name: Deploy Documentation
+
+# on:
+#   push:
+#     tags:
+#       - 'v*.*.*'
+#   workflow_dispatch:  # Allow manual triggering
+
+# permissions:
+#   contents: write  # This is the key addition - explicitly grant write permission
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0  # fetch all history for proper versioning
+      
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.10'
+          
+#       - name: Install dependencies
+#         run: |
+#           python -m pip install --upgrade pip
+#           pip install -e ".[dev]"
+          
+#       - name: Set up Git user
+#         run: |
+#           git config --local user.email "github-actions[bot]@users.noreply.github.com"
+#           git config --local user.name "github-actions[bot]"
+          
+#       - name: Extract version from tag
+#         id: get_version
+#         run: |
+#           echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+          
+#       - name: Deploy docs
+#         run: |
+#           mike deploy --push --update-aliases ${{ env.VERSION }} latest
+
+# .github/workflows/docs.yml
+name: Deploy Documentation
+
+on:
+  workflow_run:
+    workflows: ["Publish Package"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual triggering
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    # Only run if the package publish was successful
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # fetch all history for proper versioning
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          
+      - name: Set up Git user
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          # Get the latest tag
+          TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+          
+      - name: Deploy docs
+        run: |
+          mike deploy --push --update-aliases ${{ env.VERSION }} latest
