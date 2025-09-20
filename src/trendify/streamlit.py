@@ -33,27 +33,27 @@ gatherUsageStats = false
 def make_streamlit(trendify_dir: Path):
     trendify_dir = trendify_dir.resolve()
     save_location = trendify_dir.joinpath("assets", "dashboard", "streamlit_run.py")
-    run_command = f"streamlit run {save_location}"
-    to_write = f"""'''To run use:
+    run_command = f"streamlit run {save_location.as_posix()}"
+    to_write = f'''"""To run use:
 
 {run_command}
-'''
+"""
+
 import trendify.streamlit as trendy_stream
 from pathlib import Path
 
-trendify_dir = Path("{trendify_dir}")
+trendify_dir = Path("{trendify_dir.as_posix()}")
 
-trendy_stream.make_theme()
 trendy_stream.make_dashboard(trendify_dir=trendify_dir)
-"""
-
+'''
+    make_theme()
     save_location.parent.mkdir(parents=True, exist_ok=True)
     save_location.write_text(to_write)
     print(
         f"""To run use
 
 {run_command}
-    """
+"""
     )
 
 
@@ -107,44 +107,30 @@ def render_nested_expanders(
     for tag_name, group_info in level_groups.items():
         # Create the full tag tuple up to this level
         current_tag = tuple(
-            t[current_level]
+            t[: current_level + 1]
             for t in tags
             if len(t) > current_level and t[current_level] == tag_name
         )
         if current_tag:
             current_tag = current_tag[
-                :1
-            ]  # Take just the first one since they're all the same at this level
+                0
+            ]  # Take the first one since they're all the same at this level
 
         # Check if this tag is part of the currently selected path
-        is_selected = (
-            selected_tag is not None
-            and len(selected_tag) > current_level
-            and selected_tag[current_level] == tag_name
-        )
+        is_selected = selected_tag == current_tag
         button_text = f"{tag_name}"
         button_type = "primary" if is_selected else "secondary"
 
         # Only create expander if there are subtags, otherwise just show button
         if group_info["subtags"]:
-            with st.expander(f"📁 {tag_name}", expanded=True):
+            with st.expander(f"📁 {tag_name}", expanded=False):
                 if group_info["complete"]:
                     if st.button(
                         button_text,
-                        key=f"btn_{current_level}_{tag_name}",
+                        key=f"btn_{'_'.join(current_tag)}",  # Use the full tag tuple as the key
                         type=button_type,
                     ):
-                        # Find the complete tag tuple for this selection
-                        full_tag = next(
-                            (
-                                t
-                                for t in tags
-                                if len(t) == current_level + 1
-                                and t[current_level] == tag_name
-                            ),
-                            None,
-                        )
-                        st.session_state.selected_tags = full_tag
+                        st.session_state.selected_tags = current_tag
                         st.rerun()
 
                 render_nested_expanders(
@@ -155,21 +141,11 @@ def render_nested_expanders(
             if group_info["complete"]:
                 if st.button(
                     button_text,
-                    key=f"btn_{current_level}_{tag_name}",
+                    key=f"btn_{'_'.join(current_tag)}",  # Use the full tag tuple as the key
                     type=button_type,
                     use_container_width=True,
                 ):
-                    # Find the complete tag tuple for this selection
-                    full_tag = next(
-                        (
-                            t
-                            for t in tags
-                            if len(t) == current_level + 1
-                            and t[current_level] == tag_name
-                        ),
-                        None,
-                    )
-                    st.session_state.selected_tags = full_tag
+                    st.session_state.selected_tags = current_tag
                     st.rerun()
 
     return st.session_state.get("selected_tags", None)

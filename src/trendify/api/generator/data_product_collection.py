@@ -542,16 +542,11 @@ class DataProductCollection(BaseModel):
                         from trendify.api.generator.table_builder import TableBuilder
 
                         logger.info(f"Making tables for {tag = }")
-                        table_builder = TableBuilder(
-                            in_dirs=[dir_in],  # Input directory
-                            out_dir=dir_out,  # Output directory
+                        TableBuilder.process_table_entries(
+                            tag=tag,
+                            table_entries=table_entries,
+                            out_dir=dir_out,
                         )
-
-                        # Build tables for the given tag
-                        table_builder.build_tables(tag=tag)
-
-                        # Save the generated tables
-                        table_builder.save_tables(tag=tag)
                         logger.info(f"Finished tables for {tag = }")
 
                 if not no_xy_plots:

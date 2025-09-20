@@ -22,3 +22,4 @@ find $input -name "data_product.json" -type f -delete
 # trendify products-serve $output --host $server_host --port $server_port
 
 trendify make static -i $input/**/results.csv -g $generator -n $n_procs -o $output -f data_product.json
+trendify make dashboard -o $output
