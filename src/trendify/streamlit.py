@@ -33,27 +33,27 @@ gatherUsageStats = false
 def make_streamlit(trendify_dir: Path):
     trendify_dir = trendify_dir.resolve()
     save_location = trendify_dir.joinpath("assets", "dashboard", "streamlit_run.py")
-    run_command = f"streamlit run {save_location}"
-    to_write = f"""'''To run use:
+    run_command = f"streamlit run {save_location.as_posix()}"
+    to_write = f'''"""To run use:
 
 {run_command}
-'''
+"""
+
 import trendify.streamlit as trendy_stream
 from pathlib import Path
 
-trendify_dir = Path("{trendify_dir}")
+trendify_dir = Path("{trendify_dir.as_posix()}")
 
-trendy_stream.make_theme()
 trendy_stream.make_dashboard(trendify_dir=trendify_dir)
-"""
-
+'''
+    make_theme()
     save_location.parent.mkdir(parents=True, exist_ok=True)
     save_location.write_text(to_write)
     print(
         f"""To run use
 
 {run_command}
-    """
+"""
     )
 
 
