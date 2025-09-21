@@ -10,7 +10,7 @@ export n_procs=1
 
 rm -rf $output/products
 
-# trendify_make_sample_data -wd $workdir -n 10
+trendify_make_sample_data -wd $workdir -n 10
 
 find $input -name "data_product.json" -type f -delete
 

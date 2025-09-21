@@ -113,9 +113,8 @@ def render_nested_expanders(
             if len(t) > current_level and t[current_level] == tag_name
         )
         if current_tag:
-            current_tag = current_tag[
-                0
-            ]  # Take the first one since they're all the same at this level
+            # Take the first one since they're all the same at this level
+            current_tag = current_tag[0]
 
         # Check if this tag is part of the currently selected path
         is_selected = selected_tag == current_tag

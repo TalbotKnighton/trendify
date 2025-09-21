@@ -51,7 +51,12 @@ class Point2D(XYData):
         )
 
         # Define hovertemplate for the tooltip
-        hovertemplate = "x: %{x}<br>" "y: %{y}<br>" f"{metadata_html}<extra></extra>"
+        hovertemplate = (
+            f"<b>{self.marker.label if self.marker else ''}</b><br>"
+            "x: %{x}<br>"
+            "y: %{y}<br>"
+            f"{metadata_html}<extra></extra>"
+        )
 
         plotly_figure.fig.add_trace(
             go.Scatter(
@@ -60,14 +65,14 @@ class Point2D(XYData):
                 name=self.marker.label if self.marker else None,
                 mode="markers",
                 marker=dict(
-                    color=self.marker.color if self.marker else None,
+                    color=self.marker.rgba if self.marker else None,
                     size=self.marker.size if self.marker else None,
                     symbol=self.marker.plotly_symbol if self.marker else None,
                 ),
                 legendgroup=legend_key,
                 hovertemplate=hovertemplate,
                 hoverlabel=dict(
-                    bgcolor=(self.marker.color if self.marker else None),
+                    bgcolor=(self.marker.rgba if self.marker else None),
                     font=dict(
                         color=self.marker.get_contrast_color() if self.marker else None
                     ),
