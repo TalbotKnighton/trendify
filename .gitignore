@@ -15,3 +15,5 @@ discriminator_tests.json
 discriminator_tests.log
 .coverage
 coverage.xml
+# MkDocs build directory
+site/
