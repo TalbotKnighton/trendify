@@ -64,11 +64,12 @@ def get_index_map_path(trendify_dir: Path, tag: Tuple[str, ...]) -> Path:
 
 def get_tags(trendify_dir: Path) -> Sequence[Tuple[str, ...]]:
     products_dir = trendify_dir.joinpath("products")
-    return [
+    tags = [
         p.parent.relative_to(products_dir).parts
         for p in products_dir.rglob("*")
         if p.name == "index_map" and p.is_file()
     ]
+    return sorted(tags, key=lambda x: (len(x), x))
 
 
 def create_nested_expanders(
@@ -127,7 +128,7 @@ def render_nested_expanders(
                 if group_info["complete"]:
                     if st.button(
                         button_text,
-                        key=f"btn_{'_'.join(current_tag)}",  # Use the full tag tuple as the key
+                        key=f"btn_{str('_').join(current_tag)}",  # Use the full tag tuple as the key
                         type=button_type,
                     ):
                         st.session_state.selected_tags = current_tag
@@ -141,7 +142,7 @@ def render_nested_expanders(
             if group_info["complete"]:
                 if st.button(
                     button_text,
-                    key=f"btn_{'_'.join(current_tag)}",  # Use the full tag tuple as the key
+                    key=f"btn_{str('_').join(current_tag)}",  # Use the full tag tuple as the key
                     type=button_type,
                     use_container_width=True,
                 ):
