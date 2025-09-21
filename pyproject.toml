@@ -72,14 +72,20 @@ dev = [
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
+  "mike",
+  "isort>=5.12.0",
+  "flake8>=6.0.0",
+  "mkdocs-material>=9.2.0",
+  "mkdocs-redirects>=1.0.0",
+  "hatchling>=1.11.0",
 ]
 
-# [project.urls]
-# Homepage = ""
-# Documentation = ""
-# Repository = ""
-# Issues = ""
-# Changelog = ""
+[project.urls]
+"Homepage" = "https://github.com/talbotknighton/trendify"
+"Bug Tracker" = "https://github.com/talbotknighton/trendify/issues"
+"Documentation" = "https://talbotknighton.github.io/trendify/"
+"Source Code" = "https://github.com/talbotknighton/trendify"
+"PyPI" = "https://pypi.org/project/trendify/"
 
 [project.scripts]
 trendify_make_sample_data = "trendify.examples:make_sample_data"
