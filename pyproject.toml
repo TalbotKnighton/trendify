@@ -23,14 +23,14 @@ dependencies = [
   "streamlit",
 ]
 name = "trendify"
-version = "1.2.0"
+version = "1.2.1"
 requires-python = ">= 3.9"
 authors = [
-  { name = "Talbot Knighton", email = "talbotknighton@gmail.org" },
+  { name = "Talbot Knighton", email = "talbotknighton@gmail.com" },
   { name = "David Gable", email = "david@david-gable.com" },
 ]
 maintainers = [
-  { name = "Talbot Knighton", email = "talbotknighton@gmail.org" },
+  { name = "Talbot Knighton", email = "talbotknighton@gmail.com" },
   { name = "David Gable", email = "david@david-gable.com" },
 ]
 description = "Tools for generating data products, storing, and interacting with them"
