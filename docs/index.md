@@ -9,6 +9,13 @@ hide:
 
 # Welcome to Trendify
 
+
+[![PyPI Version](https://img.shields.io/pypi/v/trendify.svg)](https://pypi.org/project/trendify/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/trendify.svg)](https://pypi.org/project/trendify/)
+[![License](https://img.shields.io/github/license/TalbotKnighton/trendify.svg)](https://github.com/TalbotKnighton/trendify/blob/main/LICENSE)
+[![GitHub](https://img.shields.io/github/stars/TalbotKnighton/trendify?style=social)](https://github.com/TalbotKnighton/trendify)
+
+
 ### Description
 
 The `trendify` package makes it easy to compare data from multiple runs of a batch process.  The core functionality is to generate CSV tables and JPEG images by mapping a user-provided processing function over a user-provided set of input data directories.  Parallelization and data serialization are used to speed up processing time and maintain low memory requirements.  `trendify` is run via a terminal [command line interface (CLI)][cli] one-liner method or via a Python application programming interface (API).

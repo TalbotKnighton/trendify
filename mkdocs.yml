@@ -1,9 +1,10 @@
 site_name: Trendify
 site_url: https://talbotknighton.github.io/trendify/
+repo_url: https://github.com/TalbotKnighton/trendify
+repo_name: TalbotKnighton/trendify
 site_description: Data visualization for batch processes via data models.
 site_author: Talbot Knighton
 
-repo_url: https://github.com/TalbotKnighton/trendify
 # edit_uri: blob/master/docs/
 
 theme:

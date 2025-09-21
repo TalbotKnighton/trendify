@@ -93,7 +93,7 @@ fi
 
 # Update documentation URL in pyproject.toml to point to the docs site
 echo "Updating documentation URL in pyproject.toml..."
-sed -i.bak 's|"Documentation" = ".*"|"Documentation" = "https://talbotknighton.github.io/pydantic-discriminated/"|' pyproject.toml
+sed -i.bak 's|"Documentation" = ".*"|"Documentation" = "https://talbotknighton.github.io/trendify/"|' pyproject.toml
 rm pyproject.toml.bak  # Remove backup file
 
 # Check if email in pyproject.toml contains .org and fix it if needed
@@ -106,8 +106,8 @@ fi
 # Update README.md if it contains badge.fury.io badges
 if [ -f "README.md" ] && grep -q "badge.fury.io" README.md; then
     echo "Updating badges in README.md..."
-    sed -i.bak 's|https://badge.fury.io/py/pydantic-discriminated.svg|https://img.shields.io/pypi/v/pydantic-discriminated.svg|g' README.md
-    sed -i.bak 's|https://badge.fury.io/py/pydantic-discriminated|https://pypi.org/project/pydantic-discriminated/|g' README.md
+    sed -i.bak 's|https://badge.fury.io/py/trendify.svg|https://img.shields.io/pypi/v/trendify.svg|g' README.md
+    sed -i.bak 's|https://badge.fury.io/py/trendify|https://pypi.org/project/trendify/|g' README.md
     rm README.md.bak  # Remove backup file
 fi
 
@@ -119,15 +119,15 @@ if [ -f "docs/index.md" ]; then
     echo "Checking badges in docs/index.md..."
     if grep -q "badge.fury.io" docs/index.md; then
         echo "Updating PyPI badge in docs/index.md..."
-        sed -i.bak 's|https://badge.fury.io/py/pydantic-discriminated.svg|https://img.shields.io/pypi/v/pydantic-discriminated.svg|g' docs/index.md
-        sed -i.bak 's|https://badge.fury.io/py/pydantic-discriminated|https://pypi.org/project/pydantic-discriminated/|g' docs/index.md
+        sed -i.bak 's|https://badge.fury.io/py/trendify.svg|https://img.shields.io/pypi/v/trendify.svg|g' docs/index.md
+        sed -i.bak 's|https://badge.fury.io/py/trendify|https://pypi.org/project/trendify/|g' docs/index.md
         rm docs/index.md.bak  # Remove backup file
     fi
     
     # Update documentation badge to be more useful (not link to itself)
     if grep -q "docs-mkdocs-blue" docs/index.md; then
         echo "Updating documentation badge in docs/index.md..."
-        sed -i.bak 's|[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://talbotknighton.github.io/pydantic-discriminated/)|[![API Reference](https://img.shields.io/badge/api-reference-blue.svg)](https://talbotknighton.github.io/pydantic-discriminated/api-reference/)|g' docs/index.md
+        sed -i.bak 's|[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://talbotknighton.github.io/trendify/)|[![API Reference](https://img.shields.io/badge/api-reference-blue.svg)](https://talbotknighton.github.io/trendify/api-reference/)|g' docs/index.md
         rm docs/index.md.bak  # Remove backup file
     fi
 fi
@@ -186,7 +186,7 @@ echo "To view the documentation locally, run: mike serve"
 
 # Create pull request from dev to main
 echo "Creating a pull request from dev to main..."
-echo "Please go to GitHub and create the PR: https://github.com/TalbotKnighton/pydantic-discriminated/compare/main...dev"
+echo "Please go to GitHub and create the PR: https://github.com/TalbotKnighton/trendify/compare/main...dev"
 echo "After the PR is reviewed and merged, run the following commands:"
 echo "git checkout main"
 echo "git pull origin main"
@@ -214,7 +214,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     # Wait for the package to be published to PyPI
     echo "Waiting for package to be published to PyPI..."
     echo "This may take a few minutes. The GitHub Actions workflow should be building and publishing your package."
-    echo "You can check the progress here: https://github.com/TalbotKnighton/pydantic-discriminated/actions"
+    echo "You can check the progress here: https://github.com/TalbotKnighton/trendify/actions"
     
     read -p "Has the package been published to PyPI? (y/n) " -n 1 -r
     echo
