@@ -23,14 +23,14 @@ dependencies = [
   "streamlit",
 ]
 name = "trendify"
-version = "1.2.1"
-requires-python = ">= 3.9"
+version = "1.2.3"
+requires-python = ">= 3.11"
 authors = [
-  { name = "Talbot Knighton", email = "talbotknighton@gmail.org" },
+  { name = "Talbot Knighton", email = "talbotknighton@gmail.com" },
   { name = "David Gable", email = "david@david-gable.com" },
 ]
 maintainers = [
-  { name = "Talbot Knighton", email = "talbotknighton@gmail.org" },
+  { name = "Talbot Knighton", email = "talbotknighton@gmail.com" },
   { name = "David Gable", email = "david@david-gable.com" },
 ]
 description = "Tools for generating data products, storing, and interacting with them"
@@ -59,7 +59,7 @@ dev = [
   "mdx-gh-links",
   "mkdocs-click",
   "markdown_include",
-  "mkdocs-glighbox",
+  "mkdocs-glightbox",
   "mkdocs-gen-files",
   "mkdocs-section-index",
   "mkdocs-autorefs",
@@ -67,9 +67,11 @@ dev = [
   "mkdocstrings",
   "mkdocs-exclude",
   "mkdocs-snippets",
-  "mkdocsstrings_handlers",
   "mkdocstrings-python",
   "griffe-pydantic",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-cov",
 ]
 
 # [project.urls]
@@ -89,3 +91,9 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 "trendify.assets" = ["*.svg"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "*.py"
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
