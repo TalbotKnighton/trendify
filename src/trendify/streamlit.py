@@ -183,7 +183,7 @@ def process_tag(tag: Tuple[str, ...], trendify_dir: Path):
 def make_main_page(tag: Tuple[str, ...], trendify_dir: Path):
     """Display the main page content for the selected tag"""
 
-    st.title(f"{tag} Asset")
+    st.title(f"{"|".join(tag)} Asset")
 
     # Process the tag for tables and plots
     proccessed_tag = process_tag(tag=tag, trendify_dir=trendify_dir)
@@ -200,7 +200,24 @@ def make_main_page(tag: Tuple[str, ...], trendify_dir: Path):
                 step=100,
                 help="Set the height of the rendered plot (in pixels)",
             )
+        with col2:
+            opts = ["closest", "x unified", "y unified", "x", "y"]
+            if "tooltip_selected" not in st.session_state:
+                st.session_state.tooltip_selected = "closest"
+
+            index = opts.index(st.session_state.tooltip_selected)
+
+            tooltip = st.selectbox(
+                key="tooltip",
+                label="Tooltip",
+                options=opts,
+                index=index,
+                accept_new_options=False,
+            )
+            st.session_state.tooltip_selected = tooltip
+
         proccessed_tag.fig.update_layout(
+            hovermode=tooltip,
             height=height,
             margin=dict(pad=4, t=25, b=25),
         )  # Padding between the plot area and the margin))
