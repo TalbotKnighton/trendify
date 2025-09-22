@@ -7,6 +7,7 @@ import warnings
 import logging
 
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from trendify.api.formats.format2d import PlottableData2D
 
@@ -200,8 +201,12 @@ class PlotlyFigure:
         layout_updates = {}
 
         # Set titles
-        if format2d.title_ax is not None:
-            layout_updates["title"] = format2d.title_ax
+        if format2d.title_fig is not None and format2d.title_ax is not None:
+            layout_updates["title"] = f"{format2d.title_fig} | {format2d.title_ax}"
+        elif format2d.title_fig is None and format2d.title_ax is not None:
+            layout_updates["title"] = f"{format2d.title_ax}"
+        elif format2d.title_fig is not None and format2d.title_ax is None:
+            layout_updates["title"] = f"{format2d.title_fig}"
 
         # Set axis labels
         if format2d.label_x is not None:

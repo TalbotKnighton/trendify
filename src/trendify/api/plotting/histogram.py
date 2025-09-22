@@ -105,6 +105,49 @@ class HistogramStyle(HashableBase):
 
         return f"rgba({r}, {g}, {b}, {a})"
 
+    def get_face_contrast_color(self, background_luminance: float = 1.0) -> str:
+        """
+        Returns 'white' or 'black' to provide the best contrast against the pen's color,
+        taking into account the alpha (transparency) value of the line.
+
+        Args:
+            background_luminance (float): The luminance of the background (default is 1.0 for white).
+
+        Returns:
+            str: 'white' or 'black'
+        """
+        # Convert the pen's color to RGB (0-255 range) and get alpha
+        if isinstance(self.color, tuple):
+            if len(self.color) == 3:  # RGB tuple
+                r, g, b = self.color
+                a = self.alpha_face
+            else:  # RGBA tuple
+                r, g, b, a = self.color
+            r, g, b = int(r * 255), int(g * 255), int(b * 255)
+        else:  # String color (name or hex)
+            rgba_vals = to_rgba(self.color, self.alpha_face)
+            r, g, b = [int(x * 255) for x in rgba_vals[:3]]
+            a = rgba_vals[3]
+
+        # Calculate relative luminance of the pen's color
+        def luminance(channel):
+            channel /= 255.0
+            return (
+                channel / 12.92
+                if channel <= 0.03928
+                else ((channel + 0.055) / 1.055) ** 2.4
+            )
+
+        color_luminance = (
+            0.2126 * luminance(r) + 0.7152 * luminance(g) + 0.0722 * luminance(b)
+        )
+
+        # Blend the color luminance with the background luminance based on alpha
+        blended_luminance = (1 - a) * background_luminance + a * color_luminance
+
+        # Return white for dark blended colors, black for light blended colors
+        return "white" if blended_luminance < 0.5 else "black"
+
 
 class HistogramEntry(PlottableData2D):
     """
@@ -140,6 +183,19 @@ class HistogramEntry(PlottableData2D):
                 trace.x = list(trace.x) + [self.value]
                 return plotly_figure
 
+        metadata_html = (
+            "<br>".join([f"{key}: {value}" for key, value in self.metadata.items()])
+            if self.metadata
+            else ""
+        )
+
+        hovertemplate = (
+            f"<b>{self.style.label if self.style.label else ""}</b><br>"
+            "x: %{x}<br>"
+            "y: %{y}<br>"
+            f"{metadata_html}<extra></extra>"
+        )
+
         # If no existing trace, add a new one
         plotly_figure.fig.add_trace(
             go.Histogram(
@@ -154,6 +210,14 @@ class HistogramEntry(PlottableData2D):
                 ),
                 nbinsx=self.style.bins if isinstance(self.style.bins, int) else None,
                 legendgroup=legend_key,  # Group histograms with the same label and color
+                hovertemplate=hovertemplate,
+                hoverlabel=dict(
+                    bgcolor=self.style.rgba_face,
+                    bordercolor=self.style.rgba_edge,
+                    font=dict(
+                        color=self.style.get_face_contrast_color()  # Optionally, set the font color as well
+                    ),
+                ),
                 showlegend=(
                     True if self.style.label is not None else False
                 ),  # Always show legend for the first trace

@@ -103,7 +103,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
     df = pd.read_csv(workdir.joinpath("results.csv"))
     df = df.set_index(Channels.time.name, drop=True)
 
-    colors = list(plt.rcParams["axes.prop_cycle"].by_key()["color"])
+    # colors = list(plt.rcParams["axes.prop_cycle"].by_key()["color"])
+    colors = ["#FF0000", "#000B81", "#FFAA00"]
+    alphas = [1.0, 0.3, 1.0]
     linestyles = ["-", ":", (0, (3, 1, 1, 1))]
 
     run_num = workdir.name
@@ -115,8 +117,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=[("an_xy_plot", "trace_plot")],
             pen=trendify.Pen(
                 label=col,
-                color=colors[list(Channels).index(col)],
+                color=colors[i],
                 linestyle=linestyles[i % len(linestyles)],
+                alpha=alphas[i],
             ),
             format2d=trendify.Format2D(
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
@@ -136,8 +139,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=[("an_xy_plot", "another_trace_plot")],
             pen=trendify.Pen(
                 label=col,
-                color=colors[list(Channels).index(col)],
+                color=colors[i],
                 linestyle=linestyles[i % len(linestyles)],
+                alpha=alphas[i],
             ),
             format2d=trendify.Format2D(
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
@@ -157,8 +161,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=[("another_xy_plot", "trace_plot")],
             pen=trendify.Pen(
                 label=col,
-                color=colors[list(Channels).index(col)],
+                color=colors[i],
                 linestyle=linestyles[i % len(linestyles)],
+                alpha=alphas[i],
             ),
             format2d=trendify.Format2D(
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
@@ -178,8 +183,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=["trace_plot_log_y"],
             pen=trendify.Pen(
                 label=col,
-                color=colors[list(Channels).index(col)],
+                color=colors[i],
                 linestyle=linestyles[i % len(linestyles)],
+                alpha=alphas[i],
             ),
             format2d=trendify.Format2D(
                 legend=trendify.Legend(
@@ -204,8 +210,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=["trace_plot_log_xy"],
             pen=trendify.Pen(
                 label=col,
-                color=colors[list(Channels).index(col)],
+                color=colors[i],
                 linestyle=linestyles[i % len(linestyles)],
+                alpha=alphas[i],
             ),
             format2d=trendify.Format2D(
                 legend=trendify.Legend(
@@ -231,8 +238,9 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=["trace_plot_log_x"],
             pen=trendify.Pen(
                 label=col,
-                color=colors[list(Channels).index(col)],
+                color=colors[i],
                 linestyle=linestyles[i % len(linestyles)],
+                alpha=alphas[i],
             ),
             format2d=trendify.Format2D(
                 legend=trendify.Legend(visible=False),
@@ -254,6 +262,7 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 size=10,
                 label=trace.pen.label,
                 color=trace.pen.color,
+                alpha=alphas[i],
             ),
             format2d=trendify.Format2D(title_fig="N Points"),
             tags=["scatter_plot"],
@@ -272,7 +281,8 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=["histogram"],
             value=series.mean(),
             format2d=trendify.Format2D(
-                title_fig="Idk lol",
+                title_ax="Idk lol",
+                title_fig="Idk lol2",
                 legend=trendify.Legend(
                     loc=trendify.LegendLocation.UPPER_LEFT,
                     bbox_to_anchor=(1.05, 1),
@@ -281,7 +291,12 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 label_y="Counts",
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
             ),
-            style=trendify.HistogramStyle(alpha_face=1),
+            style=trendify.HistogramStyle(
+                alpha_face=0.75,
+                alpha_edge=1,
+                bins=6,
+                label="A histogram entry",
+            ),
         ).append_to_list(products)
 
         trendify.AxLine(

@@ -81,25 +81,57 @@ class Marker(HashableBase):
         }
         return symbol_map.get(self.symbol, "circle")
 
-    def get_contrast_color(self) -> str:
+    @property
+    def rgba(self) -> str:
         """
-        Returns 'white' or 'black' to provide the best contrast against the pen's color.
+        Convert the pen's color to rgba string format.
+
+        Returns:
+            str: Color in 'rgba(r,g,b,a)' format where r,g,b are 0-255 and a is 0-1
+        """
+        # Handle different color input formats
+        if isinstance(self.color, tuple):
+            if len(self.color) == 3:  # RGB tuple
+                r, g, b = self.color
+                a = self.alpha
+            else:  # RGBA tuple
+                r, g, b, a = self.color
+            # Convert 0-1 range to 0-255 for RGB
+            r, g, b = int(r * 255), int(g * 255), int(b * 255)
+        else:  # String color (name or hex)
+            # Use matplotlib's color converter
+            rgba_vals = to_rgba(self.color, self.alpha)
+            # Convert 0-1 range to 0-255 for RGB
+            r, g, b = [int(x * 255) for x in rgba_vals[:3]]
+            a = rgba_vals[3]
+
+        return f"rgba({r}, {g}, {b}, {a})"
+
+    def get_contrast_color(self, background_luminance: float = 1.0) -> str:
+        """
+        Returns 'white' or 'black' to provide the best contrast against the pen's color,
+        taking into account the alpha (transparency) value of the line.
+
+        Args:
+            background_luminance (float): The luminance of the background (default is 1.0 for white).
 
         Returns:
             str: 'white' or 'black'
         """
-        # Convert the pen's color to RGB (0-255 range)
+        # Convert the pen's color to RGB (0-255 range) and get alpha
         if isinstance(self.color, tuple):
             if len(self.color) == 3:  # RGB tuple
                 r, g, b = self.color
+                a = self.alpha
             else:  # RGBA tuple
-                r, g, b, _ = self.color
+                r, g, b, a = self.color
             r, g, b = int(r * 255), int(g * 255), int(b * 255)
         else:  # String color (name or hex)
-            rgba_vals = to_rgba(self.color)
+            rgba_vals = to_rgba(self.color, self.alpha)
             r, g, b = [int(x * 255) for x in rgba_vals[:3]]
+            a = rgba_vals[3]
 
-        # Calculate relative luminance
+        # Calculate relative luminance of the pen's color
         def luminance(channel):
             channel /= 255.0
             return (
@@ -108,7 +140,12 @@ class Marker(HashableBase):
                 else ((channel + 0.055) / 1.055) ** 2.4
             )
 
-        lum = 0.2126 * luminance(r) + 0.7152 * luminance(g) + 0.0722 * luminance(b)
+        color_luminance = (
+            0.2126 * luminance(r) + 0.7152 * luminance(g) + 0.0722 * luminance(b)
+        )
 
-        # Return white for dark colors, black for light colors
-        return "white" if lum < 0.5 else "black"
+        # Blend the color luminance with the background luminance based on alpha
+        blended_luminance = (1 - a) * background_luminance + a * color_luminance
+
+        # Return white for dark blended colors, black for light blended colors
+        return "white" if blended_luminance < 0.5 else "black"

@@ -64,11 +64,12 @@ def get_index_map_path(trendify_dir: Path, tag: Tuple[str, ...]) -> Path:
 
 def get_tags(trendify_dir: Path) -> Sequence[Tuple[str, ...]]:
     products_dir = trendify_dir.joinpath("products")
-    return [
+    tags = [
         p.parent.relative_to(products_dir).parts
         for p in products_dir.rglob("*")
         if p.name == "index_map" and p.is_file()
     ]
+    return sorted(tags, key=lambda x: (len(x), x))
 
 
 def create_nested_expanders(
@@ -112,9 +113,8 @@ def render_nested_expanders(
             if len(t) > current_level and t[current_level] == tag_name
         )
         if current_tag:
-            current_tag = current_tag[
-                0
-            ]  # Take the first one since they're all the same at this level
+            # Take the first one since they're all the same at this level
+            current_tag = current_tag[0]
 
         # Check if this tag is part of the currently selected path
         is_selected = selected_tag == current_tag
@@ -127,7 +127,7 @@ def render_nested_expanders(
                 if group_info["complete"]:
                     if st.button(
                         button_text,
-                        key=f"btn_{'_'.join(current_tag)}",  # Use the full tag tuple as the key
+                        key=f"btn_{str('_').join(current_tag)}",  # Use the full tag tuple as the key
                         type=button_type,
                     ):
                         st.session_state.selected_tags = current_tag
@@ -141,7 +141,7 @@ def render_nested_expanders(
             if group_info["complete"]:
                 if st.button(
                     button_text,
-                    key=f"btn_{'_'.join(current_tag)}",  # Use the full tag tuple as the key
+                    key=f"btn_{str('_').join(current_tag)}",  # Use the full tag tuple as the key
                     type=button_type,
                     use_container_width=True,
                 ):
@@ -153,14 +153,9 @@ def render_nested_expanders(
 
 def make_sidebar(trendify_dir: Path) -> Tuple[str, ...] | None:
     st.title(f"Trendify (v{version("trendify")})")
-    st.caption(f"Viewing assets for {trendify_dir}")
-
-    products_dir = trendify_dir.joinpath("products")
-    product_dirs = list(products_dir.glob("**/*/"))
 
     tags = get_tags(trendify_dir=trendify_dir)
-
-    st.caption(f"Located {len(tags)} assets")
+    st.caption(f"Viewing {len(tags)} assets for {trendify_dir}")
 
     if "selected_tags" not in st.session_state:
         st.session_state.selected_tags = None
@@ -183,27 +178,58 @@ def process_tag(tag: Tuple[str, ...], trendify_dir: Path):
 def make_main_page(tag: Tuple[str, ...], trendify_dir: Path):
     """Display the main page content for the selected tag"""
 
-    st.title(f"{tag} Asset")
+    st.title(f"{" | ".join(tag)}")
 
     # Process the tag for tables and plots
     proccessed_tag = process_tag(tag=tag, trendify_dir=trendify_dir)
 
     # Display Plotly figures if available
     if isinstance(proccessed_tag, PlotlyFigure):
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            height = st.slider(
-                label="Figure Height",
-                min_value=100,
-                value=600,
-                max_value=2000,
-                step=100,
-                help="Set the height of the rendered plot (in pixels)",
-            )
+        col1, col2, col3 = st.columns([1, 1, 0.3], vertical_alignment="bottom")
+        with st.form("plot_form"):
+            with col1:
+                if "height" not in st.session_state:
+                    st.session_state.height = 600
+
+                height = st.slider(
+                    label="Figure Height",
+                    min_value=100,
+                    value=st.session_state.height,
+                    max_value=2000,
+                    step=100,
+                    help="Set the height of the rendered plot (in pixels)",
+                )
+            with col2:
+                opts = ["closest", "x unified", "y unified", "x", "y"]
+                if "tooltip_selected" not in st.session_state:
+                    st.session_state.tooltip_selected = "closest"
+
+                index = opts.index(st.session_state.tooltip_selected)
+
+                tooltip = st.selectbox(
+                    key="tooltip",
+                    label="Tooltip",
+                    options=opts,
+                    index=index,
+                    accept_new_options=False,
+                    help="Select tooltip option",
+                )
+
+            with col3:
+                if st.button(
+                    "🔄",
+                    key="refresh_button",
+                    help="Refresh the plot area with the selections made.",
+                ):
+                    st.session_state.height = height
+                    st.session_state.tooltip_selected = tooltip
+                    st.rerun()
+
         proccessed_tag.fig.update_layout(
-            height=height,
+            hovermode=st.session_state.tooltip_selected,
+            height=st.session_state.height,
             margin=dict(pad=4, t=25, b=25),
-        )  # Padding between the plot area and the margin))
+        )
         st.plotly_chart(proccessed_tag.fig)
 
     else:
