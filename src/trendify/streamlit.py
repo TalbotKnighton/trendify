@@ -153,14 +153,9 @@ def render_nested_expanders(
 
 def make_sidebar(trendify_dir: Path) -> Tuple[str, ...] | None:
     st.title(f"Trendify (v{version("trendify")})")
-    st.caption(f"Viewing assets for {trendify_dir}")
-
-    products_dir = trendify_dir.joinpath("products")
-    product_dirs = list(products_dir.glob("**/*/"))
 
     tags = get_tags(trendify_dir=trendify_dir)
-
-    st.caption(f"Located {len(tags)} assets")
+    st.caption(f"Viewing {len(tags)} assets for {trendify_dir}")
 
     if "selected_tags" not in st.session_state:
         st.session_state.selected_tags = None
@@ -183,7 +178,7 @@ def process_tag(tag: Tuple[str, ...], trendify_dir: Path):
 def make_main_page(tag: Tuple[str, ...], trendify_dir: Path):
     """Display the main page content for the selected tag"""
 
-    st.title(f"{"|".join(tag)} Asset")
+    st.title(f"{" | ".join(tag)}")
 
     # Process the tag for tables and plots
     proccessed_tag = process_tag(tag=tag, trendify_dir=trendify_dir)
