@@ -281,7 +281,8 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=["histogram"],
             value=series.mean(),
             format2d=trendify.Format2D(
-                title_fig="Idk lol",
+                title_ax="Idk lol",
+                title_fig="Idk lol2",
                 legend=trendify.Legend(
                     loc=trendify.LegendLocation.UPPER_LEFT,
                     bbox_to_anchor=(1.05, 1),
@@ -290,7 +291,12 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 label_y="Counts",
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
             ),
-            style=trendify.HistogramStyle(alpha_face=1),
+            style=trendify.HistogramStyle(
+                alpha_face=0.75,
+                alpha_edge=1,
+                bins=6,
+                label="A histogram entry",
+            ),
         ).append_to_list(products)
 
         trendify.AxLine(
