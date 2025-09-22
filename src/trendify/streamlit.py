@@ -190,37 +190,51 @@ def make_main_page(tag: Tuple[str, ...], trendify_dir: Path):
 
     # Display Plotly figures if available
     if isinstance(proccessed_tag, PlotlyFigure):
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            height = st.slider(
-                label="Figure Height",
-                min_value=100,
-                value=600,
-                max_value=2000,
-                step=100,
-                help="Set the height of the rendered plot (in pixels)",
-            )
-        with col2:
-            opts = ["closest", "x unified", "y unified", "x", "y"]
-            if "tooltip_selected" not in st.session_state:
-                st.session_state.tooltip_selected = "closest"
+        col1, col2, col3 = st.columns([1, 1, 0.3], vertical_alignment="bottom")
+        with st.form("plot_form"):
+            with col1:
+                if "height" not in st.session_state:
+                    st.session_state.height = 600
 
-            index = opts.index(st.session_state.tooltip_selected)
+                height = st.slider(
+                    label="Figure Height",
+                    min_value=100,
+                    value=st.session_state.height,
+                    max_value=2000,
+                    step=100,
+                    help="Set the height of the rendered plot (in pixels)",
+                )
+            with col2:
+                opts = ["closest", "x unified", "y unified", "x", "y"]
+                if "tooltip_selected" not in st.session_state:
+                    st.session_state.tooltip_selected = "closest"
 
-            tooltip = st.selectbox(
-                key="tooltip",
-                label="Tooltip",
-                options=opts,
-                index=index,
-                accept_new_options=False,
-            )
-            st.session_state.tooltip_selected = tooltip
+                index = opts.index(st.session_state.tooltip_selected)
+
+                tooltip = st.selectbox(
+                    key="tooltip",
+                    label="Tooltip",
+                    options=opts,
+                    index=index,
+                    accept_new_options=False,
+                    help="Select tooltip option",
+                )
+
+            with col3:
+                if st.button(
+                    "🔄",
+                    key="refresh_button",
+                    help="Refresh the plot area with the selections made.",
+                ):
+                    st.session_state.height = height
+                    st.session_state.tooltip_selected = tooltip
+                    st.rerun()
 
         proccessed_tag.fig.update_layout(
-            hovermode=tooltip,
-            height=height,
+            hovermode=st.session_state.tooltip_selected,
+            height=st.session_state.height,
             margin=dict(pad=4, t=25, b=25),
-        )  # Padding between the plot area and the margin))
+        )
         st.plotly_chart(proccessed_tag.fig)
 
     else:
