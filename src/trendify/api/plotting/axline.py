@@ -79,11 +79,13 @@ class AxLine(PlottableData2D):
                     opacity=self.pen.alpha if self.pen else None,
                 )
                 plotly_figure.fig.add_annotation(
-                    x=1.05,
+                    x=1.0,
                     y=self.value,
                     xref="paper",  # Reference to the entire plotting area
+                    yref="y",
                     text=self.pen.label,
                     showarrow=False,  # Hide the arrow if not needed
+                    xanchor="left",
                     yanchor="middle",  # Center the text horizontally with the vline
                 )
             case LineOrientation.VERTICAL:
@@ -103,11 +105,12 @@ class AxLine(PlottableData2D):
                 )
                 plotly_figure.fig.add_annotation(
                     x=self.value,
-                    y=1.05,  # Position slightly above the plot area
+                    y=1.0,  # Position slightly above the plot area
                     yref="paper",  # Reference to the entire plotting area
                     text=self.pen.label,
                     showarrow=False,  # Hide the arrow if not needed
                     xanchor="center",  # Center the text horizontally with the vline
+                    yanchor="bottom",
                 )
             case _:
                 logger.error(f"Unrecognized line orientation {self.orientation}")

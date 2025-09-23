@@ -97,6 +97,7 @@ class SingleAxisFigure:
                         bbox_to_anchor=format2d.legend.bbox_to_anchor,
                         **kwargs,
                     )
+                    leg.set_zorder(level=format2d.legend.zorder)
 
                     if leg is not None and format2d.legend.edgecolor:
                         leg.get_frame().set_edgecolor(format2d.legend.edgecolor)

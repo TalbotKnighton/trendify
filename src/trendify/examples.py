@@ -169,12 +169,25 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
                 scale_x=trendify.AxisScale.LINEAR,
                 scale_y=trendify.AxisScale.LINEAR,
+                legend=trendify.Legend(loc=trendify.LegendLocation.LOWER_CENTER),
             ),
         )
         .append_to_list(products)
         .set_metadata({"run_num": run_num})
         for i, col in enumerate(df.columns)
     ]
+    trendify.AxLine(
+        tags=[("another_xy_plot", "trace_plot")],
+        value=0.5,
+        orientation=trendify.LineOrientation.VERTICAL,
+        pen=trendify.Pen(zorder=11, color="k"),
+    ).append_to_list(products)
+    trendify.AxLine(
+        tags=[("another_xy_plot", "trace_plot")],
+        value=0.45,
+        orientation=trendify.LineOrientation.VERTICAL,
+        pen=trendify.Pen(zorder=9, color="r"),
+    ).append_to_list(products)
 
     traces = [
         trendify.Trace2D.from_xy(
@@ -211,9 +224,10 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             pen=trendify.Pen(
                 label=col,
                 color=colors[i],
-                linestyle=linestyles[i % len(linestyles)],
+                linestyle="-",
                 alpha=alphas[i],
-                zorder=2,
+                zorder=[1, 1, 2][i],
+                size=5,
             ),
             format2d=trendify.Format2D(
                 legend=trendify.Legend(

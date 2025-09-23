@@ -37,6 +37,7 @@ class HistogramStyle(HashableBase):
     alpha_edge: float = 0
     alpha_face: float = 0.3
     linewidth: float = 2
+    zorder: int = 1
     bins: int | list[int] | Tuple[int] | NDArray[Shape["*"], int] | None = None
 
     def as_plot_kwargs(self):
@@ -51,6 +52,7 @@ class HistogramStyle(HashableBase):
             "label": self.label,
             "histtype": self.histtype,
             "bins": self.bins,
+            "zorder": self.zorder,
         }
 
     @property
@@ -216,6 +218,7 @@ class HistogramEntry(PlottableData2D):
                         width=self.style.linewidth,
                     ),
                 ),
+                zorder=self.style.zorder,
                 nbinsx=self.style.bins if isinstance(self.style.bins, int) else None,
                 legendgroup=legend_key,  # Group histograms with the same label and color
                 hovertemplate=hovertemplate,
