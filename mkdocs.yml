@@ -9,8 +9,8 @@ site_author: Talbot Knighton
 
 theme:
   name: material
-  logo: assets/logo_white_bg.svg
-  favicon: assets/logo_white_bg.svg
+  logo: assets/logo_pink_white_bg.svg
+  favicon: assets/logo_pink_white_bg.svg
   features:
     # - header.autohide
     - search.suggest
