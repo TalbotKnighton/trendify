@@ -200,7 +200,7 @@ class HistogramEntry(PlottableData2D):
         )
 
         hovertemplate = (
-            f"<b>{self.style.label if self.style.label else ""}</b><br>"
+            f"<b>{self.style.label if self.style.label else ''}</b><br>"
             "x: %{x}<br>"
             "y: %{y}<br>"
             f"{metadata_html}<extra></extra>"
