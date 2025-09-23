@@ -171,6 +171,7 @@ class Trace2D(XYData):
                 marker=dict(
                     color=self.pen.rgba if self.pen else None,  # Marker color
                 ),
+                zorder=int(self.pen.zorder),
                 hovertemplate=hovertemplate,
                 hoverlabel=dict(
                     bgcolor=(self.pen.rgba if self.pen else None),

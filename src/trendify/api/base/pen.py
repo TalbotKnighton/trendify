@@ -87,6 +87,10 @@ class Pen(HashableBase):
 
         return f"rgba({r}, {g}, {b}, {a})"
 
+    @property
+    def rgb(self) -> str:
+        return ", ".join(self.rgba.split(",")[0:-1]) + ")"
+
     def get_contrast_color(self, background_luminance: float = 1.0) -> str:
         """
         Returns 'white' or 'black' to provide the best contrast against the pen's color,

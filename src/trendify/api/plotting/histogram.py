@@ -105,6 +105,14 @@ class HistogramStyle(HashableBase):
 
         return f"rgba({r}, {g}, {b}, {a})"
 
+    @property
+    def rgb_face(self) -> str:
+        return ", ".join(self.rgba_face.split(",")[0:-1]) + ")"
+
+    @property
+    def rgb_edge(self) -> str:
+        return ", ".join(self.rgba_edge.split(",")[0:-1]) + ")"
+
     def get_face_contrast_color(self, background_luminance: float = 1.0) -> str:
         """
         Returns 'white' or 'black' to provide the best contrast against the pen's color,

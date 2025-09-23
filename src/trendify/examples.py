@@ -213,6 +213,7 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 color=colors[i],
                 linestyle=linestyles[i % len(linestyles)],
                 alpha=alphas[i],
+                zorder=2,
             ),
             format2d=trendify.Format2D(
                 legend=trendify.Legend(
@@ -221,6 +222,8 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                     edgecolor="red",
                     framealpha=1,
                 ),
+                lim_y_min=0.1,
+                lim_y_max=10,
                 grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
                 scale_x=trendify.AxisScale.LOG,
                 scale_y=trendify.AxisScale.LOG,
@@ -230,6 +233,14 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
         .set_metadata({"run_num": run_num})
         for i, col in enumerate(df.columns)
     ]
+    trendify.AxLine(
+        tags=["trace_plot_log_xy"],
+        value=2.5,
+        orientation=trendify.LineOrientation.HORIZONTAL,
+        pen=trendify.Pen(
+            alpha=0.5, color="r", linestyle="-", label="test line", zorder=1
+        ),
+    ).append_to_list(products)
 
     traces = [
         trendify.Trace2D.from_xy(
