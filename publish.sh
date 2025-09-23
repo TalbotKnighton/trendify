@@ -241,7 +241,7 @@ else
     echo "git pull origin main"
     echo "git tag -a $VERSION -m \"Release $VERSION\""
     echo "git push origin $VERSION"
-    echo "mike deploy \"$VERSION_NO_V\" --alias latest --update-aliases --push"
-    echo "mike set-default latest --push"
+    echo "mike deploy \"$VERSION_NO_V\" latest --update-aliases --push --allow-empty"
+    echo "mike set-default latest --push --allow-empty"
     echo "git checkout dev"
 fi

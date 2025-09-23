@@ -69,6 +69,7 @@ class Point2D(XYData):
                     size=self.marker.size if self.marker else None,
                     symbol=self.marker.plotly_symbol if self.marker else None,
                 ),
+                zorder=int(self.marker.zorder) if self.marker else None,
                 legendgroup=legend_key,
                 hovertemplate=hovertemplate,
                 hoverlabel=dict(

@@ -37,6 +37,7 @@ class HistogramStyle(HashableBase):
     alpha_edge: float = 0
     alpha_face: float = 0.3
     linewidth: float = 2
+    zorder: int = 1
     bins: int | list[int] | Tuple[int] | NDArray[Shape["*"], int] | None = None
 
     def as_plot_kwargs(self):
@@ -51,6 +52,7 @@ class HistogramStyle(HashableBase):
             "label": self.label,
             "histtype": self.histtype,
             "bins": self.bins,
+            "zorder": self.zorder,
         }
 
     @property
@@ -104,6 +106,14 @@ class HistogramStyle(HashableBase):
             a = rgba_vals[3]
 
         return f"rgba({r}, {g}, {b}, {a})"
+
+    @property
+    def rgb_face(self) -> str:
+        return ", ".join(self.rgba_face.split(",")[0:-1]) + ")"
+
+    @property
+    def rgb_edge(self) -> str:
+        return ", ".join(self.rgba_edge.split(",")[0:-1]) + ")"
 
     def get_face_contrast_color(self, background_luminance: float = 1.0) -> str:
         """
@@ -190,7 +200,7 @@ class HistogramEntry(PlottableData2D):
         )
 
         hovertemplate = (
-            f"<b>{self.style.label if self.style.label else ""}</b><br>"
+            f"<b>{self.style.label if self.style.label else ''}</b><br>"
             "x: %{x}<br>"
             "y: %{y}<br>"
             f"{metadata_html}<extra></extra>"
@@ -208,6 +218,7 @@ class HistogramEntry(PlottableData2D):
                         width=self.style.linewidth,
                     ),
                 ),
+                zorder=self.style.zorder,
                 nbinsx=self.style.bins if isinstance(self.style.bins, int) else None,
                 legendgroup=legend_key,  # Group histograms with the same label and color
                 hovertemplate=hovertemplate,

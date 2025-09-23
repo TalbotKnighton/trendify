@@ -6,10 +6,11 @@ import matplotlib.pyplot as plt
 import warnings
 import logging
 
+import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from trendify.api.formats.format2d import PlottableData2D
+from trendify.api.formats.format2d import AxisScale, PlottableData2D
 
 try:
     from typing import Self, TYPE_CHECKING
@@ -96,6 +97,7 @@ class SingleAxisFigure:
                         bbox_to_anchor=format2d.legend.bbox_to_anchor,
                         **kwargs,
                     )
+                    leg.set_zorder(level=format2d.legend.zorder)
 
                     if leg is not None and format2d.legend.edgecolor:
                         leg.get_frame().set_edgecolor(format2d.legend.edgecolor)
@@ -215,15 +217,37 @@ class PlotlyFigure:
             layout_updates["yaxis"] = {"title": format2d.label_y}
 
         # Set axis ranges
+        def _log10(v: float | None):
+            return None if v is None else np.log10(v)
+
         if format2d.lim_x_min is not None or format2d.lim_x_max is not None:
             if "xaxis" not in layout_updates:
                 layout_updates["xaxis"] = {}
-            layout_updates["xaxis"]["range"] = [format2d.lim_x_min, format2d.lim_x_max]
+
+            if format2d.scale_x == AxisScale.LOG:
+                layout_updates["xaxis"]["range"] = [
+                    _log10(format2d.lim_x_min),
+                    _log10(format2d.lim_x_max),
+                ]
+            elif format2d.scale_x == AxisScale.LOG:
+                layout_updates["xaxis"]["range"] = [
+                    format2d.lim_x_min,
+                    format2d.lim_x_max,
+                ]
 
         if format2d.lim_y_min is not None or format2d.lim_y_max is not None:
             if "yaxis" not in layout_updates:
                 layout_updates["yaxis"] = {}
-            layout_updates["yaxis"]["range"] = [format2d.lim_y_min, format2d.lim_y_max]
+            if format2d.scale_y == AxisScale.LOG:
+                layout_updates["yaxis"]["range"] = [
+                    _log10(format2d.lim_y_min),
+                    _log10(format2d.lim_y_max),
+                ]
+            elif format2d.scale_y == AxisScale.LOG:
+                layout_updates["yaxis"]["range"] = [
+                    format2d.lim_y_min,
+                    format2d.lim_y_max,
+                ]
 
         # Set axis scales
         if format2d.scale_x is not None:

@@ -74,6 +74,7 @@ class Legend(HashableBase):
     ncol: int = 1
     fancybox: bool = True
     edgecolor: str = "black"
+    zorder: int = 10
     bbox_to_anchor: tuple[float, float] | None = None
 
     def to_kwargs(self):
