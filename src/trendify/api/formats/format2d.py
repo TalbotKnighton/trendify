@@ -57,6 +57,8 @@ class Format2D(HashableBase):
     grid: Grid | None = None
     scale_x: AxisScale = AxisScale.LINEAR
     scale_y: AxisScale = AxisScale.LINEAR
+    figure_width: float = 6.4
+    figure_height: float = 4.8
 
     model_config = ConfigDict(extra="forbid")
 
@@ -79,6 +81,8 @@ class Format2D(HashableBase):
         [title_ax] = set(i.title_ax for i in formats if i is not None)
         [label_x] = set(i.label_x for i in formats if i is not None)
         [label_y] = set(i.label_y for i in formats if i is not None)
+        [figure_width] = set(i.figure_width for i in formats)
+        [figure_height] = set(i.figure_height for i in formats)
 
         x_min = [i.lim_x_min for i in formats if i.lim_x_min is not None]
         x_max = [i.lim_x_max for i in formats if i.lim_x_max is not None]
@@ -108,6 +112,8 @@ class Format2D(HashableBase):
             grid=grid,
             scale_x=scale_x,
             scale_y=scale_y,
+            figure_width=figure_width,
+            figure_height=figure_height,
         )
 
 

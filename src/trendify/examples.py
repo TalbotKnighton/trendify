@@ -170,6 +170,8 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
                 scale_x=trendify.AxisScale.LINEAR,
                 scale_y=trendify.AxisScale.LINEAR,
                 legend=trendify.Legend(loc=trendify.LegendLocation.LOWER_CENTER),
+                figure_width=8,
+                figure_height=4,
             ),
         )
         .append_to_list(products)
