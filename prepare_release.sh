@@ -1,5 +1,7 @@
 #!/bin/bash
+echo "Script started"
 set -e  # Exit immediately if a command exits with a non-zero status
+echo "Version argument: $1"
 
 # Check if a version argument was provided
 if [ $# -ne 1 ]; then
@@ -186,62 +188,25 @@ echo "To view the documentation locally, run: mike serve"
 
 # Create pull request from dev to main
 echo "Creating a pull request from dev to main..."
-echo "Please go to GitHub and create the PR: https://github.com/TalbotKnighton/trendify/compare/main...dev"
-echo "After the PR is reviewed and merged, run the following commands:"
-echo "git checkout main"
-echo "git pull origin main"
-echo "git tag -a $VERSION -m \"Release $VERSION\""
-echo "git push origin $VERSION"
 
-# Ask if the PR has been merged
-read -p "Has the PR been merged to main? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    # Clean up test output files again to ensure branch switching works
-    echo "Cleaning up test output files..."
-    rm -f discriminator_tests.json discriminator_tests.log .coverage coverage.xml
+# Try to create PR with GitHub CLI if available
+if command -v gh &> /dev/null; then
+    echo "GitHub CLI found. Attempting to create PR automatically..."
+    PR_URL=$(gh pr create --title "Release $VERSION" \
+                         --body "This PR prepares the release of version $VERSION. Please review the changes carefully." \
+                         --base main \
+                         --head dev)
     
-    # Switch to main and pull latest changes
-    echo "Switching to main branch and pulling latest changes..."
-    git checkout main
-    git pull origin main
-    
-    # Create and push the tag
-    echo "Creating and pushing tag $VERSION..."
-    git tag -a $VERSION -m "Release $VERSION"
-    git push origin $VERSION
-    
-    # Wait for the package to be published to PyPI
-    echo "Waiting for package to be published to PyPI..."
-    echo "This may take a few minutes. The GitHub Actions workflow should be building and publishing your package."
-    echo "You can check the progress here: https://github.com/TalbotKnighton/trendify/actions"
-    
-    read -p "Has the package been published to PyPI? (y/n) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        # Push documentation to GitHub Pages
-        echo "Pushing documentation to GitHub Pages..."
-        mike deploy "$VERSION_NO_V" latest --update-aliases --push
-        mike set-default latest --push
+    if [ $? -eq 0 ]; then
+        echo "Pull request created successfully!"
+        echo "PR URL: $PR_URL"
+        echo "After the PR is reviewed and merged, run publish_release.sh $VERSION to complete the release process."
     else
-        echo "Skipping documentation push. You can do this manually later with:"
-        echo "mike deploy \"$VERSION_NO_V\" --alias latest --update-aliases --push"
-        echo "mike set-default latest --push"
+        echo "Failed to create PR automatically. Please create it manually:"
+        echo "https://github.com/TalbotKnighton/trendify/compare/main...dev"
     fi
-    
-    # Switch back to dev branch
-    echo "Switching back to dev branch..."
-    git checkout dev
-    
-    echo "Release process completed successfully!"
-    echo "Documentation has been deployed to GitHub Pages."
 else
-    echo "Please complete the PR process and then run:"
-    echo "git checkout main"
-    echo "git pull origin main"
-    echo "git tag -a $VERSION -m \"Release $VERSION\""
-    echo "git push origin $VERSION"
-    echo "mike deploy \"$VERSION_NO_V\" latest --update-aliases --push --allow-empty"
-    echo "mike set-default latest --push --allow-empty"
-    echo "git checkout dev"
+    echo "GitHub CLI not found. Please create the PR manually:"
+    echo "https://github.com/TalbotKnighton/trendify/compare/main...dev"
+    echo "After the PR is reviewed and merged, run publish_release.sh $VERSION to complete the release process."
 fi
