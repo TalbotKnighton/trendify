@@ -188,5 +188,25 @@ echo "To view the documentation locally, run: mike serve"
 
 # Create pull request from dev to main
 echo "Creating a pull request from dev to main..."
-echo "Please go to GitHub and create the PR: https://github.com/TalbotKnighton/trendify/compare/main...dev"
-echo "After the PR is reviewed and merged, run publish_release.sh $VERSION to complete the release process."
+
+# Try to create PR with GitHub CLI if available
+if command -v gh &> /dev/null; then
+    echo "GitHub CLI found. Attempting to create PR automatically..."
+    PR_URL=$(gh pr create --title "Release $VERSION" \
+                         --body "This PR prepares the release of version $VERSION. Please review the changes carefully." \
+                         --base main \
+                         --head dev)
+    
+    if [ $? -eq 0 ]; then
+        echo "Pull request created successfully!"
+        echo "PR URL: $PR_URL"
+        echo "After the PR is reviewed and merged, run publish_release.sh $VERSION to complete the release process."
+    else
+        echo "Failed to create PR automatically. Please create it manually:"
+        echo "https://github.com/TalbotKnighton/trendify/compare/main...dev"
+    fi
+else
+    echo "GitHub CLI not found. Please create the PR manually:"
+    echo "https://github.com/TalbotKnighton/trendify/compare/main...dev"
+    echo "After the PR is reviewed and merged, run publish_release.sh $VERSION to complete the release process."
+fi
