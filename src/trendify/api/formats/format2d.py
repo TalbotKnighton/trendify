@@ -31,18 +31,20 @@ class Format2D(HashableBase):
     Formatting data for matplotlib figure and axes
 
     Attributes:
-        title_fig (Optional[str]): Sets [figure title][matplotlib.figure.Figure.suptitle]
-        legend (Optional[Legend]): Sets [legend style][trendify.api.styling.legend.Legend]
-        title_ax (Optional[str]): Sets [axis title][matplotlib.axes.Axes.set_title]
-        label_x (Optional[str]): Sets [x-axis label][matplotlib.axes.Axes.set_xlabel]
-        label_y (Optional[str]): Sets [y-axis label][matplotlib.axes.Axes.set_ylabel]
-        lim_x_min (float | None): Sets [x-axis lower bound][matplotlib.axes.Axes.set_xlim]
-        lim_x_max (float | None): Sets [x-axis upper bound][matplotlib.axes.Axes.set_xlim]
-        lim_y_min (float | None): Sets [y-axis lower bound][matplotlib.axes.Axes.set_ylim]
-        lim_y_max (float | None): Sets [y-axis upper bound][matplotlib.axes.Axes.set_ylim]
-        grid (Grid | None): Sets the [grid][matplotlib.pyplot.grid]
-        scale_x (AxisScale): Sets the x axis scale to an option from [AxisScale][trendify.api.formats.format2d.AxisScale]
-        scale_y (AxisScale): Sets the y axis scale to an option from [AxisScale][trendify.api.formats.format2d.AxisScale]
+        title_fig (Optional[str], optional): Sets [figure title][matplotlib.figure.Figure.suptitle]. Defaults to None.
+        legend (Optional[Legend], optional): Sets [legend style][trendify.api.styling.legend.Legend]. Defaults to Legend().
+        title_ax (Optional[str], optional): Sets [axis title][matplotlib.axes.Axes.set_title]. Defaults to None.
+        label_x (Optional[str], optional): Sets [x-axis label][matplotlib.axes.Axes.set_xlabel]. Defaults to None.
+        label_y (Optional[str], optional): Sets [y-axis label][matplotlib.axes.Axes.set_ylabel]. Defaults to None.
+        lim_x_min (float | None, optional): Sets [x-axis lower bound][matplotlib.axes.Axes.set_xlim]. Defaults to None.
+        lim_x_max (float | None, optional): Sets [x-axis upper bound][matplotlib.axes.Axes.set_xlim]. Defaults to None.
+        lim_y_min (float | None, optional): Sets [y-axis lower bound][matplotlib.axes.Axes.set_ylim]. Defaults to None.
+        lim_y_max (float | None, optional): Sets [y-axis upper bound][matplotlib.axes.Axes.set_ylim]. Defaults to None.
+        grid (Grid | None,optional): Sets the [grid][matplotlib.pyplot.grid]. Defaults to None.
+        scale_x (AxisScale, optional): Sets the x axis scale to an option from [AxisScale][trendify.api.formats.format2d.AxisScale]. Defaults to AxisScale.LINEAR
+        scale_y (AxisScale, optional): Sets the y axis scale to an option from [AxisScale][trendify.api.formats.format2d.AxisScale]. Defaults to AxisScale.LINEAR
+        figure_width (float, optional): Sets the of the width of rendered figure in inches. Defaults to 6.4.
+        figure_height (float, optional): Sets the of the height of rendered figure in inches. Defaults to 4.8.
     """
 
     title_fig: Optional[str] | None = None
