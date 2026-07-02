@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum, auto
-from typing import Iterable, Optional, Tuple, Union
+from collections.abc import Iterable
 import logging
 
-import numpy as np
 from pydantic import ConfigDict
 
 from trendify.api.base.helpers import HashableBase
@@ -29,6 +28,7 @@ class GridAxis(HashableBase):
     Attributes:
         show (bool): Whether to display this grid axis.
         pen (Pen): Style and label information for drawing to matplotlib axes.
+
     """
 
     show: bool = False
@@ -51,6 +51,7 @@ class Grid(HashableBase):
         major (GridAxis): Configuration for major grid lines.
         minor (GridAxis): Configuration for minor grid lines.
         enable_minor_ticks (bool): Whether to enable minor ticks on the axes.
+
     """
 
     major: GridAxis = GridAxis(show=False)

@@ -9,6 +9,7 @@ Some important learning material for pydantic classes and JSON (de)serialization
 
 Attributes:
     DATA_PRODUCTS_FNAME_DEFAULT (str): Hard-coded json file name 'data_products.json'
+
 """
 
 from __future__ import annotations
@@ -16,7 +17,7 @@ from __future__ import annotations
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 import time
-from typing import List, Callable
+from collections.abc import Callable
 import logging
 
 import numpy as np
@@ -72,7 +73,6 @@ def make_include_files(
             This path should correspond to includ dir in `mkdocs.yml` file.  (See `vulcan_srb_sep` repo for example).
 
     Note:
-
         Here is how to setup `mkdocs.yml` file to have an `include_dir` that can be used to
         include generated markdown files (and the images/CSVs that they reference).
 
@@ -83,7 +83,6 @@ def make_include_files(
         ```
 
     """
-
     INCLUDE = "include.md"
     dirs = list(root_dir.glob("**/"))
     dirs.sort()
@@ -92,7 +91,7 @@ def make_include_files(
         for s in dirs:
             child_dirs = list(s.glob("*/"))
             child_dirs.sort()
-            tables_to_include: List[Path] = [
+            tables_to_include: list[Path] = [
                 x
                 for x in flatten(
                     [
@@ -101,13 +100,13 @@ def make_include_files(
                     ]
                 )
             ]
-            figures_to_include: List[Path] = [
+            figures_to_include: list[Path] = [
                 x
                 for x in flatten(
                     [list(s.glob(p, case_sensitive=False)) for p in ["*.jpg", "*.png"]]
                 )
             ]
-            children_to_include: List[Path] = [
+            children_to_include: list[Path] = [
                 c.resolve().joinpath(INCLUDE) for c in child_dirs
             ]
             if local_server_path is not None:
@@ -167,6 +166,7 @@ def map_callable(
         iterables (Tuple[Iterable, ...]): iterables of arguments for mapped function `f`
         n_procs (int): Number of parallel processes to run
         mp_context (str): Context to use for creating new processes (see `multiprocessing` package documentation)
+
     """
     if n_procs > 1:
         with ProcessPoolExecutor(
@@ -179,7 +179,7 @@ def map_callable(
     return result
 
 
-def get_sorted_dirs(dirs: List[Path]):
+def get_sorted_dirs(dirs: list[Path]):
     """
     Sorts dirs numerically if possible, else alphabetically
 
@@ -188,6 +188,7 @@ def get_sorted_dirs(dirs: List[Path]):
 
     Returns:
         (List[Path]): Sorted list of directories
+
     """
     dirs = list(dirs)
     try:
@@ -199,7 +200,7 @@ def get_sorted_dirs(dirs: List[Path]):
 
 def make_products(
     product_generator: Callable[[Path], DataProductCollection] | None,
-    data_dirs: List[Path],
+    data_dirs: list[Path],
     n_procs: int = 1,
     data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
 ):
@@ -218,6 +219,7 @@ def make_products(
             If `n_procs > 1`, a [ProcessPoolExecutor][concurrent.futures.ProcessPoolExecutor] will
             be used to load and process directories and/or tags in parallel.
         data_products_fname (str): File name to be used for storing generated data products
+
     """
     sorted_dirs = get_sorted_dirs(dirs=data_dirs)
 
@@ -235,7 +237,7 @@ def make_products(
 
 
 def sort_products(
-    data_dirs: List[Path],
+    data_dirs: list[Path],
     output_dir: Path,
     n_procs: int = 1,
     data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
@@ -247,10 +249,11 @@ def sort_products(
         data_dirs (List[Path]): Directories containing JSON data product files
         output_dir (Path): Directory to which sorted products will be written
         data_products_fname (str): File name in which the data products to be sorted are stored
+
     """
     sorted_data_dirs = get_sorted_dirs(dirs=data_dirs)
 
-    logger.info(f"Sorting data by tags")
+    logger.info("Sorting data by tags")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     map_callable(
@@ -261,7 +264,7 @@ def sort_products(
         n_procs=n_procs,
     )
 
-    logger.info(f"Finished sorting by tags")
+    logger.info("Finished sorting by tags")
 
 
 # def make_grafana_dashboard(
@@ -339,8 +342,8 @@ def make_tables_and_figures(
         no_histograms (bool): Whether or not to generate histograms of the
             [`HistogramEntry`][trendify.api.HistogramEntry] products
             using matplotlib.
-    """
 
+    """
     if not (no_tables and no_xy_plots and no_histograms):
         product_dirs = list(products_dir.glob("**/*/"))
         map_callable(
@@ -362,7 +365,7 @@ def _mkdir(p: Path):
 
 def make_it_trendy(
     data_product_generator: ProductGenerator | None,
-    input_dirs: List[Path],
+    input_dirs: list[Path],
     output_dir: Path,
     n_procs: int = 1,
     dpi_static_plots: int = 500,
@@ -401,6 +404,7 @@ def make_it_trendy(
         no_grafana_dashboard (bool): Suppresses generation of Grafana dashboard JSON definition file
         no_include_files (bool): Suppresses generation of include files for importing static assets to markdown or LaTeX reports
         data_products_fname (str): File name to be used for storing generated data products
+
     """
     input_dirs = [
         Path(p).parent if Path(p).is_file() else Path(p) for p in list(input_dirs)

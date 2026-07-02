@@ -4,16 +4,11 @@ Module for generating interactive Plotly dashboards from data products.
 
 import dash
 from dash import dcc, html, dash_table
-from dash.dependencies import Input, Output, State, ALL
+from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
-from pathlib import Path
-from typing import Dict, List, Any, Union, Optional, Tuple, Set
-import warnings
 from collections import defaultdict
-import os
 
 # Import from trendify
 # from trendify.api.API import (
@@ -70,6 +65,7 @@ class PlotlyDashboardGenerator:
 
         Args:
             debug (bool): Whether to enable debug logging
+
         """
         self.debug = debug
         self.app = dash.Dash(__name__, suppress_callback_exceptions=True)
@@ -93,6 +89,7 @@ class PlotlyDashboardGenerator:
 
         Returns:
             dash.Dash: The configured Dash application
+
         """
         self.debug_log(
             f"Processing collection with {len(collection.elements or [])} elements"
@@ -140,7 +137,7 @@ class PlotlyDashboardGenerator:
 
         return self.app
 
-    def _create_tab_content(self, tag_str: str) -> List[html.Div]:
+    def _create_tab_content(self, tag_str: str) -> list[html.Div]:
         """Create content for a single tab."""
         data = self.tag_data[tag_str]
         content = []
@@ -414,7 +411,7 @@ class PlotlyDashboardGenerator:
         )
 
     def _create_xy_figure(
-        self, tag_str: str, format2d: Optional[Format2D] = None
+        self, tag_str: str, format2d: Format2D | None = None
     ) -> go.Figure:
         """Create the XY plot figure."""
         data = self.tag_data[tag_str]
@@ -612,9 +609,9 @@ class PlotlyDashboardGenerator:
     def _create_histogram_figure(
         self,
         tag_str: str,
-        histogram_groups: Dict[str, List[HistogramEntry]],
+        histogram_groups: dict[str, list[HistogramEntry]],
         num_bins: int,
-        options: List[str],
+        options: list[str],
     ) -> go.Figure:
         """Create the histogram figure."""
         fig = go.Figure()
@@ -757,7 +754,7 @@ class PlotlyDashboardGenerator:
         fig.update_layout(**layout_args)
         return fig
 
-    def _create_app_layout(self, title: str, tab_contents: List[Dict]) -> html.Div:
+    def _create_app_layout(self, title: str, tab_contents: list[dict]) -> html.Div:
         """Create the main application layout with category-based tag selection."""
         if not tab_contents:
             return html.Div(
@@ -993,6 +990,7 @@ def generate_plotly_dashboard(
 
     Returns:
         dash.Dash: The configured Dash application ready to run
+
     """
     generator = PlotlyDashboardGenerator(debug=debug)
     return generator.process_collection(collection, title)

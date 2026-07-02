@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from typing import List
 import logging
 
 import plotly.graph_objects as go
 from trendify.api.plotting.plotting import PlotlyFigure
 
 try:
-    from typing import Self, TYPE_CHECKING
+    from typing import TYPE_CHECKING
 except:
-    from typing_extensions import Self, TYPE_CHECKING
+    from typing import TYPE_CHECKING
 
 import numpy as np
 from numpydantic import NDArray, Shape
@@ -44,11 +43,12 @@ class Trace2D(XYData):
             Eventually style information will be used in grafana.
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
+
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    points: List[Point2D]
+    points: list[Point2D]
     pen: Pen = Pen()
 
     @property
@@ -58,7 +58,9 @@ class Trace2D(XYData):
 
         Returns:
             (NDArray[Shape["*"], float]): array of x values from `self.points`
-        '"""
+        '
+
+        """
         return np.array([p.x for p in self.points])
 
     @property
@@ -68,6 +70,7 @@ class Trace2D(XYData):
 
         Returns:
             (NDArray[Shape["*"], float]): array of y values from `self.points`
+
         """
         return np.array([p.y for p in self.points])
 
@@ -79,6 +82,7 @@ class Trace2D(XYData):
 
         Args:
             marker_symbol (str): Valid matplotlib marker symbol
+
         """
         self.points = [
             p.model_copy(
@@ -109,8 +113,8 @@ class Trace2D(XYData):
             y (NDArray[Shape["*"], float]): y values
             pen (Pen): Style and label for trace
             format2d (Format2D | None): Format to apply to plot
-        """
 
+        """
         return cls(
             tags=tags,
             points=[
@@ -133,6 +137,7 @@ class Trace2D(XYData):
 
         Args:
             ax (Axes): axes to which xy data should be plotted
+
         """
         ax.plot(self.x, self.y, **self.pen.as_scatter_plot_kwargs())
 

@@ -12,12 +12,11 @@ from strenum import StrEnum
 # Common imports
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Local imports
 import trendify
 
-__all__ = ["make_example_data", "example_data_product_generator"]
+__all__ = ["example_data_product_generator", "make_example_data"]
 
 
 class Channels(StrEnum):
@@ -27,6 +26,7 @@ class Channels(StrEnum):
         wave1 (str): `'wave1'`
         wave2 (str): `'wave2'`
         wave3 (str): `'wave3'`
+
     """
 
     time = auto()
@@ -42,6 +42,7 @@ def make_example_data(workdir: Path, n_folders: int = 10):
     Args:
         workdir (Path): Directory in which the sample data is to be generated
         n_folders (int): Number of sample data files to generate (in separate subfolders).
+
     """
     models_dir = workdir.joinpath("models")
     models_dir.mkdir(parents=True, exist_ok=True)
@@ -97,6 +98,7 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
 
     Args:
         workdir (Path): Directory containing sample data.
+
     """
     products = []
 

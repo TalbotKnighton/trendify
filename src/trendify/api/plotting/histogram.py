@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
 import logging
 from matplotlib.colors import to_rgba
 import plotly.graph_objects as go
@@ -12,7 +11,7 @@ from trendify.api.formats.format2d import PlottableData2D
 from trendify.api.base.helpers import HashableBase, Tags
 from trendify.api.plotting.plotting import PlotlyFigure
 
-__all__ = ["HistogramStyle", "HistogramEntry"]
+__all__ = ["HistogramEntry", "HistogramStyle"]
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +28,7 @@ class HistogramStyle(HashableBase):
         alpha_face (float): Opacity of bar face
         linewidth (float): Line width of bar outline
         bins (int | list[int] | Tuple[int] | NDArray[Shape["*"], int] | None): Number of bins (see [matplotlib docs][matplotlib.pyplot.hist])
+
     """
 
     color: str = "k"
@@ -38,12 +38,13 @@ class HistogramStyle(HashableBase):
     alpha_face: float = 0.3
     linewidth: float = 2
     zorder: int = 1
-    bins: int | list[int] | Tuple[int] | NDArray[Shape["*"], int] | None = None
+    bins: int | list[int] | tuple[int] | NDArray[Shape["*"], int] | None = None
 
     def as_plot_kwargs(self):
         """
         Returns:
             (dict): kwargs for matplotlib `hist` method
+
         """
         return {
             "facecolor": (self.color, self.alpha_face),
@@ -62,6 +63,7 @@ class HistogramStyle(HashableBase):
 
         Returns:
             str: Color in 'rgba(r,g,b,a)' format where r,g,b are 0-255 and a is 0-1
+
         """
         # Handle different color input formats
         if isinstance(self.color, tuple):
@@ -88,6 +90,7 @@ class HistogramStyle(HashableBase):
 
         Returns:
             str: Color in 'rgba(r,g,b,a)' format where r,g,b are 0-255 and a is 0-1
+
         """
         # Handle different color input formats
         if isinstance(self.color, tuple):
@@ -125,6 +128,7 @@ class HistogramStyle(HashableBase):
 
         Returns:
             str: 'white' or 'black'
+
         """
         # Convert the pen's color to RGB (0-255 range) and get alpha
         if isinstance(self.color, tuple):
@@ -167,6 +171,7 @@ class HistogramEntry(PlottableData2D):
         tags (Tags): Tags used to sort data products
         value (float | str): Value to be binned
         style (HistogramStyle): Style of histogram display
+
     """
 
     value: float | str

@@ -2,7 +2,6 @@ import unittest
 import numpy as np
 from pathlib import Path
 import tempfile
-import json
 import matplotlib.pyplot as plt
 from trendify import (
     Trace2D,

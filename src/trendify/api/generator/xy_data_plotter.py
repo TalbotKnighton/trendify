@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
 import logging
 
 from trendify.api.generator.data_product_collection import (
@@ -29,11 +28,12 @@ class XYDataPlotter:
         in_dirs (List[Path]): Directories in which to search for data products from JSON files
         out_dir (Path): directory to which figure will be output
         dpi (int): Saved image resolution
+
     """
 
     def __init__(
         self,
-        in_dirs: List[Path],
+        in_dirs: list[Path],
         out_dir: Path,
         dpi: int = 500,
     ):
@@ -56,6 +56,7 @@ class XYDataPlotter:
         Args:
             tag (Tag): data tag for which products are to be collected and plotted.
             data_products_fname (str): Data products file name
+
         """
         logger.info(f"Making xy plot for {tag = }")
         saf = SingleAxisFigure.new(tag=tag)
@@ -64,10 +65,10 @@ class XYDataPlotter:
             collection = DataProductCollection.model_validate_json(
                 subdir.joinpath(data_products_fname).read_text()
             )
-            traces: List[Trace2D] = collection.get_products(
+            traces: list[Trace2D] = collection.get_products(
                 tag=tag, object_type=Trace2D
             ).elements
-            points: List[Point2D] = collection.get_products(
+            points: list[Point2D] = collection.get_products(
                 tag=tag, object_type=Point2D
             ).elements
 
@@ -108,9 +109,9 @@ class XYDataPlotter:
     def handle_points_and_traces(
         cls,
         tag: Tag,
-        points: List[Point2D],
-        traces: List[Trace2D],
-        axlines: List[AxLine],  # Add this parameter
+        points: list[Point2D],
+        traces: list[Trace2D],
+        axlines: list[AxLine],  # Add this parameter
         dir_out: Path,
         dpi: int,
         saf: SingleAxisFigure | None = None,
@@ -125,8 +126,8 @@ class XYDataPlotter:
             axlines (List[AxLine]): List of axis lines to be plotted
             dir_out (Path): directory to output the plot
             dpi (int): resolution of plot
-        """
 
+        """
         if saf is None:
             saf = SingleAxisFigure.new(tag=tag)
 
@@ -170,10 +171,10 @@ class XYDataPlotter:
     def plotly_handle_points_and_traces(
         cls,
         tag: Tag,
-        points: List[Point2D],
-        traces: List[Trace2D],
-        axlines: List[AxLine],
-        hist_entries: List[HistogramEntry],
+        points: list[Point2D],
+        traces: list[Trace2D],
+        axlines: list[AxLine],
+        hist_entries: list[HistogramEntry],
         plotly_figure: PlotlyFigure | None = None,
     ) -> PlotlyFigure:
         if plotly_figure is None:

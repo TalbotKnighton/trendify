@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
 import logging
 
 import pandas as pd
@@ -25,11 +24,12 @@ class TableBuilder:
     Args:
         in_dirs (List[Path]): directories from which to load data products
         out_dir (Path): directory in which tables should be saved
+
     """
 
     def __init__(
         self,
-        in_dirs: List[Path],
+        in_dirs: list[Path],
         out_dir: Path,
     ):
         self.in_dirs = in_dirs
@@ -50,10 +50,11 @@ class TableBuilder:
 
         Args:
             tag (Tag): product tag for which to collect and process.
+
         """
         logger.info(f"Making table for {tag = }")
 
-        table_entries: List[TableEntry] = []
+        table_entries: list[TableEntry] = []
         for subdir in self.in_dirs:
             collection = DataProductCollection.model_validate_json(
                 subdir.joinpath(data_products_fname).read_text()
@@ -70,7 +71,7 @@ class TableBuilder:
     def process_table_entries(
         cls,
         tag: Tag,
-        table_entries: List[TableEntry],
+        table_entries: list[TableEntry],
         out_dir: Path,
     ):
         """
@@ -84,13 +85,14 @@ class TableBuilder:
             tag (Tag): product tag for which to collect and process.
             table_entries (List[TableEntry]): List of table entries
             out_dir (Path): Directory to which table CSV files should be saved
+
         """
         melted = pd.DataFrame([t.get_entry_dict() for t in table_entries])
         pivot = TableEntry.pivot_table(melted=melted)
 
         save_path_partial = out_dir.joinpath(*tuple(atleast_1d(tag)))
         save_path_partial.parent.mkdir(exist_ok=True, parents=True)
-        logger.info(f"Saving to {str(save_path_partial)}_*.csv")
+        logger.info(f"Saving to {save_path_partial!s}_*.csv")
 
         melted.to_csv(
             save_path_partial.with_stem(save_path_partial.stem + "_melted").with_suffix(
@@ -118,7 +120,7 @@ class TableBuilder:
                     )
             except Exception as e:
                 logger.error(
-                    f"Could not generate pivot table for {tag = }. Error: {str(e)}"
+                    f"Could not generate pivot table for {tag = }. Error: {e!s}"
                 )
 
     @classmethod
@@ -135,6 +137,7 @@ class TableBuilder:
         Returns:
             (pd.DataFrame): Dataframe having statistics (column headers) for each of the columns
                 of the input `df`.  The columns of `df` will be the row indices of the stats table.
+
         """
         # Try to convert to numeric, coerce errors to NaN
         numeric_df = df.apply(pd.to_numeric, errors="coerce")

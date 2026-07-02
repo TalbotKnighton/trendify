@@ -24,6 +24,7 @@ class Marker(HashableBase):
         zorder (float): Prioritization
         label (Union[str, None]): Legend label
         symbol (str): Matplotlib symbol string
+
     """
 
     color: str = "k"
@@ -50,6 +51,7 @@ class Marker(HashableBase):
         """
         Returns:
             (dict): dictionary of `kwargs` for [matplotlib scatter][matplotlib.axes.Axes.scatter]
+
         """
         return {
             "marker": self.symbol,
@@ -88,6 +90,7 @@ class Marker(HashableBase):
 
         Returns:
             str: Color in 'rgba(r,g,b,a)' format where r,g,b are 0-255 and a is 0-1
+
         """
         # Handle different color input formats
         if isinstance(self.color, tuple):
@@ -117,6 +120,7 @@ class Marker(HashableBase):
 
         Returns:
             str: 'white' or 'black'
+
         """
         # Convert the pen's color to RGB (0-255 range) and get alpha
         if isinstance(self.color, tuple):

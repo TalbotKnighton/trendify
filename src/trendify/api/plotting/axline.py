@@ -10,17 +10,19 @@ from trendify.api.formats.format2d import PlottableData2D
 from trendify.api.base.pen import Pen
 from trendify.api.plotting.plotting import PlotlyFigure
 
-__all__ = ["LineOrientation", "AxLine"]
+__all__ = ["AxLine", "LineOrientation"]
 
 logger = logging.getLogger(__name__)
 
 
 class LineOrientation(Enum):
-    """Defines orientation for axis lines
+    """
+    Defines orientation for axis lines
 
     Attributes:
         HORIZONTAL (LineOrientation): Horizontal line
         VERTICAL (LineOrientation): Vertical line
+
     """
 
     HORIZONTAL = "horizontal"
@@ -37,6 +39,7 @@ class AxLine(PlottableData2D):
         pen (Pen): Style and label information for drawing to matplotlib axes
         tags (Tags): Tags to be used for sorting data
         metadata (dict[str, str]): A dictionary of metadata
+
     """
 
     value: float
@@ -51,6 +54,7 @@ class AxLine(PlottableData2D):
 
         Args:
             ax (Axes): axes to which line should be plotted
+
         """
         match self.orientation:
             case LineOrientation.HORIZONTAL:

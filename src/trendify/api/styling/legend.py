@@ -4,7 +4,7 @@ from enum import StrEnum
 
 from trendify.api.base.helpers import HashableBase
 
-__all__ = ["LegendLocation", "Legend"]
+__all__ = ["Legend", "LegendLocation"]
 
 
 class LegendLocation(StrEnum):
@@ -65,6 +65,7 @@ class Legend(HashableBase):
                 loc=LegendLocation.UPPER_CENTER
                 bbox_to_anchor=(0.5, -0.02)
                 ```
+
     """
 
     visible: bool = True
@@ -93,6 +94,7 @@ class Legend(HashableBase):
 
         Returns:
             dict: Dictionary containing Plotly legend position parameters (x, y, xanchor, yanchor)
+
         """
         # Default position mappings for standard locations
         location_map = {

@@ -19,6 +19,7 @@ class DataProductGenerator:
     Args:
         processor (ProductGenerator): A callable that receives a working directory
             and returns a list of data products.
+
     """
 
     def __init__(self, processor: ProductGenerator):
@@ -35,8 +36,8 @@ class DataProductGenerator:
         Args:
             workdir (Path): working directory on which to run the processor method.
             data_products_fname (str): Name of data products file
-        """
 
+        """
         logger.info(f"Processing {workdir = } with {self._processor = }")
         collection = DataProductCollection.from_iterable(self._processor(workdir))
         if collection.elements:

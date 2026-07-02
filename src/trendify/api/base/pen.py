@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from typing import Optional, Tuple, Union
 
 from pydantic import ConfigDict
-from matplotlib.colors import to_rgba, to_rgb
-import numpy as np
+from matplotlib.colors import to_rgba
 
 from trendify.api.base.helpers import HashableBase
 
@@ -22,14 +20,15 @@ class Pen(HashableBase):
         linestyle (Union[str, Tuple[int, Tuple[int, ...]]]): Linestyle to plot. Supports `str` or `tuple` definition ([matplotlib documentation](https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html)).
         zorder (float): Prioritization
         label (Union[str, None]): Legend label
+
     """
 
-    color: Tuple[float, float, float] | Tuple[float, float, float, float] | str = "k"
+    color: tuple[float, float, float] | tuple[float, float, float, float] | str = "k"
     size: float = 1
     alpha: float = 1
     zorder: float = 0
-    linestyle: Union[str, Tuple[int, Tuple[int, ...]]] = "-"
-    label: Union[str, None] = None
+    linestyle: str | tuple[int, tuple[int, ...]] = "-"
+    label: str | None = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -68,6 +67,7 @@ class Pen(HashableBase):
 
         Returns:
             str: Color in 'rgba(r,g,b,a)' format where r,g,b are 0-255 and a is 0-1
+
         """
         # Handle different color input formats
         if isinstance(self.color, tuple):
@@ -101,6 +101,7 @@ class Pen(HashableBase):
 
         Returns:
             str: 'white' or 'black'
+
         """
         # Convert the pen's color to RGB (0-255 range) and get alpha
         if isinstance(self.color, tuple):

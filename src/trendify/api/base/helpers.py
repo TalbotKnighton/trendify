@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from enum import auto
 from strenum import StrEnum
-from typing import Union, List, Tuple, TypeVar, Hashable
+from typing import Union, TypeVar
+from collections.abc import Hashable
 import logging
 
 from pydantic import BaseModel
@@ -11,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     "DATA_PRODUCTS_FNAME_DEFAULT",
+    "HashableBase",
+    "ProductType",
     "R",
     "Tag",
     "Tags",
-    "HashableBase",
-    "ProductType",
 ]
 
 DATA_PRODUCTS_FNAME_DEFAULT = "data_products.json"
@@ -25,12 +26,12 @@ Hard-coded file name for storing data products in batch-processed input director
 
 R = TypeVar("R")
 
-Tag = Union[Tuple[Hashable, ...], Hashable]
+Tag = Union[tuple[Hashable, ...], Hashable]
 """
 Determines what types can be used to define a tag
 """
 
-Tags = List[Tag]
+Tags = list[Tag]
 """
 List of tags
 """
@@ -59,6 +60,7 @@ class ProductType(StrEnum):
         Point2D (str): class name
         TableEntry (str): class name
         HistogramEntry (str): class name
+
     """
 
     DataProduct = auto()

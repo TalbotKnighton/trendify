@@ -3,15 +3,15 @@ from __future__ import annotations
 import os
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Union, List, Iterable, Any, Callable, Tuple, Type
+from typing import TYPE_CHECKING, Any
+from collections.abc import Iterable
 import logging
 
-import pandas as pd
 
 try:
     from typing import Self
 except:
-    from typing_extensions import Self
+    from typing import Self
 
 import dash
 from filelock import FileLock
@@ -35,9 +35,9 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     "DataProductCollection",
-    "flatten",
     "ProductEntryMetadata",
     "ProductIndexMap",
+    "flatten",
 ]
 
 
@@ -115,6 +115,7 @@ def _should_be_flattened(obj: Any):
 
     Returns:
         (bool): Whether or not to flatten object
+
     """
     return isinstance(obj, Iterable) and not isinstance(obj, (str, bytes, DataProduct))
 
@@ -128,6 +129,7 @@ def flatten(obj: Iterable):
 
     Returns:
         (Iterable): Flattned iterable
+
     """
     if not _should_be_flattened(obj):
         yield obj
@@ -145,6 +147,7 @@ def atleast_1d(obj: Any) -> Iterable:
 
     Returns:
         (Iterable): Returns an iterable
+
     """
     if not _should_be_flattened(obj):
         return [obj]
@@ -152,7 +155,7 @@ def atleast_1d(obj: Any) -> Iterable:
         return obj
 
 
-def _squeeze(obj: Union[Iterable, Any]):
+def _squeeze(obj: Iterable | Any):
     """
     Returns a scalar if object is iterable of length 1 else returns object.
 
@@ -161,6 +164,7 @@ def _squeeze(obj: Union[Iterable, Any]):
 
     Returns:
         (Any): Either iterable or scalar if possible
+
     """
     if _should_be_flattened(obj) and len(obj) == 1:
         return obj[0]
@@ -176,6 +180,7 @@ class DataProductCollection(BaseModel):
 
     Attributes:
         elements (ProductList): A list of data products.
+
     """
 
     derived_from: Path | None = None
@@ -186,7 +191,7 @@ class DataProductCollection(BaseModel):
         super().__init__(**kwargs)
 
     @classmethod
-    def from_iterable(cls, *products: Tuple[ProductList, ...]):
+    def from_iterable(cls, *products: tuple[ProductList, ...]):
         """
         Returns a new instance containing all of the products provided in the `*products` argument.
 
@@ -195,10 +200,11 @@ class DataProductCollection(BaseModel):
 
         Returns:
             (cls): A data product collection containing all of the provided products in the `*products` argument.
+
         """
         return cls(elements=list(flatten(products)))
 
-    def get_tags(self, data_product_type: Type[DataProduct] | None = None) -> set:
+    def get_tags(self, data_product_type: type[DataProduct] | None = None) -> set:
         """
         Gets the tags related to a given type of `DataProduct`.  Parent classes will match all child class types.
 
@@ -207,6 +213,7 @@ class DataProductCollection(BaseModel):
 
         Returns:
             (set): set of tags applying to the given `data_product_type`.
+
         """
         tags = []
         for e in flatten(self.elements):
@@ -220,6 +227,7 @@ class DataProductCollection(BaseModel):
         Args:
             products (Tuple[DataProduct|ProductList, ...]): Products or lists of products to be
                 appended to collection elements.
+
         """
         self.elements.extend(flatten(products))
 
@@ -293,7 +301,7 @@ class DataProductCollection(BaseModel):
     def drop_products(
         self,
         tag: Tag | None = None,
-        object_type: Type[R] | None = None,
+        object_type: type[R] | None = None,
     ) -> Self[R]:
         """
         Removes products matching `tag` and/or `object_type` from collection elements.
@@ -304,6 +312,7 @@ class DataProductCollection(BaseModel):
 
         Returns:
             (DataProductCollection): A new collection from which matching elements have been dropped.
+
         """
         match_key = tag is None, object_type is None
         match match_key:
@@ -319,7 +328,7 @@ class DataProductCollection(BaseModel):
             case (False, True):
                 # assert self.elements is not None
                 return type(self)(
-                    elements=[e for e in self.elements if not tag in e.tags]
+                    elements=[e for e in self.elements if tag not in e.tags]
                 )
             case (False, False):
                 # assert self.elements is not None
@@ -334,7 +343,7 @@ class DataProductCollection(BaseModel):
                 raise ValueError("Something is wrong with match statement")
 
     def get_products(
-        self, tag: Tag | None = None, object_type: Type[R] | None = None
+        self, tag: Tag | None = None, object_type: type[R] | None = None
     ) -> Self[R]:
         """
         Returns a new collection containing products matching `tag` and/or `object_type`.
@@ -346,6 +355,7 @@ class DataProductCollection(BaseModel):
 
         Returns:
             (DataProductCollection): A new collection containing matching elements.
+
         """
         match_key = tag is None, object_type is None
         match match_key:
@@ -383,6 +393,7 @@ class DataProductCollection(BaseModel):
         Returns:
             (Type[Self]): A new data product collection containing all products from
                 the provided `*collections`.
+
         """
         return cls(elements=list(flatten(chain(c.elements for c in collections))))
 
@@ -406,13 +417,14 @@ class DataProductCollection(BaseModel):
         Returns:
             (Type[Self] | None): Data product collection if JSON files are found.
                 Otherwise, returns None if no product JSON files were found.
+
         """
         if not recursive:
-            jsons: List[Path] = list(
+            jsons: list[Path] = list(
                 flatten(chain(list(d.glob(data_products_filename)) for d in dirs))
             )
         else:
-            jsons: List[Path] = list(
+            jsons: list[Path] = list(
                 flatten(
                     chain(list(d.glob(f"**/{data_products_filename}")) for d in dirs)
                 )
@@ -427,7 +439,7 @@ class DataProductCollection(BaseModel):
     @classmethod
     def sort_by_tags(
         cls,
-        dirs_in: List[Path],
+        dirs_in: list[Path],
         dir_out: Path,
         data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
     ):
@@ -442,6 +454,7 @@ class DataProductCollection(BaseModel):
             dir_out (Path): Directory to which the sorted data products will be written into a
                 nested folder structure generated according to the data tags.
             data_products_fname (str): Name of data products file
+
         """
         dirs_in = list(dirs_in)
         dirs_in.sort()
@@ -470,6 +483,7 @@ class DataProductCollection(BaseModel):
             dir_out (Path): Directory to which the sorted data products will be written into a
                 nested folder structure generated according to the data tags.
             data_products_fname (str): Name of data products file
+
         """
         products_file = dir_in.joinpath(data_products_fname)
         if products_file.exists():
@@ -517,12 +531,11 @@ class DataProductCollection(BaseModel):
             no_xy_plots (bool):  Suppresses xy plot asset creation
             no_histograms (bool):  Suppresses histogram asset creation
             dpi (int):  Sets resolution of asset output
-        """
 
+        """
         collection = cls.collect_from_all_jsons(dir_in)
 
         if collection is not None:
-
             for tag in collection.get_tags():
                 # tags = collection.get_tags()
                 # try:
@@ -533,7 +546,7 @@ class DataProductCollection(BaseModel):
                 format_2ds: list[Format2D] = []
 
                 if not no_tables:
-                    table_entries: List[TableEntry] = collection.get_products(
+                    table_entries: list[TableEntry] = collection.get_products(
                         tag=tag,
                         object_type=TableEntry,
                     ).elements
@@ -550,15 +563,15 @@ class DataProductCollection(BaseModel):
                         logger.info(f"Finished tables for {tag = }")
 
                 if not no_xy_plots:
-                    traces: List[Trace2D] = collection.get_products(
+                    traces: list[Trace2D] = collection.get_products(
                         tag=tag,
                         object_type=Trace2D,
                     ).elements
-                    points: List[Point2D] = collection.get_products(
+                    points: list[Point2D] = collection.get_products(
                         tag=tag,
                         object_type=Point2D,
                     ).elements
-                    axlines: List[AxLine] = collection.get_products(
+                    axlines: list[AxLine] = collection.get_products(
                         tag=tag,
                         object_type=AxLine,
                     ).elements
@@ -595,7 +608,7 @@ class DataProductCollection(BaseModel):
                         logger.info(f"Finished xy plot for {tag = }")
 
                 if not no_histograms:
-                    histogram_entries: List[HistogramEntry] = collection.get_products(
+                    histogram_entries: list[HistogramEntry] = collection.get_products(
                         tag=tag,
                         object_type=HistogramEntry,
                     ).elements
@@ -633,7 +646,7 @@ class DataProductCollection(BaseModel):
     def process_tables_for_tag(
         self,
         tag: Tag,
-        in_dirs: List[Path],
+        in_dirs: list[Path],
         out_dir: Path,
         data_products_fname: str = DATA_PRODUCTS_FNAME_DEFAULT,
     ) -> TableBuilder:
@@ -648,6 +661,7 @@ class DataProductCollection(BaseModel):
 
         Returns:
             TableBuilder: The TableBuilder instance with generated tables.
+
         """
         from trendify.api.generator.table_builder import TableBuilder
 
@@ -658,14 +672,13 @@ class DataProductCollection(BaseModel):
 
     @classmethod
     def process_tag_for_streamlit(
-        cls, jsons: List[Path], tag: Tag
+        cls, jsons: list[Path], tag: Tag
     ) -> PlotlyFigure | None:
         collection = cls.union(
             *tuple([cls.model_validate_json(p.read_text()) for p in jsons])
         )
 
         if collection is not None:
-
             plotly_figure: PlotlyFigure | None = None
             format_2ds: list[Format2D] = []
 
@@ -676,10 +689,10 @@ class DataProductCollection(BaseModel):
                 tag=tag, object_type=HistogramEntry
             ).elements
 
-            traces: List[Trace2D]
-            points: List[Point2D]
-            axlines: List[AxLine]
-            hist_entries: List[HistogramEntry]
+            traces: list[Trace2D]
+            points: list[Point2D]
+            axlines: list[AxLine]
+            hist_entries: list[HistogramEntry]
 
             traces = [e for e in collection.elements if isinstance(e, Trace2D)]
             points = [e for e in collection.elements if isinstance(e, Point2D)]

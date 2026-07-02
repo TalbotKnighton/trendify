@@ -1,105 +1,152 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-license-files = ["LICENSE"]
-dependencies = [
-  "dash",
-  "filelock",
-  "flask",
-  "jinja2",
-  "pandas",
-  "plotly",
-  "pydantic",
-  "matplotlib",
-  "numpy",
-  "numpydantic",
-  "scipy",
-  "strenum",
-  "supervisor",
-  "waitress",
-  "grafana_api",
-  "streamlit",
-]
 name = "trendify"
-version = "1.2.11"
-requires-python = ">= 3.11"
-authors = [
-  { name = "Talbot Knighton", email = "talbotknighton@gmail.com" },
-  { name = "David Gable", email = "david@david-gable.com" },
-]
-maintainers = [
-  { name = "Talbot Knighton", email = "talbotknighton@gmail.com" },
-  { name = "David Gable", email = "david@david-gable.com" },
-]
+dynamic = ["version"]
 description = "Tools for generating data products, storing, and interacting with them"
 readme = "README.md"
-keywords = ["Data", "Products", "Process", "Post", "Database"]
-classifiers = [
-  # How mature is this project? Common values are
-  #   3 - Alpha
-  #   4 - Beta
-  #   5 - Production/Stable
-  "Development Status :: 3 - Alpha",
-
-
-  # Specify the Python versions you support here.
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.11",
+requires-python = ">=3.11"
+dependencies = [
+    "dash>=4.3.0",
+    "filelock>=3.29.4",
+    "flask>=3.1.3",
+    "grafana-api>=1.0.3",
+    "jinja2>=3.1.6",
+    "matplotlib>=3.11.0",
+    "numpy>=2.4.6",
+    "numpydantic>=1.10.0",
+    "pandas>=3.0.3",
+    "plotly>=6.8.0",
+    "pydantic>=2.13.4",
+    "scipy>=1.17.1",
+    "streamlit>=1.58.0",
+    "strenum>=0.4.15",
+    "supervisor>=4.3.0",
+    "waitress>=3.0.2",
 ]
 
-[project.optional-dependencies]
+keywords = ["Data", "Products", "Process", "Post", "Database"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    # "Intended Audience :: Science/Research",
+    # "Topic :: Scientific/Engineering :: Mathematics",
+    "Typing :: Typed",
+    "Operating System :: OS Independent",
+    "Natural Language :: English",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+authors = [
+    { name = "Talbot Knighton", email = "talbotknighton@gmail.com" },
+    { name = "David Gable", email = "david@david-gable.com" },
+]
+maintainers = [
+    { name = "Talbot Knighton", email = "talbotknighton@gmail.com" },
+    { name = "David Gable", email = "david@david-gable.com" },
+]
+license = { text = "MIT" }
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.0"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/trendify"]
+
+[tool.ruff]
+exclude = ["typings"]
+
+
+[tool.ruff.lint]
+select = ["D", "RUF", "E", "F", "W", "UP"] # some suggest using "ALL"
+
+ignore = [
+    # modules
+    "ANN", # flake8-annotations
+    "COM", # flake8-commas
+    "C90", # mccabe complexity
+    "DJ",  # django
+    "EXE", # flake8-executable
+    "T10", # debugger
+    "TID", # flake8-tidy-imports
+
+    # specific rules
+    # "D100",   # ignore missing docs
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D200",
+    "D203",
+    "D205",
+    "D212",
+    "D400",
+    "D401",
+    "D404",
+    "D415",
+    "E402",   # false positives for local imports
+    "E501",   # line too long
+    "TRY003", # external messages in exceptions are too verbose
+    "TD002",
+    "TD003",
+    "FIX002", # too verbose descriptions of todos
+]
+
+[tool.pyright]
+stubPath = "typings"
+venvPath = ".."
+venv = ".venv"
+ignore = ["typings"]
+
+[tool.coverage.report]
+exclude_also = ["if __name__ == .__main__.:", "@(abc\\.)?abstractmethod"]
+
+[dependency-groups]
 dev = [
-  "mkdocs",
-  "black",
-  "pymdown-extensions",
-  "mkdocs-material",
-  "markdown-callouts",
-  "mdx-gh-links",
-  "mkdocs-click",
-  "markdown_include",
-  "mkdocs-glightbox",
-  "mkdocs-gen-files",
-  "mkdocs-section-index",
-  "mkdocs-autorefs",
-  "mkdocs-literate-nav",
-  "mkdocstrings",
-  "mkdocs-exclude",
-  "mkdocs-snippets",
-  "mkdocstrings-python",
-  "griffe-pydantic",
-  "pytest",
-  "pytest-asyncio",
-  "pytest-cov",
-  "mike",
-  "isort>=5.12.0",
-  "flake8>=6.0.0",
-  "mkdocs-material>=9.2.0",
-  "mkdocs-redirects>=1.0.0",
-  "hatchling>=1.11.0",
+    "black>=26.5.1",
+    "flake8>=7.3.0",
+    "griffe-pydantic>=1.3.1",
+    "hatchling>=1.30.1",
+    "isort>=8.0.1",
+    "markdown-callouts>=0.4.0",
+    "markdown-include>=0.8.1",
+    "mdx-gh-links>=0.4",
+    "mike>=2.2.0",
+    "mkdocs>=1.6.1",
+    "mkdocs-autorefs>=1.4.4",
+    "mkdocs-click>=0.9.0",
+    "mkdocs-exclude>=1.0.2",
+    "mkdocs-gen-files>=0.6.1",
+    "mkdocs-glightbox>=0.5.2",
+    "mkdocs-literate-nav>=0.6.3",
+    "mkdocs-material>=9.7.6",
+    "mkdocs-redirects>=1.2.3",
+    "mkdocs-section-index>=0.3.12",
+    "mkdocs-snippets>=1.3.2",
+    "mkdocstrings>=1.0.4",
+    "mkdocstrings-python>=2.0.5",
+    "pymdown-extensions>=11.0",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "pytest-cov>=7.1.0",
 ]
 
 [project.urls]
 "Homepage" = "https://github.com/talbotknighton/trendify"
-"Bug Tracker" = "https://github.com/talbotknighton/trendify/issues"
 "Documentation" = "https://talbotknighton.github.io/trendify/"
-"Source Code" = "https://github.com/talbotknighton/trendify"
+"Repository" = "https://github.com/talbotknighton/trendify"
+"Issues" = "https://github.com/talbotknighton/trendify/issues"
 "PyPI" = "https://pypi.org/project/trendify/"
 
 [project.scripts]
 trendify_make_sample_data = "trendify.examples:make_sample_data"
 trendify = "trendify.CLI:trendify"
-# trendify_server = "trendify.CLI:serve"
-
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.package-data]
-"trendify.assets" = ["*.svg"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = "*.py"
-asyncio_mode = "strict"
-asyncio_default_fixture_loop_scope = "function"

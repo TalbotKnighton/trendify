@@ -27,6 +27,7 @@ class TableEntry(DataProduct):
         value (float | str): Value
         unit (str | None): Units for value
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
+
     """
 
     row: float | str
@@ -42,6 +43,7 @@ class TableEntry(DataProduct):
 
         Returns:
             (dict[str, str | float]): Dictionary of entries to be used in creating a melted [DataFrame][pandas.DataFrame]
+
         """
         return {
             "row": self.row,
@@ -61,10 +63,11 @@ class TableEntry(DataProduct):
         Returns:
             (pd.DataFrame | None): pivoted DataFrame if pivot works else `None`. Pivot operation fails if
                 row or column index pairs are repeated.
+
         """
         try:
             result = melted.pivot(index="row", columns="col", values="value")
-        except ValueError as e:
+        except ValueError:
             logger.debug(traceback.format_exc())
             result = None
         return result
@@ -80,5 +83,6 @@ class TableEntry(DataProduct):
 
         Returns:
             (pd.DataFrame | None): Pivoted data frame or elese `None` if pivot operation fails.
+
         """
         return cls.pivot_table(melted=pd.read_csv(path))

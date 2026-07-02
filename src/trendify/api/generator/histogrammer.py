@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
 import logging
 
 # from trendify.api.data_product_collection import DataProductCollection
-from trendify.api.base.helpers import Tag, DATA_PRODUCTS_FNAME_DEFAULT
+from trendify.api.base.helpers import Tag
 from trendify.api.plotting.histogram import HistogramEntry
 from trendify.api.plotting.plotting import SingleAxisFigure, PlotlyFigure
 
@@ -22,11 +21,12 @@ class Histogrammer:
         in_dirs (List[Path]): Directories from which the data products are to be loaded.
         out_dir (Path): Directory to which the generated histogram will be stored
         dpi (int): resolution of plot
+
     """
 
     def __init__(
         self,
-        in_dirs: List[Path],
+        in_dirs: list[Path],
         out_dir: Path,
         dpi: int,
     ):
@@ -69,7 +69,7 @@ class Histogrammer:
     def handle_histogram_entries(
         cls,
         tag: Tag,
-        histogram_entries: List[HistogramEntry],
+        histogram_entries: list[HistogramEntry],
         dir_out: Path,
         dpi: int,
         saf: SingleAxisFigure | None = None,
@@ -82,6 +82,7 @@ class Histogrammer:
             histogram_entries (List[HistogramEntry]): A list of [`HistogramEntry`][trendify.api.HistogramEntry]s
             dir_out (Path): Directory to which the generated histogram will be stored
             dpi (int): resolution of plot
+
         """
         if saf is None:
             saf = SingleAxisFigure.new(tag=tag)
@@ -116,7 +117,7 @@ class Histogrammer:
     def plotly_histogram(
         cls,
         tag: Tag,
-        histogram_entries: List[HistogramEntry],
+        histogram_entries: list[HistogramEntry],
         plotly_figure: PlotlyFigure | None = None,
     ) -> PlotlyFigure:
         if plotly_figure is None:

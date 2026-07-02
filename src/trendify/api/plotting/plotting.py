@@ -8,19 +8,17 @@ import logging
 
 import numpy as np
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 from trendify.api.formats.format2d import AxisScale, PlottableData2D
 
 try:
     from typing import Self, TYPE_CHECKING
 except:
-    from typing_extensions import Self, TYPE_CHECKING
+    from typing import Self, TYPE_CHECKING
 
 from pydantic import ConfigDict
 
-from trendify.api.base.data_product import DataProduct
-from trendify.api.base.helpers import HashableBase, Tag
+from trendify.api.base.helpers import Tag
 
 if TYPE_CHECKING:
     from trendify.api.formats.format2d import Format2D, Grid
@@ -28,7 +26,7 @@ if TYPE_CHECKING:
     from matplotlib.figure import Figure
 
 
-__all__ = ["SingleAxisFigure", "PlotlyFigure"]
+__all__ = ["PlotlyFigure", "SingleAxisFigure"]
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +40,7 @@ class SingleAxisFigure:
         ax (Axes): Matplotlib axis to which data will be plotted
         fig (Figure): Matplotlib figure.
         tag (Tag): Figure tag.  Not yet used.
+
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -59,6 +58,7 @@ class SingleAxisFigure:
 
         Returns:
             (Type[Self]): New single axis figure
+
         """
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
@@ -74,6 +74,7 @@ class SingleAxisFigure:
 
         Args:
             format2d (Format2D): format information to apply to the single axis figure
+
         """
         if format2d.title_ax is not None:
             self.ax.set_title(format2d.title_ax)
@@ -162,6 +163,7 @@ class SingleAxisFigure:
 
         Returns:
             (Self): Returns self
+
         """
         self.fig.savefig(path, dpi=dpi)
         return self
@@ -190,6 +192,7 @@ class PlotlyFigure:
 
         Returns:
             (Type[Self]): New single axis figure
+
         """
         fig = go.Figure()
         return cls(tag=tag, fig=fig)
@@ -200,6 +203,7 @@ class PlotlyFigure:
 
         Args:
             format2d (Format2D): format information to apply to the figure
+
         """
         layout_updates = {}
 
@@ -263,7 +267,6 @@ class PlotlyFigure:
 
         # Set legend
         if format2d.legend is not None:
-
             layout_updates["showlegend"] = format2d.legend.visible
             layout_updates["legend"] = dict(
                 title=format2d.legend.title,
@@ -285,6 +288,7 @@ class PlotlyFigure:
 
         Args:
             grid (Grid): Grid configuration to apply
+
         """
         # Major grid
 
@@ -323,13 +327,15 @@ class PlotlyFigure:
         self.fig.update_yaxes(**yaxis_updates)
 
     def add_data_product(self, product: PlottableData2D) -> Self:
-        """Add a data product to the figure
+        """
+        Add a data product to the figure
 
         Args:
             product (PlottableData2D): Data product to add to figure
 
         Returns:
             Self: Returns self for method chaining
+
         """
         raise NotImplementedError()
 

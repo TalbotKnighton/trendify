@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import TYPE_CHECKING, Iterable, Optional
+from typing import TYPE_CHECKING
+from collections.abc import Iterable
 import logging
 
 import numpy as np
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
     from trendify.api.plotting.plotting import PlotlyFigure
 logger = logging.getLogger(__name__)
 
-__all__ = ["Format2D", "PlottableData2D", "XYData", "AxisScale"]
+__all__ = ["AxisScale", "Format2D", "PlottableData2D", "XYData"]
 
 
 class AxisScale(StrEnum):
@@ -45,13 +46,14 @@ class Format2D(HashableBase):
         scale_y (AxisScale, optional): Sets the y axis scale to an option from [AxisScale][trendify.api.formats.format2d.AxisScale]. Defaults to AxisScale.LINEAR
         figure_width (float, optional): Sets the of the width of rendered figure in inches. Defaults to 6.4.
         figure_height (float, optional): Sets the of the height of rendered figure in inches. Defaults to 4.8.
+
     """
 
-    title_fig: Optional[str] | None = None
-    legend: Optional[Legend] = Legend()
-    title_ax: Optional[str] | None = None
-    label_x: Optional[str] | None = None
-    label_y: Optional[str] | None = None
+    title_fig: str | None | None = None
+    legend: Legend | None = Legend()
+    title_ax: str | None | None = None
+    label_x: str | None | None = None
+    label_y: str | None | None = None
     lim_x_min: float | None = None
     lim_x_max: float | None = None
     lim_y_min: float | None = None
@@ -75,6 +77,7 @@ class Format2D(HashableBase):
 
         Returns:
             (Format2D): Single format object from list of objects.
+
         """
         formats = list(set(format2ds) - {None})
 
@@ -127,15 +130,18 @@ class PlottableData2D(DataProduct):
         format2d (Format2D|None): Format to apply to plot
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
+
     """
 
     format2d: Format2D | None = None
 
     def add_to_plotly(self, plotly_figure: PlotlyFigure):
-        """Add this data product to a plotly figure
+        """
+        Add this data product to a plotly figure
 
         Args:
             plotly_figure (PlotlyFigure): Plotly figure to add data to
+
         """
         raise NotImplementedError("Subclasses must implement add_to_plotly")
 

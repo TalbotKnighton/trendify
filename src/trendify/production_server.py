@@ -5,10 +5,9 @@ This module provides functions to run Dash applications in a production environm
 using the Waitress WSGI server.
 """
 
-import os
 import sys
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 
 from trendify.api.api import DataProductCollection
 
@@ -32,6 +31,7 @@ def run_production_server(
 
     Raises:
         ImportError: If Waitress is not installed
+
     """
     try:
         import waitress
@@ -63,11 +63,11 @@ def run_production_server(
 
 
 def serve_from_data_dir(
-    data_dir: Union[str, Path],
+    data_dir: str | Path,
     host: str = "0.0.0.0",
     port: int = 8000,
-    title: Optional[str] = None,
-    tag: Optional[str] = None,
+    title: str | None = None,
+    tag: str | None = None,
 ) -> None:
     """
     Serve a dashboard from a directory containing data products.
@@ -78,6 +78,7 @@ def serve_from_data_dir(
         port: Port to listen on
         title: Optional title for the dashboard. If None, will use the directory name
         tag: Optional tag to filter data products by
+
     """
     from trendify.api.api import DataProductCollection
 

@@ -2,9 +2,8 @@ import importlib.resources
 from importlib.metadata import version
 from pathlib import Path
 import time
-from typing import List, Sequence, Tuple
+from collections.abc import Sequence
 
-import pandas as pd
 import streamlit as st
 
 from trendify.api.generator.data_product_collection import DataProductCollection
@@ -57,12 +56,12 @@ trendy_stream.make_dashboard(trendify_dir=trendify_dir)
     )
 
 
-def get_index_map_path(trendify_dir: Path, tag: Tuple[str, ...]) -> Path:
+def get_index_map_path(trendify_dir: Path, tag: tuple[str, ...]) -> Path:
     products_dir = trendify_dir.joinpath("products")
     return products_dir.joinpath(*tag, "index_map")
 
 
-def get_tags(trendify_dir: Path) -> Sequence[Tuple[str, ...]]:
+def get_tags(trendify_dir: Path) -> Sequence[tuple[str, ...]]:
     products_dir = trendify_dir.joinpath("products")
     tags = [
         p.parent.relative_to(products_dir).parts
@@ -73,7 +72,7 @@ def get_tags(trendify_dir: Path) -> Sequence[Tuple[str, ...]]:
 
 
 def create_nested_expanders(
-    tags: Sequence[Tuple[str, ...]], current_level: int = 0
+    tags: Sequence[tuple[str, ...]], current_level: int = 0
 ) -> dict:
     # Group tags by their current level
     level_groups = {}
@@ -93,9 +92,9 @@ def create_nested_expanders(
 
 
 def render_nested_expanders(
-    tags: Sequence[Tuple[str, ...]],
+    tags: Sequence[tuple[str, ...]],
     current_level: int = 0,
-    selected_tags: Tuple[str, ...] | None = None,
+    selected_tags: tuple[str, ...] | None = None,
 ):
     if selected_tags is None:
         selected_tags = None
@@ -127,7 +126,7 @@ def render_nested_expanders(
                 if group_info["complete"]:
                     if st.button(
                         button_text,
-                        key=f"btn_{str('_').join(current_tag)}",  # Use the full tag tuple as the key
+                        key=f"btn_{'_'.join(current_tag)}",  # Use the full tag tuple as the key
                         type=button_type,
                     ):
                         st.session_state.selected_tags = current_tag
@@ -141,7 +140,7 @@ def render_nested_expanders(
             if group_info["complete"]:
                 if st.button(
                     button_text,
-                    key=f"btn_{str('_').join(current_tag)}",  # Use the full tag tuple as the key
+                    key=f"btn_{'_'.join(current_tag)}",  # Use the full tag tuple as the key
                     type=button_type,
                     use_container_width=True,
                 ):
@@ -151,8 +150,8 @@ def render_nested_expanders(
     return st.session_state.get("selected_tags", None)
 
 
-def make_sidebar(trendify_dir: Path) -> Tuple[str, ...] | None:
-    st.title(f"Trendify (v{version("trendify")})")
+def make_sidebar(trendify_dir: Path) -> tuple[str, ...] | None:
+    st.title(f"Trendify (v{version('trendify')})")
 
     tags = get_tags(trendify_dir=trendify_dir)
     st.caption(f"Viewing {len(tags)} assets for {trendify_dir}")
@@ -167,7 +166,7 @@ def make_sidebar(trendify_dir: Path) -> Tuple[str, ...] | None:
 
 
 @st.cache_data(show_time=True)
-def process_tag(tag: Tuple[str, ...], trendify_dir: Path):
+def process_tag(tag: tuple[str, ...], trendify_dir: Path):
     products_paths = list(
         trendify_dir.joinpath("products").joinpath(*tag).glob("*.json")
     )
@@ -175,10 +174,9 @@ def process_tag(tag: Tuple[str, ...], trendify_dir: Path):
     return DataProductCollection.process_tag_for_streamlit(products_paths, tag=tag)
 
 
-def make_main_page(tag: Tuple[str, ...], trendify_dir: Path):
+def make_main_page(tag: tuple[str, ...], trendify_dir: Path):
     """Display the main page content for the selected tag"""
-
-    st.title(f"{" | ".join(tag)}")
+    st.title(f"{' | '.join(tag)}")
 
     # Process the tag for tables and plots
     proccessed_tag = process_tag(tag=tag, trendify_dir=trendify_dir)
@@ -287,11 +285,12 @@ def make_dashboard(trendify_dir: str | Path):
         make_main_page(tag=selected_tag, trendify_dir=trendify_dir)
 
     with st.sidebar:
-        st.caption(f"Site built in {time.perf_counter()-start:.2f} seconds")
+        st.caption(f"Site built in {time.perf_counter() - start:.2f} seconds")
 
 
 def main():
-    """To run use
+    """
+    To run use
 
     streamlit run src/trendify/streamlit.py
     """

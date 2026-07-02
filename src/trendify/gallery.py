@@ -228,6 +228,7 @@ def run_trendify_commands(input_dir: str | Path, output_dir: str | Path):
     Args:
         input_dir (str | Path): Input directory containing data products
         output_dir (str | Path): Output directory for sorted products and assets
+
     """
     # Convert to Path objects
     input_dir = Path(input_dir).resolve()
@@ -278,7 +279,7 @@ def run_trendify_commands(input_dir: str | Path, output_dir: str | Path):
             sys.exit(1)
         except Exception as e:
             print(f"Unexpected error executing command: {' '.join(cmd)}")
-            print(f"Error: {str(e)}")
+            print(f"Error: {e!s}")
             sys.exit(1)
 
 
@@ -286,7 +287,6 @@ def make_gallery(output_dir: Path):
     """
     Generates the gallery
     """
-
     # Create output directory
     output_dir.mkdir(exist_ok=True, parents=True)
     data_dir = output_dir.joinpath("data")

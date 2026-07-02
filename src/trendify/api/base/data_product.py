@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable, List, Any
+from typing import Any
+from collections.abc import Callable
 import logging
 
 from pydantic import (
@@ -18,7 +19,7 @@ from trendify.api.base.helpers import Tags
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["DataProduct", "ProductList", "ProductGenerator"]
+__all__ = ["DataProduct", "ProductGenerator", "ProductList"]
 
 _data_product_subclass_registry: dict[str, DataProduct] = {}
 
@@ -32,6 +33,7 @@ class DataProduct(BaseModel):
             The product type is used to search for products from a [DataProductCollection][trendify.api.DataProductCollection].
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
+
     """
 
     tags: Tags
@@ -48,6 +50,7 @@ class DataProduct(BaseModel):
 
         Returns:
             (dict[str, Any]): Sanitized data to be passed to class constructor.
+
         """
         for f in cls.model_computed_fields:
             data.pop(f, None)
@@ -61,6 +64,7 @@ class DataProduct(BaseModel):
             (str): Product type should be the same as the class name.
                 The product type is used to search for products from a
                 [DataProductCollection][trendify.api.DataProductCollection].
+
         """
         return type(self).__name__
 
@@ -74,7 +78,7 @@ class DataProduct(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    def append_to_list(self, l: List):
+    def append_to_list(self, l: list):
         """
         Appends self to list.
 
@@ -83,6 +87,7 @@ class DataProduct(BaseModel):
 
         Returns:
             (Self): returns instance of `self`
+
         """
         l.append(self)
         return self
@@ -95,6 +100,7 @@ class DataProduct(BaseModel):
         Args:
             key (str): json key
             kwargs (dict): json entries stored under given key
+
         """
         type_key = "product_type"
         elements = kwargs.get(key, None)
@@ -111,7 +117,7 @@ class DataProduct(BaseModel):
         return self
 
 
-ProductList = List[SerializeAsAny[InstanceOf[DataProduct]]]
+ProductList = list[SerializeAsAny[InstanceOf[DataProduct]]]
 """List of serializable [DataProduct][trendify.api.DataProduct] or child classes thereof"""
 
 ProductGenerator = Callable[[Path], ProductList]

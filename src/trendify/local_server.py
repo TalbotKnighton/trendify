@@ -5,8 +5,6 @@ Defines Flask server for providing data products on local system
 # Standard impots
 from dataclasses import dataclass
 from pathlib import Path
-import pandas as pd
-from typing import Type
 
 # External imports
 from flask import Flask
@@ -15,12 +13,11 @@ from waitress import serve
 # Local imports
 from trendify.api import api
 
-from flask import Flask
 
 __all__ = ["TrendifyProductServerLocal"]
 
 
-def _to_product_type(type_name: str) -> Type:
+def _to_product_type(type_name: str) -> type:
     """
     Converts type name str to trendify type for searching data collection
 
@@ -29,6 +26,7 @@ def _to_product_type(type_name: str) -> Type:
 
     Returns:
         (Type): Class type corresponding to given `type_name`
+
     """
     # breakpoint()
     product_type = api.ProductType[type_name]
@@ -44,6 +42,7 @@ class ProductGetter:
     """
     Attributes:
         trendy_dir (Path): Path for trendify
+
     """
 
     trendy_dir: Path
@@ -76,8 +75,8 @@ class ProductGetter:
             | project "label", "x", "y"
             | pivot sum("y"), "x", "label"
             | project "label", "x", "y"
-        """
 
+        """
         # Interpret Product Type
         product_type = _to_product_type(type_name=str(product_type_name))
         if product_type is None:

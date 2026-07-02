@@ -28,6 +28,7 @@ class Point2D(XYData):
             Only the label information is used in Grafana.
             Eventually style information will be used in grafana.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
+
     """
 
     x: float | str
