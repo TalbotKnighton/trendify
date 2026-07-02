@@ -14,7 +14,7 @@ import importlib.util
 import os
 from pathlib import Path
 import sys
-from typing import List, Iterable
+from collections.abc import Iterable
 import logging
 
 import matplotlib.pyplot as plt
@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 from trendify.api import api
 from trendify.api.base.helpers import DATA_PRODUCTS_FNAME_DEFAULT
-from trendify.local_server import TrendifyProductServerLocal
 from trendify.streamlit import make_streamlit
 
 __all__ = []
@@ -120,6 +119,7 @@ class NProcs:
 
         Returns;
             (int): Number of processes capped to `5*os.cpu_count()`
+
         """
         n_proc = int(arg)
 
@@ -184,6 +184,7 @@ class UserMethod:
 
         Returns:
             (Callable): User-specified method to be mapped over raw data directories.
+
         """
         msplit = arg.split(":")
         assert 1 <= len(msplit) <= 2
@@ -243,6 +244,7 @@ class DataProductsFileName:
 
         Returns:
             (str): String (file name to be used for generated data products)
+
         """
         return str(arg)
 
@@ -255,7 +257,7 @@ class InputDirectories:
     _NAME = "input-directories"
 
     @classmethod
-    def get_from_namespace(cls, namespace: argparse.Namespace) -> List[Path]:
+    def get_from_namespace(cls, namespace: argparse.Namespace) -> list[Path]:
         return cls.process_argument(getattr(namespace, cls._NAME.replace("-", "_")))
 
     @classmethod
@@ -272,7 +274,7 @@ class InputDirectories:
         )
 
     @staticmethod
-    def process_argument(arg: str) -> List[Path]:
+    def process_argument(arg: str) -> list[Path]:
         """
         Converts CLI input to list of directories over which user-specified data product generator method will be mapped.
 
@@ -281,6 +283,7 @@ class InputDirectories:
 
         Returns:
             (List[Path]): List of directories over which to map the user-specified product generator
+
         """
         if isinstance(arg, str):
             return [
@@ -334,6 +337,7 @@ class TrendifyDirectory:
 
         Returns:
             (FileManager): List of directories over which to map the user-specified product generator
+
         """
         return FileManager(output_dir=Path(arg).resolve())
 
@@ -347,8 +351,8 @@ def trendify(*pargs):
     Args:
         *pargs (list[Any]): List of flags and arguments to pass to commandline.
             Simulates running from commandline in pythong script.
-    """
 
+    """
     # Main parser
     parser = argparse.ArgumentParser(
         prog="trendify",
