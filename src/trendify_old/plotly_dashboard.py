@@ -2,6 +2,8 @@
 Module for generating interactive Plotly dashboards from data products.
 """
 
+from typing import Any, cast
+
 import dash
 from dash import dcc, html, dash_table
 from dash.dependencies import Input, Output, State
@@ -11,20 +13,16 @@ import numpy as np
 from collections import defaultdict
 
 # Import from trendify
-# from trendify.api.API import (
-#     DataProductCollection,
-#     Tag,
-#     Tags,
-#     Point2D,
-#     Trace2D,
-#     TableEntry,
-#     HistogramEntry,
-#     AxLine,
-#     LineOrientation,
-#     Format2D,
-#     flatten,
-#     atleast_1d,
-# )
+from trendify import (
+    DataProductCollection,
+    Point2D,
+    Trace2D,
+    TableEntry,
+    HistogramEntry,
+    AxLine,
+    LineOrientation,
+    Format2D,
+)
 
 # Constants
 COLORS = [
@@ -292,15 +290,21 @@ class PlotlyDashboardGenerator:
                                         (
                                             dash_table.DataTable(
                                                 id=f"pivot-table-{tag_str}",
-                                                columns=[{"name": "row", "id": "row"}]
-                                                + [
-                                                    {"name": str(col), "id": str(col)}
-                                                    for col in (
-                                                        pivot_df.columns
-                                                        if pivot_df is not None
-                                                        else []
-                                                    )
-                                                ],
+                                                columns=cast(
+                                                    "list[dash_table.DataTable.Columns]",
+                                                    [{"name": "row", "id": "row"}]
+                                                    + [
+                                                        {
+                                                            "name": str(col),
+                                                            "id": str(col),
+                                                        }
+                                                        for col in (
+                                                            pivot_df.columns
+                                                            if pivot_df is not None
+                                                            else []
+                                                        )
+                                                    ],
+                                                ),
                                                 data=(
                                                     pivot_df.reset_index().to_dict(
                                                         "records"
@@ -554,7 +558,7 @@ class PlotlyDashboardGenerator:
                 )
 
         # Update layout with format information
-        layout_args = dict(
+        layout_args: dict[str, Any] = dict(
             title=(
                 format2d.title_ax
                 if format2d and format2d.title_ax
@@ -700,7 +704,7 @@ class PlotlyDashboardGenerator:
                 break
 
         # Update layout
-        layout_args = dict(
+        layout_args: dict[str, Any] = dict(
             title=(
                 format2d.title_ax
                 if format2d and format2d.title_ax

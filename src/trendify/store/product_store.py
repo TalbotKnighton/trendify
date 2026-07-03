@@ -1,0 +1,300 @@
+"""
+ProductStore: the SQLite-backed replacement for v1's DataProductCollection file-glob methods.
+
+Pydantic objects remain what flows in and out everywhere -- only the storage/query mechanics
+change. See rewrite_reference/OVERVIEW.md and the v2 architecture plan for the full design
+rationale (why SQLite/WAL, why this schema shape, why no merge phase).
+"""
+
+from __future__ import annotations
+
+import datetime
+import sqlite3
+from collections.abc import Iterable, Iterator
+from pathlib import Path
+
+import polars as pl
+
+from trendify.base.data_product import DataProduct
+from trendify.base.helpers import Tag
+from trendify.formats.table import TableEntry
+from trendify.store import db
+from trendify.store.tags import decode_tag, encode_tag
+
+__all__ = ["ProductStore"]
+
+
+def _leaf_type_names(object_type: type[DataProduct]) -> list[str]:
+    """
+    Expands a (possibly non-leaf) `DataProduct` type into the list of registered leaf
+    `product_type` names that are instances of it -- e.g. `PlottableData2D` expands to
+    `["Point2D", "Trace2D", "AxLine", "HistogramEntry"]`. This lets tag/type filtering happen
+    as a plain SQL `product_type IN (...)` clause instead of deserializing every tag-matched
+    row just to run an `isinstance` check in Python.
+    """
+    return [
+        name
+        for name, cls in DataProduct.registry().items()
+        if issubclass(cls, object_type)
+    ]
+
+
+def _tag_sort_key(tag: Tag):
+    as_tuple = tag if isinstance(tag, tuple) else (tag,)
+    return (len(as_tuple), as_tuple)
+
+
+class ProductStore:
+    """
+    SQLite-backed store for `DataProduct`s, grouped by run and queryable by tag/type.
+
+    Usage:
+        with ProductStore.open(db_path) as store:
+            store.write_run(run_path, products)
+            traces = store.get_products_of_type(Trace2D, tag="my_tag")
+    """
+
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+
+    @classmethod
+    def open(cls, db_path: Path, *, readonly: bool = False) -> ProductStore:
+        return cls(db.connect(Path(db_path), readonly=readonly))
+
+    def __enter__(self) -> ProductStore:
+        return self
+
+    def __exit__(self, *exc_info) -> None:
+        self.close()
+
+    def close(self) -> None:
+        self._conn.close()
+
+    def write_run(self, run_path: Path, products: Iterable[DataProduct]) -> int:
+        """
+        Replaces all products for `run_path` in a single transaction. Idempotent: calling this
+        again for the same `run_path` (e.g. re-running a generator on the same input directory)
+        deletes and replaces that run's rows rather than accumulating duplicates -- this is what
+        replaces v1's `ProductIndexMap`/`FileLock` stable-indexing dance, since there's no
+        per-tag file to keep numbered anymore.
+
+        Args:
+            run_path (Path): the raw-data run directory these products were generated from
+            products (Iterable[DataProduct]): products returned by the user's `ProductGenerator`
+
+        Returns:
+            (int): number of products written
+
+        """
+        products = list(products)
+        run_path_str = str(Path(run_path).resolve())
+        now = datetime.datetime.now(datetime.UTC).isoformat()
+
+        conn = self._conn
+        with conn:  # transaction: commits on success, rolls back on exception
+            row = conn.execute(
+                "SELECT id FROM runs WHERE path = ?", (run_path_str,)
+            ).fetchone()
+            if row is None:
+                run_id = conn.execute(
+                    "INSERT INTO runs(path, generated_at) VALUES (?, ?)",
+                    (run_path_str, now),
+                ).lastrowid
+            else:
+                run_id = row["id"]
+                conn.execute(
+                    "UPDATE runs SET generated_at = ? WHERE id = ?", (now, run_id)
+                )
+
+            # ON DELETE CASCADE (product_tags, table_entries) requires PRAGMA foreign_keys=ON,
+            # set in db.connect().
+            conn.execute("DELETE FROM products WHERE run_id = ?", (run_id,))
+
+            for product in products:
+                product_id = conn.execute(
+                    "INSERT INTO products(run_id, product_type, payload, created_at) "
+                    "VALUES (?, ?, ?, ?)",
+                    (run_id, product.product_type, product.model_dump_json(), now),
+                ).lastrowid
+
+                tag_keys = [encode_tag(t) for t in product.tags]
+                conn.executemany(
+                    "INSERT INTO product_tags(product_id, tag_key, product_type) "
+                    "VALUES (?, ?, ?)",
+                    [(product_id, tk, product.product_type) for tk in tag_keys],
+                )
+
+                if isinstance(product, TableEntry):
+                    value_num = value_text = value_bool = None
+                    if isinstance(product.value, bool):
+                        value_bool = int(product.value)
+                    elif isinstance(product.value, (int, float)):
+                        value_num = float(product.value)
+                    else:
+                        value_text = product.value
+
+                    conn.executemany(
+                        "INSERT INTO table_entries("
+                        "product_id, tag_key, row_key, col_key, "
+                        "value_num, value_text, value_bool, unit) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        [
+                            (
+                                product_id,
+                                tk,
+                                str(product.row),
+                                str(product.col),
+                                value_num,
+                                value_text,
+                                value_bool,
+                                product.unit,
+                            )
+                            for tk in tag_keys
+                        ],
+                    )
+
+        return len(products)
+
+    def get_tags(self, object_type: type[DataProduct] | None = None) -> set[Tag]:
+        """
+        Args:
+            object_type (type[DataProduct] | None): restrict to tags used by products of this
+                type (or any registered subclass of it); `None` matches every product type.
+
+        Returns:
+            (set[Tag]): the set of tags in use
+
+        """
+        if object_type is None:
+            rows = self._conn.execute("SELECT DISTINCT tag_key FROM product_tags")
+        else:
+            names = _leaf_type_names(object_type)
+            if not names:
+                return set()
+            placeholders = ",".join("?" * len(names))
+            rows = self._conn.execute(
+                f"SELECT DISTINCT tag_key FROM product_tags "
+                f"WHERE product_type IN ({placeholders})",
+                names,
+            )
+        return {decode_tag(r["tag_key"]) for r in rows}
+
+    def tag_tree(self, object_type: type[DataProduct] | None = None) -> list[Tag]:
+        """
+        Returns:
+            (list[Tag]): tags sorted the way v1's Streamlit sidebar expects (shallow tags
+                first, then lexicographically) -- direct replacement for v1's
+                `streamlit.get_tags()`, which discovered this list by globbing for files
+                literally named `index_map` in the sorted-products directory tree.
+
+        """
+        return sorted(self.get_tags(object_type=object_type), key=_tag_sort_key)
+
+    def get_products(
+        self,
+        tag: Tag | None = None,
+        object_type: type[DataProduct] | None = None,
+    ) -> Iterator[DataProduct]:
+        """
+        Streams matching products, deserialized to their concrete pydantic type. Filtering by
+        `tag` and/or `object_type` happens in SQL (indexed tag lookup, `product_type IN (...)`
+        for the type hierarchy) before anything is deserialized, so this only ever parses JSON
+        for rows that actually match -- unlike v1, which reparsed every JSON in a tag directory
+        before filtering in Python.
+
+        Args:
+            tag (Tag | None): tag to filter by; `None` matches every tag
+            object_type (type[DataProduct] | None): type (or base type) to filter by;
+                `None` matches every type
+
+        Yields:
+            (DataProduct): matching products, in insertion order
+
+        """
+        select = "SELECT p.product_type, p.payload FROM products p"
+        joins = []
+        where = []
+        params: list[object] = []
+
+        if tag is not None:
+            joins.append("JOIN product_tags pt ON pt.product_id = p.id")
+            where.append("pt.tag_key = ?")
+            params.append(encode_tag(tag))
+
+        if object_type is not None:
+            names = _leaf_type_names(object_type)
+            if not names:
+                return
+            where.append(f"p.product_type IN ({','.join('?' * len(names))})")
+            params.extend(names)
+
+        query = " ".join([select, *joins])
+        if where:
+            query += " WHERE " + " AND ".join(where)
+
+        cursor = self._conn.execute(query, params)
+        for row in cursor:
+            yield DataProduct.deserialize(row["product_type"], row["payload"])
+
+    def get_products_of_type(
+        self, object_type: type[DataProduct], tag: Tag | None = None
+    ) -> list[DataProduct]:
+        """
+        Same as `get_products`, but eager (a `list`) -- convenience for callers that don't need
+        streaming, mirroring v1's `DataProductCollection.get_products_of_type`.
+        """
+        return list(self.get_products(tag=tag, object_type=object_type))
+
+    def get_table_entries(self, tag: Tag) -> pl.DataFrame:
+        """
+        Fetches `TableEntry` rows for `tag` directly from the `table_entries` table -- skips
+        deserializing full `DataProduct` payloads entirely, since row/col/value/unit are already
+        real columns. This is the direct replacement for `TableBuilder.load_table`'s "reparse
+        every JSON in every input dir" step.
+
+        Note: `value` is resolved to a single Python value per row (whichever of
+        `value_num`/`value_text`/`value_bool` is populated) before handing rows to Polars,
+        rather than asking Polars/SQLite to reconcile a mixed-type SQL column -- Polars expects
+        one dtype per column, so resolving the union type in Python first is the well-defined
+        choice.
+
+        Args:
+            tag (Tag): tag to filter by
+
+        Returns:
+            (pl.DataFrame): columns `row`, `col`, `value`, `unit` -- same shape as v1's
+                `TableEntry.get_entry_dict()`.
+
+        """
+        rows = self._conn.execute(
+            "SELECT row_key, col_key, value_num, value_text, value_bool, unit "
+            "FROM table_entries WHERE tag_key = ?",
+            (encode_tag(tag),),
+        ).fetchall()
+
+        records = []
+        for r in rows:
+            if r["value_bool"] is not None:
+                value = bool(r["value_bool"])
+            elif r["value_num"] is not None:
+                value = r["value_num"]
+            else:
+                value = r["value_text"]
+            records.append(
+                {
+                    "row": r["row_key"],
+                    "col": r["col_key"],
+                    "value": value,
+                    "unit": r["unit"],
+                }
+            )
+
+        return pl.DataFrame(
+            records,
+            schema={
+                "row": pl.Utf8,
+                "col": pl.Utf8,
+                "value": pl.Object,
+                "unit": pl.Utf8,
+            },
+        )

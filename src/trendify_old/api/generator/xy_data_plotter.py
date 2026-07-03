@@ -65,12 +65,8 @@ class XYDataPlotter:
             collection = DataProductCollection.model_validate_json(
                 subdir.joinpath(data_products_fname).read_text()
             )
-            traces: list[Trace2D] = collection.get_products(
-                tag=tag, object_type=Trace2D
-            ).elements
-            points: list[Point2D] = collection.get_products(
-                tag=tag, object_type=Point2D
-            ).elements
+            traces = collection.get_products_of_type(tag=tag, object_type=Trace2D)
+            points = collection.get_products_of_type(tag=tag, object_type=Point2D)
 
             if points or traces:
                 if points:
@@ -91,9 +87,8 @@ class XYDataPlotter:
                 formats = list(
                     set(
                         [p.format2d for p in points if p.format2d]
-                        + [t.format2d for t in traces]
+                        + [t.format2d for t in traces if t.format2d]
                     )
-                    - {None}
                 )
                 format2d = Format2D.union_from_iterable(formats)
                 saf.apply_format(format2d)
@@ -138,7 +133,10 @@ class XYDataPlotter:
                 x = [p.x for p in matching_points]
                 y = [p.y for p in matching_points]
                 if x and y:
-                    saf.ax.scatter(x, y, **marker.as_scatter_plot_kwargs())
+                    if marker is not None:
+                        saf.ax.scatter(x, y, **marker.as_scatter_plot_kwargs())
+                    else:
+                        saf.ax.scatter(x, y)
 
         for trace in traces:
             trace.plot_to_ax(saf.ax)

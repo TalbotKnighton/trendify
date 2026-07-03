@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = ["DataProduct", "ProductGenerator", "ProductList"]
 
-_data_product_subclass_registry: dict[str, DataProduct] = {}
+_data_product_subclass_registry: dict[str, type[DataProduct]] = {}
 
 
 class DataProduct(BaseModel):

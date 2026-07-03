@@ -9,22 +9,14 @@ description = "Tools for generating data products, storing, and interacting with
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "dash>=4.3.0",
-    "filelock>=3.29.4",
-    "flask>=3.1.3",
-    "grafana-api>=1.0.3",
-    "jinja2>=3.1.6",
     "matplotlib>=3.11.0",
     "numpy>=2.4.6",
     "numpydantic>=1.10.0",
-    "pandas>=3.0.3",
     "plotly>=6.8.0",
+    "polars>=1.42.1",
     "pydantic>=2.13.4",
-    "scipy>=1.17.1",
-    "streamlit>=1.58.0",
-    "strenum>=0.4.15",
-    "supervisor>=4.3.0",
-    "waitress>=3.0.2",
+    "rich>=15.0.0",
+    "typer>=0.26.8",
 ]
 
 keywords = ["Data", "Products", "Process", "Post", "Database"]
@@ -103,7 +95,7 @@ ignore = [
 
 [tool.pyright]
 stubPath = "typings"
-venvPath = ".."
+venvPath = "."
 venv = ".venv"
 ignore = ["typings"]
 
@@ -112,32 +104,8 @@ exclude_also = ["if __name__ == .__main__.:", "@(abc\\.)?abstractmethod"]
 
 [dependency-groups]
 dev = [
-    "black>=26.5.1",
-    "flake8>=7.3.0",
-    "griffe-pydantic>=1.3.1",
-    "hatchling>=1.30.1",
-    "isort>=8.0.1",
-    "markdown-callouts>=0.4.0",
-    "markdown-include>=0.8.1",
-    "mdx-gh-links>=0.4",
-    "mike>=2.2.0",
-    "mkdocs>=1.6.1",
-    "mkdocs-autorefs>=1.4.4",
-    "mkdocs-click>=0.9.0",
-    "mkdocs-exclude>=1.0.2",
-    "mkdocs-gen-files>=0.6.1",
-    "mkdocs-glightbox>=0.5.2",
-    "mkdocs-literate-nav>=0.6.3",
-    "mkdocs-material>=9.7.6",
-    "mkdocs-redirects>=1.2.3",
-    "mkdocs-section-index>=0.3.12",
-    "mkdocs-snippets>=1.3.2",
-    "mkdocstrings>=1.0.4",
-    "mkdocstrings-python>=2.0.5",
-    "pymdown-extensions>=11.0",
+    "mkinit>=1.2.0",
     "pytest>=9.1.1",
-    "pytest-asyncio>=1.4.0",
-    "pytest-cov>=7.1.0",
 ]
 
 [project.urls]

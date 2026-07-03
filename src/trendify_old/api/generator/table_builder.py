@@ -60,7 +60,7 @@ class TableBuilder:
                 subdir.joinpath(data_products_fname).read_text()
             )
             table_entries.extend(
-                collection.get_products(tag=tag, object_type=TableEntry).elements
+                collection.get_products_of_type(tag=tag, object_type=TableEntry)
             )
 
         self.process_table_entries(

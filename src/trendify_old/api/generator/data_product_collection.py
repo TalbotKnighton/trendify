@@ -4,7 +4,7 @@ import os
 from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 import logging
 
 
@@ -74,7 +74,7 @@ class ProductIndexMap(BaseModel):
     entries: dict[int, ProductEntryMetadata] = Field(default_factory=dict)
 
     @property
-    def inverse(self) -> dict[Path, int]:
+    def inverse(self) -> dict[ProductEntryMetadata, int]:
         return {v: k for k, v in self.entries.items()}
 
     @classmethod
@@ -83,7 +83,7 @@ class ProductIndexMap(BaseModel):
         cls,
         save_dir: Path,
         metadata: ProductEntryMetadata,
-    ) -> Self:
+    ) -> int:
         if not save_dir.is_dir():
             raise ValueError(f"{save_dir} is not a directory")
         lock_file = save_dir.joinpath("reserving_index.lock")
@@ -120,7 +120,7 @@ def _should_be_flattened(obj: Any):
     return isinstance(obj, Iterable) and not isinstance(obj, (str, bytes, DataProduct))
 
 
-def flatten(obj: Iterable):
+def flatten(obj: Iterable[Any]) -> Iterator[Any]:
     """
     Recursively flattens iterable up to a point (leaves `str`, `bytes`, and `DataProduct` unflattened)
 
@@ -155,7 +155,7 @@ def atleast_1d(obj: Any) -> Iterable:
         return obj
 
 
-def _squeeze(obj: Iterable | Any):
+def _squeeze(obj: Any) -> Any:
     """
     Returns a scalar if object is iterable of length 1 else returns object.
 
@@ -184,14 +184,14 @@ class DataProductCollection(BaseModel):
     """
 
     derived_from: Path | None = None
-    elements: ProductList | None = None
+    elements: ProductList = Field(default_factory=list)
 
     def __init__(self, **kwargs: Any):
         DataProduct.deserialize_child_classes(key="elements", **kwargs)
         super().__init__(**kwargs)
 
     @classmethod
-    def from_iterable(cls, *products: tuple[ProductList, ...]):
+    def from_iterable(cls, *products: ProductList):
         """
         Returns a new instance containing all of the products provided in the `*products` argument.
 
@@ -302,7 +302,7 @@ class DataProductCollection(BaseModel):
         self,
         tag: Tag | None = None,
         object_type: type[R] | None = None,
-    ) -> Self[R]:
+    ) -> Self:
         """
         Removes products matching `tag` and/or `object_type` from collection elements.
 
@@ -319,19 +319,18 @@ class DataProductCollection(BaseModel):
             case (True, True):
                 return type(self)(elements=self.elements)
             case (True, False):
-                # assert self.elements is not None
+                assert object_type is not None
                 return type(self)(
                     elements=[
                         e for e in self.elements if not isinstance(e, object_type)
                     ]
                 )
             case (False, True):
-                # assert self.elements is not None
                 return type(self)(
                     elements=[e for e in self.elements if tag not in e.tags]
                 )
             case (False, False):
-                # assert self.elements is not None
+                assert object_type is not None
                 return type(self)(
                     elements=[
                         e
@@ -344,7 +343,7 @@ class DataProductCollection(BaseModel):
 
     def get_products(
         self, tag: Tag | None = None, object_type: type[R] | None = None
-    ) -> Self[R]:
+    ) -> Self:
         """
         Returns a new collection containing products matching `tag` and/or `object_type`.
         Both `tag` and `object_type` default to `None` which matches all products.
@@ -362,15 +361,14 @@ class DataProductCollection(BaseModel):
             case (True, True):
                 return type(self)(elements=self.elements)
             case (True, False):
-                # assert self.elements is not None
+                assert object_type is not None
                 return type(self)(
                     elements=[e for e in self.elements if isinstance(e, object_type)]
                 )
             case (False, True):
-                # assert self.elements is not None
                 return type(self)(elements=[e for e in self.elements if tag in e.tags])
             case (False, False):
-                # assert self.elements is not None
+                assert object_type is not None
                 return type(self)(
                     elements=[
                         e
@@ -380,6 +378,26 @@ class DataProductCollection(BaseModel):
                 )
             case _:
                 raise ValueError("Something is wrong with match statement")
+
+    def get_products_of_type(
+        self, object_type: type[R], tag: Tag | None = None
+    ) -> list[R]:
+        """
+        Returns the elements matching `object_type` (and `tag`, if given) as a list typed to `object_type`.
+
+        Args:
+            object_type (Type[R]): Type of data product to keep.
+            tag (Tag | None): Tag of data products to be kept.  `None` matches all products.
+
+        Returns:
+            (list[R]): List of matching elements.
+
+        """
+        if tag is None:
+            return [e for e in self.elements if isinstance(e, object_type)]
+        return [
+            e for e in self.elements if tag in e.tags and isinstance(e, object_type)
+        ]
 
     @classmethod
     def union(cls, *collections: DataProductCollection):
@@ -402,7 +420,7 @@ class DataProductCollection(BaseModel):
         cls,
         *dirs: Path,
         recursive: bool = False,
-        data_products_filename: str | None = "*.json",
+        data_products_filename: str = "*.json",
     ):
         """
         Loads all products from JSONs in the given list of directories.
@@ -546,10 +564,10 @@ class DataProductCollection(BaseModel):
                 format_2ds: list[Format2D] = []
 
                 if not no_tables:
-                    table_entries: list[TableEntry] = collection.get_products(
+                    table_entries = collection.get_products_of_type(
                         tag=tag,
                         object_type=TableEntry,
-                    ).elements
+                    )
 
                     if table_entries:
                         from trendify.api.generator.table_builder import TableBuilder
@@ -563,18 +581,18 @@ class DataProductCollection(BaseModel):
                         logger.info(f"Finished tables for {tag = }")
 
                 if not no_xy_plots:
-                    traces: list[Trace2D] = collection.get_products(
+                    traces = collection.get_products_of_type(
                         tag=tag,
                         object_type=Trace2D,
-                    ).elements
-                    points: list[Point2D] = collection.get_products(
+                    )
+                    points = collection.get_products_of_type(
                         tag=tag,
                         object_type=Point2D,
-                    ).elements
-                    axlines: list[AxLine] = collection.get_products(
+                    )
+                    axlines = collection.get_products_of_type(
                         tag=tag,
                         object_type=AxLine,
-                    ).elements
+                    )
 
                     if points or traces or axlines:  # Update condition
                         from trendify.api.generator.xy_data_plotter import XYDataPlotter
@@ -608,10 +626,10 @@ class DataProductCollection(BaseModel):
                         logger.info(f"Finished xy plot for {tag = }")
 
                 if not no_histograms:
-                    histogram_entries: list[HistogramEntry] = collection.get_products(
+                    histogram_entries = collection.get_products_of_type(
                         tag=tag,
                         object_type=HistogramEntry,
-                    ).elements
+                    )
 
                     if histogram_entries:
                         logger.info(f"Making histogram for {tag = }")
@@ -667,7 +685,7 @@ class DataProductCollection(BaseModel):
 
         logger.info(f"Processing tables for {tag = }")
         table_builder = TableBuilder(in_dirs=in_dirs, out_dir=out_dir)
-        table_builder.build_tables(tag=tag, data_products_fname=data_products_fname)
+        table_builder.load_table(tag=tag, data_products_fname=data_products_fname)
         return table_builder
 
     @classmethod
@@ -682,24 +700,12 @@ class DataProductCollection(BaseModel):
             plotly_figure: PlotlyFigure | None = None
             format_2ds: list[Format2D] = []
 
-            traces = collection.get_products(tag=tag, object_type=Trace2D).elements
-            points = collection.get_products(tag=tag, object_type=Point2D).elements
-            axlines = collection.get_products(tag=tag, object_type=AxLine).elements
-            hist_entries = collection.get_products(
+            traces = collection.get_products_of_type(tag=tag, object_type=Trace2D)
+            points = collection.get_products_of_type(tag=tag, object_type=Point2D)
+            axlines = collection.get_products_of_type(tag=tag, object_type=AxLine)
+            hist_entries = collection.get_products_of_type(
                 tag=tag, object_type=HistogramEntry
-            ).elements
-
-            traces: list[Trace2D]
-            points: list[Point2D]
-            axlines: list[AxLine]
-            hist_entries: list[HistogramEntry]
-
-            traces = [e for e in collection.elements if isinstance(e, Trace2D)]
-            points = [e for e in collection.elements if isinstance(e, Point2D)]
-            axlines = [e for e in collection.elements if isinstance(e, AxLine)]
-            hist_entries = [
-                e for e in collection.elements if isinstance(e, HistogramEntry)
-            ]
+            )
 
             if points or traces or axlines or hist_entries:
                 from trendify.api.generator.xy_data_plotter import XYDataPlotter

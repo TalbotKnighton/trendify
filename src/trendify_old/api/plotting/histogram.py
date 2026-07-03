@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import cast
 from matplotlib.colors import to_rgba
 import plotly.graph_objects as go
 
@@ -192,7 +193,8 @@ class HistogramEntry(PlottableData2D):
         )
 
         # Check if a trace with the same legend group already exists
-        for trace in plotly_figure.fig.data:
+        traces = cast("tuple[go.Histogram, ...]", plotly_figure.fig.data)
+        for trace in traces:
             if trace.legendgroup == legend_key:
                 # Append the value to the existing trace's x data
                 trace.x = list(trace.x) + [self.value]
