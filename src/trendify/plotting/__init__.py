@@ -2,6 +2,7 @@ from trendify.plotting import axline
 from trendify.plotting import figure
 from trendify.plotting import histogram
 from trendify.plotting import point
+from trendify.plotting import scatter
 from trendify.plotting import trace
 
 from trendify.plotting.axline import (
@@ -19,6 +20,9 @@ from trendify.plotting.histogram import (
 from trendify.plotting.point import (
     Point2D,
 )
+from trendify.plotting.scatter import (
+    Scatter2D,
+)
 from trendify.plotting.trace import (
     Trace2D,
 )
@@ -30,11 +34,13 @@ __all__ = [
     "LineOrientation",
     "PlotlyFigure",
     "Point2D",
+    "Scatter2D",
     "SingleAxisFigure",
     "Trace2D",
     "axline",
     "figure",
     "histogram",
     "point",
+    "scatter",
     "trace",
 ]

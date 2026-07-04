@@ -1,6 +1,7 @@
 """
-`Trace2D`: a line/scatter trace built from a list of `Point2D`s, styled with a `Pen`. Use the
-`Trace2D.from_xy` constructor rather than building the `points` list by hand.
+`Trace2D`: an xy line built from flat `x`/`y` arrays, styled with a `Pen`, and optionally
+marked at intervals with a single shared `Marker` (mirroring matplotlib's native
+`markevery`). Use the `Trace2D.from_xy` constructor.
 """
 
 from __future__ import annotations
@@ -8,7 +9,6 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-import numpy as np
 import plotly.graph_objects as go
 from pydantic import ConfigDict
 
@@ -16,7 +16,6 @@ from trendify.base.helpers import Tags
 from trendify.base.pen import Pen
 from trendify.formats.format2d import XYData
 from trendify.plotting.figure import PlotlyFigure
-from trendify.plotting.point import Point2D
 from trendify.styling.marker import Marker
 from trendify.typing import VecN
 
@@ -32,15 +31,20 @@ logger = logging.getLogger(__name__)
 
 class Trace2D(XYData):
     """
-    A collection of points comprising a trace.
+    An xy line, optionally marked at intervals.
     Use the [Trace2D.from_xy][trendify.plotting.trace.Trace2D.from_xy] constructor.
 
     Attributes:
-        points (List[Point2D]): List of points.  Usually the points would have null values
-            for `marker` and `format2d` fields to save space.
+        x (VecN): x values
+        y (VecN): y values
         pen (Pen): Style and label information for drawing to matplotlib axes.
             Only the label information is used in Grafana.
             Eventually style information will be used in grafana.
+        marker (Marker | None): Shared marker style drawn along the line (e.g. one marker
+            every `markevery` points). `None` draws a plain line with no markers.
+        markevery (int | None): Draw a marker every Nth point when `marker` is set (passed
+            straight through to matplotlib's `Axes.plot(markevery=...)`); `None` marks every
+            point.
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
 
@@ -48,49 +52,11 @@ class Trace2D(XYData):
 
     model_config = ConfigDict(extra="forbid")
 
-    points: list[Point2D]
+    x: VecN
+    y: VecN
     pen: Pen = Pen()
-
-    @property
-    def x(self) -> VecN:
-        """
-        Returns an array of x values from `self.points`
-
-        Returns:
-            (VecN): array of x values from `self.points`
-
-        """
-        return np.array([p.x for p in self.points])
-
-    @property
-    def y(self) -> VecN:
-        """
-        Returns an array of y values from `self.points`
-
-        Returns:
-            (VecN): array of y values from `self.points`
-
-        """
-        return np.array([p.y for p in self.points])
-
-    def propagate_format2d_and_pen(self, marker_symbol: str = ".") -> None:
-        """
-        Propagates format and style info to all `self.points` (in-place).
-
-        Args:
-            marker_symbol (str): Valid matplotlib marker symbol
-
-        """
-        self.points = [
-            p.model_copy(
-                update={
-                    "tags": self.tags,
-                    "format2d": self.format2d,
-                    "marker": Marker.from_pen(self.pen, symbol=marker_symbol),
-                }
-            )
-            for p in self.points
-        ]
+    marker: Marker | None = None
+    markevery: int | None = None
 
     @classmethod
     def from_xy(
@@ -100,9 +66,11 @@ class Trace2D(XYData):
         y: VecN,
         pen: Pen = Pen(),
         format2d: Format2D | None = None,
+        marker: Marker | None = None,
+        markevery: int | None = None,
     ):
         """
-        Creates a list of [Point2D][trendify.plotting.point.Point2D]s from xy data and returns a new [Trace2D][trendify.plotting.trace.Trace2D] product.
+        Creates a new [Trace2D][trendify.plotting.trace.Trace2D] product from xy data.
 
         Args:
             tags (Tags): Tags used to sort data products
@@ -110,22 +78,18 @@ class Trace2D(XYData):
             y (VecN): y values
             pen (Pen): Style and label for trace
             format2d (Format2D | None): Format to apply to plot
+            marker (Marker | None): Shared marker style drawn along the line
+            markevery (int | None): Draw a marker every Nth point when `marker` is set
 
         """
         return cls(
             tags=tags,
-            points=[
-                Point2D(
-                    tags=[],
-                    x=x_,
-                    y=y_,
-                    marker=None,
-                    format2d=None,
-                )
-                for x_, y_ in zip(x, y)
-            ],
+            x=x,
+            y=y,
             pen=pen,
             format2d=format2d,
+            marker=marker,
+            markevery=markevery,
         )
 
     def plot_to_ax(self, ax: Axes):
@@ -136,7 +100,14 @@ class Trace2D(XYData):
             ax (Axes): axes to which xy data should be plotted
 
         """
-        ax.plot(self.x, self.y, **self.pen.as_scatter_plot_kwargs())
+        kwargs = self.pen.as_scatter_plot_kwargs()
+        if self.marker is not None:
+            kwargs["marker"] = self.marker.symbol
+            kwargs["markersize"] = self.marker.size
+            kwargs["markerfacecolor"] = self.marker.color
+            kwargs["markeredgecolor"] = self.marker.color
+            kwargs["markevery"] = self.markevery if self.markevery is not None else 1
+        ax.plot(self.x, self.y, **kwargs)
 
     def add_to_plotly(self, plotly_figure: PlotlyFigure) -> PlotlyFigure:
         legend_key = (
@@ -159,19 +130,23 @@ class Trace2D(XYData):
             f"{metadata_html}<extra></extra>"
         )
 
+        # `markevery` (subsampling markers along the line) has no direct Plotly equivalent
+        # for a single trace, so Plotly renders a marker at every point when `marker` is set.
         plotly_figure.fig.add_trace(
             go.Scatter(
-                x=[p.x for p in self.points],
-                y=[p.y for p in self.points],
+                x=self.x,
+                y=self.y,
                 name=self.pen.label if self.pen else None,
-                mode="lines",
+                mode="lines+markers" if self.marker is not None else "lines",
                 line=dict(
                     color=self.pen.rgba if self.pen else None,
                     width=self.pen.size if self.pen else None,
                     dash=self.pen._convert_linestyle_to_plotly() if self.pen else None,
                 ),
                 marker=dict(
-                    color=self.pen.rgba if self.pen else None,  # Marker color
+                    color=self.marker.rgba if self.marker else self.pen.rgba,
+                    size=self.marker.size if self.marker else None,
+                    symbol=self.marker.plotly_symbol if self.marker else None,
                 ),
                 zorder=int(self.pen.zorder),
                 hovertemplate=hovertemplate,

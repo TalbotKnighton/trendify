@@ -7,6 +7,7 @@ themselves onto a Plotly figure.
 from __future__ import annotations
 
 import logging
+from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from enum import StrEnum
 from typing import TYPE_CHECKING
@@ -143,7 +144,7 @@ class Format2D(HashableBase):
         )
 
 
-class PlottableData2D(DataProduct):
+class PlottableData2D(DataProduct, ABC):
     """
     Base class for children of DataProduct to be plotted ax xy data on a 2D plot
 
@@ -156,7 +157,8 @@ class PlottableData2D(DataProduct):
 
     format2d: Format2D | None = None
 
-    def add_to_plotly(self, plotly_figure: PlotlyFigure):
+    @abstractmethod
+    def add_to_plotly(self, plotly_figure: PlotlyFigure) -> PlotlyFigure:
         """
         Add this data product to a plotly figure
 
@@ -164,7 +166,6 @@ class PlottableData2D(DataProduct):
             plotly_figure (PlotlyFigure): Plotly figure to add data to
 
         """
-        raise NotImplementedError("Subclasses must implement add_to_plotly")
 
 
 class XYData(PlottableData2D):

@@ -12,24 +12,97 @@ import importlib.util
 import logging
 import os
 import sys
+from importlib.metadata import version
 from pathlib import Path
 from typing import cast
 
 import typer
+from rich.align import Align
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
 
 from trendify.base.data_product import ProductGenerator
+from trendify.color import Color
+from trendify.examples import make_example_data
 from trendify.log import setup_logger
 from trendify.pipeline import TrendifyPipeline
+from trendify.store.product_store import ProductStore
 
 __all__ = ["app"]
 
 logger = logging.getLogger(__name__)
+console = Console()
+VERSION = version("trendify")
+
+_LOGO_LINES = [
+    "████████╗██████╗ ███████╗███╗   ██╗██████╗ ██╗███████╗██╗   ██╗",
+    "╚══██╔══╝██╔══██╗██╔════╝████╗  ██║██╔══██╗██║██╔════╝╚██╗ ██╔╝",
+    "   ██║   ██████╔╝█████╗  ██╔██╗ ██║██║  ██║██║█████╗   ╚████╔╝ ",
+    "   ██║   ██╔══██╗██╔══╝  ██║╚██╗██║██║  ██║██║██╔══╝    ╚██╔╝  ",
+    "   ██║   ██║  ██║███████╗██║ ╚████║██████╔╝██║██║        ██║   ",
+    "   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚═╝╚═╝        ╚═╝   ",
+]
+_SHADES = [
+    Color.ROSE_300,
+    Color.ROSE_400,
+    Color.ROSE_500,
+    Color.ROSE_600,
+    Color.ROSE_700,
+    Color.ROSE_800,
+]
+
+
+def print_logo():
+    body = Text()
+    for i, (line, shade) in enumerate(zip(_LOGO_LINES, _SHADES)):
+        body.append(line, style=f"bold {shade}")
+        if i != len(_LOGO_LINES) - 1:
+            body.append("\n")
+
+    console.print(
+        Panel(
+            Align.center(body),
+            expand=False,
+            border_style="indian_red1",
+            subtitle=f"[dim]v{VERSION}[/dim]",
+        )
+    )
+
 
 app = typer.Typer(
     name="trendify",
     help="Generate visual data products and static assets from raw data.",
+    rich_markup_mode="rich",
     no_args_is_help=True,
 )
+
+
+def version_callback(value: bool):
+    if value:
+        console.print(
+            f"[bold indian_red1]trendify[/bold indian_red1] [bold white]{VERSION}"
+        )
+        raise typer.Exit()
+
+
+@app.callback(
+    epilog="Check out the [link=https://github.com/talbotknighton/trendify/]full documentation[/link] for more info."
+)
+def main(
+    ctx: typer.Context,
+    version: bool = typer.Option(
+        False,
+        "--version",
+        callback=version_callback,
+        is_eager=True,
+        help="Show version and exit.",
+    ),
+):
+    """
+    [bold indian_red1]Trendify:[/bold indian_red1] Generate visual data products and static assets from raw data.
+    """
+
 
 InputDirectoriesOption = typer.Option(
     ...,
@@ -47,32 +120,73 @@ ProductGeneratorOption = typer.Option(
     ),
 )
 OutputDirectoryOption = typer.Option(
-    ..., "-o", "--output-directory", help="Directory the pipeline reads/writes under."
+    ...,
+    "-o",
+    "--output-directory",
+    help="Directory the pipeline reads/writes under.",
 )
 NProcsOption = typer.Option(
-    1, "-n", "--n-procs", help="Number of parallel worker processes."
+    1,
+    "-n",
+    "--n-procs",
+    help="Number of parallel worker processes.",
+    min=1,
+    max=os.cpu_count(),
 )
 VerboseOption = typer.Option(
     0, "-v", "--verbose", count=True, help="Increase log verbosity."
 )
+QuietOption = typer.Option(
+    0, "--quiet", "-q", count=True, help="Decrease log verbosity."
+)
 DpiOption = typer.Option(
-    500, "--dpi", help="Resolution (dots per inch) for saved matplotlib figures."
+    500,
+    "--dpi",
+    help="Resolution (dots per inch) for saved matplotlib figures.",
+    min=1,
 )
 NoTablesOption = typer.Option(
     False, "--no-tables", help="Suppress TableEntry CSV output."
 )
 NoXyPlotsOption = typer.Option(
-    False, "--no-xy-plots", help="Suppress Point2D/Trace2D/AxLine plot output."
+    False,
+    "--no-xy-plots",
+    help="Suppress Point2D/Scatter2D/Trace2D/AxLine plot output.",
 )
 NoHistogramsOption = typer.Option(
-    False, "--no-histograms", help="Suppress HistogramEntry plot output."
+    False,
+    "--no-histograms",
+    help="Suppress HistogramEntry plot output.",
 )
-NoIncludeFilesOption = typer.Option(
-    False, "--no-include-files", help="Suppress MkDocs include.md generation."
+DbPathArgument = typer.Argument(
+    ...,
+    help="Path to a trendify.db file.",
+)
+ExampleWorkdirOption = typer.Option(
+    ...,
+    "-w",
+    "--workdir",
+    help="Directory in which to generate sample data.",
+)
+ExampleNFoldersOption = typer.Option(
+    10,
+    "-n",
+    "--n-folders",
+    help="Number of sample data sets (subfolders) to generate.",
+)
+HostOption = typer.Option(
+    "127.0.0.1",
+    "--host",
+    help="Interface to bind the dashboard server to.",
+)
+PortOption = typer.Option(
+    8000,
+    "--port",
+    help="Port to bind the dashboard server to.",
 )
 
 
-def _configure_logging(verbose: int) -> None:
+def _configure_logging(verbose: int, quiet: int, logo: bool = True) -> None:
     """
     Configures the root logger via `trendify.log.setup_logger` (Rich console output plus a
     rotating `trendify.log` file) rather than a one-off `logging.basicConfig`. This way a CLI
@@ -80,19 +194,10 @@ def _configure_logging(verbose: int) -> None:
     `setup_logger()` themselves, and `generate_products`'s multiprocess path picks up these
     same handlers via its `QueueListener` (see `trendify.generator.generate`).
     """
-    level = logging.DEBUG if verbose >= 1 else logging.INFO
+    if logo:
+        print_logo()
+    level = logging.INFO - (verbose * 10) + (quiet * 10)
     setup_logger(level=level)
-
-
-def _cap_n_procs(n_procs: int) -> int:
-    """Caps `n_procs` at `5 * os.cpu_count()`, as a precaution against overwhelming the machine."""
-    max_procs = 5 * (os.cpu_count() or 1)
-    if n_procs > max_procs:
-        logger.info(
-            f"Requested {n_procs = } exceeds {max_procs = }; capping to {max_procs}"
-        )
-        return max_procs
-    return n_procs
 
 
 def _resolve_input_directories(patterns: list[str]) -> list[Path]:
@@ -102,7 +207,7 @@ def _resolve_input_directories(patterns: list[str]) -> list[Path]:
     """
     dirs: list[Path] = []
     for pattern in patterns:
-        for match in glob_module.glob(pattern, root_dir=os.getcwd(), recursive=True):
+        for match in glob_module.glob(pattern, root_dir=Path.cwd(), recursive=True):
             path = Path(match)
             dirs.append((path.parent if path.is_file() else path).resolve())
     return dirs
@@ -130,7 +235,17 @@ def _resolve_product_generator(spec: str) -> ProductGenerator:
         )
 
     if Path(module_path).exists():
-        module = _import_from_path(Path(module_path).stem, Path(module_path))
+        file_path = Path(module_path).resolve()
+        # `n_procs > 1` sends `product_generator` to worker processes via pickle, which
+        # serializes a module-level function as a `(module_name, qualname)` reference, not
+        # the code itself. Worker processes (forkserver/spawn) re-import that module by name
+        # using the `sys.path` snapshotted when the process pool starts, so the file's parent
+        # directory must be on `sys.path` *before* that happens, not just registered in this
+        # process's `sys.modules` (which `_import_from_path` alone would do).
+        parent_dir = str(file_path.parent)
+        if parent_dir not in sys.path:
+            sys.path.insert(0, parent_dir)
+        module = _import_from_path(file_path.stem, file_path)
     else:
         module = importlib.import_module(module_path)
 
@@ -140,38 +255,38 @@ def _resolve_product_generator(spec: str) -> ProductGenerator:
     return cast(ProductGenerator, obj)
 
 
-@app.command()
+@app.command(name="generate")
 def generate(
+    ctx: typer.Context,
     input_directories: list[str] = InputDirectoriesOption,
     product_generator: str = ProductGeneratorOption,
     output_directory: Path = OutputDirectoryOption,
     n_procs: int = NProcsOption,
     verbose: int = VerboseOption,
+    quiet: int = QuietOption,
 ) -> None:
     """Generate tagged data products from raw data directories."""
-    _configure_logging(verbose)
-    pipeline = TrendifyPipeline(
-        output_dir=output_directory, n_procs=_cap_n_procs(n_procs)
-    )
-    total = pipeline.generate(
+    _configure_logging(verbose, quiet)
+    pipeline = TrendifyPipeline(output_dir=output_directory, n_procs=n_procs)
+    _total = pipeline.generate(
         product_generator=_resolve_product_generator(product_generator),
         data_dirs=_resolve_input_directories(input_directories),
     )
-    typer.echo(f"Wrote {total} products to {pipeline.db_path}")
 
 
-@app.command()
+@app.command(name="render")
 def render(
+    ctx: typer.Context,
     output_directory: Path = OutputDirectoryOption,
     dpi: int = DpiOption,
     no_tables: bool = NoTablesOption,
     no_xy_plots: bool = NoXyPlotsOption,
     no_histograms: bool = NoHistogramsOption,
-    no_include_files: bool = NoIncludeFilesOption,
     verbose: int = VerboseOption,
+    quiet: int = QuietOption,
 ) -> None:
     """Render CSV tables and matplotlib figures from already-generated products."""
-    _configure_logging(verbose)
+    _configure_logging(verbose, quiet)
     pipeline = TrendifyPipeline(output_dir=output_directory)
     pipeline.render(
         dpi=dpi,
@@ -179,13 +294,12 @@ def render(
         no_xy_plots=no_xy_plots,
         no_histograms=no_histograms,
     )
-    if not no_include_files:
-        pipeline.make_include_files()
     typer.echo(f"Rendered assets to {pipeline.assets_dir}")
 
 
-@app.command()
+@app.command(name="run")
 def run(
+    ctx: typer.Context,
     input_directories: list[str] = InputDirectoriesOption,
     product_generator: str = ProductGeneratorOption,
     output_directory: Path = OutputDirectoryOption,
@@ -194,14 +308,12 @@ def run(
     no_tables: bool = NoTablesOption,
     no_xy_plots: bool = NoXyPlotsOption,
     no_histograms: bool = NoHistogramsOption,
-    no_include_files: bool = NoIncludeFilesOption,
     verbose: int = VerboseOption,
+    quiet: int = QuietOption,
 ) -> None:
     """Generate products and render assets in one step."""
-    _configure_logging(verbose)
-    pipeline = TrendifyPipeline(
-        output_dir=output_directory, n_procs=_cap_n_procs(n_procs)
-    )
+    _configure_logging(verbose, quiet)
+    pipeline = TrendifyPipeline(output_dir=output_directory, n_procs=n_procs)
     total = pipeline.run(
         product_generator=_resolve_product_generator(product_generator),
         data_dirs=_resolve_input_directories(input_directories),
@@ -209,9 +321,116 @@ def run(
         no_tables=no_tables,
         no_xy_plots=no_xy_plots,
         no_histograms=no_histograms,
-        no_include_files=no_include_files,
     )
     typer.echo(f"Wrote {total} products; assets under {pipeline.assets_dir}")
+
+
+@app.command(name="example-data")
+def example_data(
+    ctx: typer.Context,
+    workdir: Path = ExampleWorkdirOption,
+    n_folders: int = ExampleNFoldersOption,
+    verbose: int = VerboseOption,
+    quiet: int = QuietOption,
+) -> None:
+    """Generate sample raw-data directories for exercising the trendify pipeline."""
+    _configure_logging(verbose, quiet)
+    make_example_data(workdir=workdir, n_folders=n_folders)
+    typer.echo(f"Wrote {n_folders} sample data folders under {workdir / 'models'}")
+
+
+def get_local_ip():
+    """Returns the actual local IP address of this machine."""
+    import socket
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Does not actually need to connect to 8.8.8.8 to work
+        s.connect(("8.8.8.8", 1))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = "127.0.0.1"
+    finally:
+        s.close()
+    return ip
+
+
+@app.command(name="serve")
+def serve(
+    ctx: typer.Context,
+    db_path: Path = DbPathArgument,
+    host: str = HostOption,
+    port: int = PortOption,
+    reload: bool = typer.Option(
+        False,
+        "--reload",
+        help="Auto-restart the server when trendify's Python source changes (development only).",
+    ),
+    verbose: int = VerboseOption,
+    quiet: int = QuietOption,
+) -> None:
+    """Launch a local web dashboard for browsing a trendify.db's data products."""
+    _configure_logging(verbose, quiet, logo=False)
+    db_path = db_path.resolve()
+    if not db_path.exists():
+        raise typer.BadParameter(f"No such database file: {db_path}")
+
+    # Fail fast on a bad/corrupt db before uvicorn even starts, rather than a 500 on first request.
+    with ProductStore.open(db_path, readonly=True):
+        pass
+
+    # Deferred import: keeps `trendify.cli` import light for callers of generate/render/run
+    # who never touch the dashboard (FastAPI/Jinja2/uvicorn stay unimported until needed).
+    import uvicorn
+
+    from trendify.viewer.app import create_app
+
+    if reload:
+        connection_info_suffix = "\n\n[yellow]--reload is on: editing trendify's Python source will restart the server.[/yellow]"
+    else:
+        connection_info_suffix = ""
+
+    password = None  # not supported yet
+    if password:
+        connection_info = "[yellow]Auth enabled. Use [u]any[/u] username and your provided password.[/yellow]\n\n"
+    else:
+        connection_info = ""
+
+    connection_info += (
+        f"Local: [bold indian_red1 u]http://127.0.0.1:{port}[/bold indian_red1 u]"
+    )
+    if host == "0.0.0.0":
+        connection_info += f"\nMobile: [bold indian_red1 u]http://{get_local_ip()}:{port}[/bold indian_red1 u]"
+    else:
+        connection_info += "\n\n[dim]Tip: To view on other devices (and to make pages shareable), run with[/dim] [yellow]--host 0.0.0.0[/yellow]"
+    connection_info += connection_info_suffix
+
+    console.print(
+        Panel(
+            f"""[bold green]Trendify Viewer is Live![/bold green]\n\n{connection_info}\n\n[yellow]Press CTRL+C to stop[/yellow]""",
+            border_style="indian_red1",
+            expand=False,
+            title="Trendify Viewer",
+        )
+    )
+
+    if reload:
+        # uvicorn's reload mode re-imports the app in a fresh subprocess on every source change,
+        # so it needs an importable factory string rather than the live `create_app(db_path)`
+        # instance -- the db_path is handed across that boundary via an env var instead
+        # (`create_app_from_env` reads it back on the reloaded side).
+        os.environ["TRENDIFY_DB_PATH"] = str(db_path)
+        uvicorn.run(
+            "trendify.viewer.app:create_app_from_env",
+            factory=True,
+            host=host,
+            port=port,
+            reload=True,
+            reload_dirs=[str(Path(__file__).parent)],
+            log_level="critical",
+        )
+    else:
+        uvicorn.run(create_app(db_path), host=host, port=port, log_level="critical")
 
 
 if __name__ == "__main__":

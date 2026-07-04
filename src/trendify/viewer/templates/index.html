@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div x-data="appShell"
+     @tag-selected="onTagSelected($event.detail)"
+     class="flex h-screen flex-col">
+    {% include "partials/nav.html" %}
+
+    <div class="flex flex-1 overflow-hidden">
+        {% include "partials/sidebar.html" %}
+
+        <div x-show="sidebarOpen"
+             x-cloak
+             @mousedown="startDrag($event)"
+             @dblclick="fitToContent()"
+             :class="dragging ? 'bg-rose-500' : 'bg-transparent hover:bg-rose-500'"
+             class="w-1 flex-shrink-0 cursor-col-resize transition-colors duration-150"
+             title="Drag to resize, double-click to fit content"></div>
+
+        <main class="flex-1 overflow-auto bg-slate-200 p-4 transition-colors duration-150 dark:bg-slate-900"
+              id="main-view">
+            <template x-if="!selectedTag">
+                <p class="text-base text-slate-500 dark:text-slate-400">
+                    Select a tag from the sidebar to view its data.
+                </p>
+            </template>
+            <template x-if="selectedTag && selectedProductKinds.includes('table')">
+                {% include "partials/table_view.html" %}
+            </template>
+            <template x-if="selectedTag && !selectedProductKinds.includes('table') && selectedProductKinds.includes('plot')">
+                <p class="text-base text-slate-500 dark:text-slate-400">Plot viewer coming soon.</p>
+            </template>
+        </main>
+    </div>
+
+    {% include "partials/footer.html" %}
+
+    <div x-cloak
+         class="pointer-events-none fixed right-4 top-16 z-50 flex w-80 flex-col">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div x-show="toast.visible"
+                 x-transition:enter="transition-all duration-200 ease-out"
+                 x-transition:enter-start="opacity-0 max-h-0 mb-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 max-h-40 mb-4 translate-y-0"
+                 x-transition:leave="transition-all duration-300 ease-in"
+                 x-transition:leave-start="opacity-100 max-h-40 mb-4"
+                 x-transition:leave-end="opacity-0 max-h-0 mb-0"
+                 class="card pointer-events-auto flex items-start gap-2 overflow-hidden rounded-lg border-l-4 p-3 shadow-lg"
+                 :class="{
+                     'border-l-emerald-500': toast.kind === 'success',
+                     'border-l-rose-500': toast.kind === 'error',
+                     'border-l-slate-400': toast.kind === 'info',
+                 }">
+                <div class="flex-1">
+                    <p class="text-base"
+                       x-text="toast.message"></p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400"
+                       x-text="timeAgo(toast.timestamp)"></p>
+                </div>
+                <button type="button"
+                        @click="dismiss(toast.id)"
+                        class="text-slate-500 transition-colors duration-150 hover:text-rose-500"
+                        aria-label="Dismiss notification">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 20 20"
+                         fill="currentColor"
+                         class="h-4 w-4">
+                        <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                    </svg>
+                </button>
+            </div>
+        </template>
+    </div>
+</div>
+{% endblock %}

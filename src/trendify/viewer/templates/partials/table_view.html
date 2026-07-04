@@ -1,0 +1,26 @@
+<div class="flex h-full flex-col"
+     x-data="tableView">
+        <div class="mb-2 flex gap-1 border-b border-slate-400/30">
+                <button type="button"
+                        @click="setView('stats')"
+                        :class="view === 'stats' ? 'border-b-2 border-rose-500 text-rose-500' : 'border-b-2 border-transparent text-slate-500 dark:text-slate-400'"
+                        class="px-3 py-2 text-base font-semibold transition-colors duration-150 hover:text-rose-500">Statistics</button>
+                <button type="button"
+                        @click="setView('melted')"
+                        :class="view === 'melted' ? 'border-b-2 border-rose-500 text-rose-500' : 'border-b-2 border-transparent text-slate-500 dark:text-slate-400'"
+                        class="px-3 py-2 text-base font-semibold transition-colors duration-150 hover:text-rose-500">Melted</button>
+                <button type="button"
+                        @click="setView('pivot')"
+                        :class="view === 'pivot' ? 'border-b-2 border-rose-500 text-rose-500' : 'border-b-2 border-transparent text-slate-500 dark:text-slate-400'"
+                        class="px-3 py-2 text-base font-semibold transition-colors duration-150 hover:text-rose-500">Pivot</button>
+        </div>
+        <p x-show="unavailable"
+           x-cloak
+           class="text-base text-slate-500 dark:text-slate-400">No data available for this view.</p>
+        <div x-show="!unavailable"
+             class="flex-1 overflow-auto">
+                <table x-ref="table"
+                       class="display w-full"
+                       style="width:100%"></table>
+        </div>
+</div>

@@ -1,0 +1,69 @@
+/* Hand-authored styles that don't fit cleanly as inline Tailwind utility classes. */
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Generic bordered/elevated surface for grouped controls (e.g. the nav bar's theme
+   selector "pill"). Matches the surrounding chrome background so it reads as a subtle,
+   bordered inset rather than a jarring color block; child elements provide their own
+   contrast (e.g. a selected button's lighter background). */
+.card {
+    border-radius: 0.5rem;
+    border: 1px solid rgb(148 163 184 / 0.3); /* slate-400/30 */
+    background-color: rgb(226 232 240); /* slate-200 */
+}
+
+.dark .card {
+    background-color: rgb(30 41 59); /* slate-800 */
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgb(100 116 139 / 0.4); /* slate-500/40 */
+    border-radius: 9999px;
+}
+
+/* DataTables (table viewer): fixed layout so manually-resized column widths stick instead of
+   being recalculated on every redraw. */
+table.dataTable {
+    table-layout: fixed;
+}
+
+.dt-col-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    user-select: none;
+}
+
+.dt-col-resize-handle:hover {
+    background-color: rgb(244 63 94 / 0.4); /* rose-500/40 */
+}
+
+.dt-column-filter {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    border: 1px solid rgb(148 163 184 / 0.4); /* slate-400/40 */
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.875rem;
+    font-weight: normal;
+    background-color: transparent;
+}
+
+.dark .dt-column-filter {
+    color: rgb(226 232 240); /* slate-200 */
+}

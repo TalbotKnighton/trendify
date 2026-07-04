@@ -1,0 +1,15 @@
+<footer class="flex h-8 flex-shrink-0 items-center justify-between border-t border-slate-400/30 bg-slate-100 px-2 text-sm dark:bg-slate-800">
+    <a href="https://github.com/TalbotKnighton/trendify"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="text-slate-500 transition-colors duration-150 hover:text-rose-500 dark:text-slate-400">&copy; {{ current_year }} Talbot Knighton, David Gable</a>
+    <div class="flex items-center gap-2">
+        <span class="text-slate-500 dark:text-slate-400">v{{ app_version }}</span>
+        <span class="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-sm font-semibold transition-colors duration-150"
+              :class="connected ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/20 text-rose-600 dark:text-rose-400'">
+            <span class="h-1.5 w-1.5 rounded-full"
+                  :class="connected ? 'bg-emerald-500' : 'bg-rose-500'"></span>
+            <span x-text="connected ? 'Connected' : 'Disconnected'"></span>
+        </span>
+    </div>
+</footer>

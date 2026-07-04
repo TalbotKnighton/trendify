@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 
 from trendify.base.data_product import ProductGenerator
 from trendify.generator.generate import generate_products
-from trendify.generator.render import make_include_files, render_assets
+from trendify.generator.render import render_assets
 from trendify.store.product_store import ProductStore
 
 __all__ = ["TrendifyPipeline"]
@@ -60,7 +60,7 @@ class TrendifyPipeline(BaseModel):
         """
         logger.info(
             f"Generating products for {len(data_dirs)} directory(ies) into {self.db_path} "
-            f"({self.n_procs} worker process(es))"
+            f"({self.n_procs} worker process{'es' if self.n_procs > 1 else ''})"
         )
         total = generate_products(
             product_generator=product_generator,
@@ -95,25 +95,6 @@ class TrendifyPipeline(BaseModel):
             )
         logger.info(f"Finished rendering assets into {self.assets_dir}")
 
-    def make_include_files(
-        self,
-        heading_level: int | None = 2,
-        local_server_path: str | Path | None = None,
-        mkdocs_include_dir: str | Path | None = None,
-    ) -> None:
-        """
-        Writes nested MkDocs `include.md` files for `self.assets_dir`. See
-        `trendify.generator.render.make_include_files`.
-
-        """
-        logger.info(f"Writing include.md files under {self.assets_dir}")
-        make_include_files(
-            root_dir=self.assets_dir,
-            local_server_path=local_server_path,
-            mkdocs_include_dir=mkdocs_include_dir,
-            heading_level=heading_level,
-        )
-
     def run(
         self,
         product_generator: ProductGenerator,
@@ -122,11 +103,10 @@ class TrendifyPipeline(BaseModel):
         no_tables: bool = False,
         no_xy_plots: bool = False,
         no_histograms: bool = False,
-        no_include_files: bool = False,
     ) -> int:
         """
         Runs the full pipeline: generate, then render (unless all three asset kinds are
-        suppressed), then write include files (unless suppressed).
+        suppressed).
 
         Returns:
             (int): total number of products written by `generate`
@@ -143,8 +123,6 @@ class TrendifyPipeline(BaseModel):
                 no_xy_plots=no_xy_plots,
                 no_histograms=no_histograms,
             )
-            if not no_include_files:
-                self.make_include_files()
 
         logger.info(f"Finished full pipeline for {self.output_dir}")
         return total

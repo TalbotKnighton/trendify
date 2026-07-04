@@ -1,0 +1,148 @@
+<nav class="flex h-14 flex-shrink-0 items-center justify-between border-b border-slate-400/30 bg-slate-100 px-2 dark:bg-slate-800">
+    <div class="flex items-center gap-2">
+        <button type="button"
+                @click="toggleSidebar()"
+                class="flex h-10 w-10 items-center justify-center rounded transition-colors duration-150 hover:bg-slate-400/20"
+                aria-label="Toggle sidebar">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 20 20"
+                 fill="currentColor"
+                 class="h-5 w-5">
+                <path fill-rule="evenodd"
+                      d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75Zm0 5A.75.75 0 0 1 2.75 9h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 9.75ZM2.75 14a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H2.75Z"
+                      clip-rule="evenodd" />
+            </svg>
+        </button>
+        <a href="https://talbotknighton.github.io/trendify/"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="flex items-center gap-2">
+            <img src="/static/assets/logo.svg"
+                 alt="trendify"
+                 class="h-8 w-8">
+            <span class="text-3xl font-extrabold tracking-wide text-rose-500">TRENDIFY</span>
+        </a>
+        <div class="card flex h-9 items-center rounded-lg p-1 shadow-sm">
+            <button type="button"
+                    @click='copyDbPath({{ db_path | tojson }})'
+                    class="max-w-xs cursor-pointer truncate rounded-md px-2 py-1 text-base text-slate-500 transition-colors duration-150 hover:text-rose-500 dark:text-slate-400"
+                    title="{{ db_path }} (click to copy)">{{ db_path }}</button>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-1"
+         x-data="themeSelector">
+        <div class="card flex h-9 items-center gap-0.5 rounded-lg p-1 shadow-sm">
+            <button type="button"
+                    @click="setTheme('light')"
+                    :class="theme === 'light' ? 'bg-slate-100 text-amber-500 shadow-sm dark:bg-slate-700' : 'text-slate-500'"
+                    class="rounded-md px-2 py-1 transition-all duration-150 hover:scale-110 active:scale-90"
+                    title="Light Mode">
+                <svg class="h-4 w-4"
+                     fill="none"
+                     stroke="currentColor"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+            <button type="button"
+                    @click="setTheme('system')"
+                    :class="theme === 'system' ? 'bg-slate-100 text-cyan-500 shadow-sm dark:bg-slate-700' : 'text-slate-500'"
+                    class="rounded-md px-2 py-1 transition-all duration-150 hover:scale-110 active:scale-90"
+                    title="Follow System Theme">
+                <svg class="h-4 w-4"
+                     fill="none"
+                     stroke="currentColor"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            </button>
+            <button type="button"
+                    @click="setTheme('dark')"
+                    :class="theme === 'dark' ? 'bg-slate-100 text-blue-400 shadow-sm dark:bg-slate-700' : 'text-slate-500'"
+                    class="rounded-md px-2 py-1 transition-all duration-150 hover:scale-110 active:scale-90"
+                    title="Dark Mode">
+                <svg class="h-4 w-4"
+                     fill="none"
+                     stroke="currentColor"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </div>
+        <div class="card relative flex h-9 items-center rounded-lg p-1 shadow-sm"
+             x-data="{ open: false }">
+            <button type="button"
+                    @click="open = !open; if (open) markAllRead()"
+                    class="relative flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150 hover:bg-slate-400/20"
+                    aria-label="Notifications">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 20 20"
+                     fill="currentColor"
+                     class="h-4 w-4">
+                    <path d="M10 2a6 6 0 0 0-6 6c0 3.09-1.176 4.256-1.596 4.66A1 1 0 0 0 3 14.5h14a1 1 0 0 0 .596-1.84C17.176 12.256 16 11.09 16 8a6 6 0 0 0-6-6ZM8.34 17a1.65 1.65 0 0 0 3.32 0H8.34Z" />
+                </svg>
+                <span x-show="unreadCount > 0"
+                      x-cloak
+                      x-text="unreadCount"
+                      class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-xs font-bold text-white"></span>
+            </button>
+            <div x-show="open"
+                 x-cloak
+                 @click.outside="open = false"
+                 class="card absolute right-0 top-11 z-[60] w-80 rounded-lg p-2 shadow-lg">
+                <div class="flex items-center justify-between px-1 pb-2">
+                    <span class="text-base font-semibold">Notifications</span>
+                    <button type="button"
+                            @click="clearAll()"
+                            class="text-sm text-slate-500 transition-colors duration-150 hover:text-rose-500 dark:text-slate-400">Clear all</button>
+                </div>
+                <template x-if="toasts.length === 0">
+                    <p class="px-1 py-2 text-base text-slate-500 dark:text-slate-400">No notifications</p>
+                </template>
+                <div class="max-h-80 overflow-y-auto">
+                    <template x-for="toast in [...toasts].reverse()"
+                              :key="toast.id">
+                        <div class="flex items-start gap-2 rounded px-1 py-2 text-left">
+                            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full"
+                                  :class="{
+                                      'bg-emerald-500': toast.kind === 'success',
+                                      'bg-rose-500': toast.kind === 'error',
+                                      'bg-slate-400': toast.kind === 'info',
+                                  }"></span>
+                            <div class="flex-1">
+                                <p class="text-base"
+                                   x-text="toast.message"></p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400"
+                                   x-text="timeAgo(toast.timestamp)"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="card flex h-9 items-center rounded-lg p-1 shadow-sm">
+            <button type="button"
+                    x-data="fullscreenToggle"
+                    @click="toggle()"
+                    class="flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150 hover:bg-slate-400/20"
+                    aria-label="Toggle fullscreen">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 20 20"
+                     fill="currentColor"
+                     class="h-4 w-4">
+                    <path d="M3.75 3.75a.75.75 0 0 0-.75.75v3.5a.75.75 0 0 0 1.5 0V5.5h2.5a.75.75 0 0 0 0-1.5h-3.25ZM16.25 3.75h-3.25a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75ZM4.5 12.75a.75.75 0 0 0-1.5 0v3.5c0 .414.336.75.75.75h3.25a.75.75 0 0 0 0-1.5h-2.5v-2.75ZM15.5 12.75v2.75h-2.5a.75.75 0 0 0 0 1.5h3.25a.75.75 0 0 0 .75-.75v-3.5a.75.75 0 0 0-1.5 0Z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</nav>

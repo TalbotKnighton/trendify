@@ -61,18 +61,6 @@ class TestRender:
         assert not (pipeline.assets_dir / "scatter.jpg").exists()
 
 
-class TestMakeIncludeFiles:
-    def test_writes_include_md(self, tmp_path: Path):
-        dirs = _make_run_dirs(tmp_path, 2)
-        pipeline = TrendifyPipeline(output_dir=tmp_path / "out")
-        pipeline.generate(_generator, dirs)
-        pipeline.render(dpi=50)
-
-        pipeline.make_include_files()
-
-        assert (pipeline.assets_dir / "include.md").exists()
-
-
 class TestRun:
     def test_generates_and_renders_end_to_end(self, tmp_path: Path):
         dirs = _make_run_dirs(tmp_path, 3)
@@ -82,15 +70,6 @@ class TestRun:
 
         assert total == 3
         assert (pipeline.assets_dir / "scatter.jpg").exists()
-        assert (pipeline.assets_dir / "include.md").exists()
-
-    def test_no_include_files_suppresses_include_md(self, tmp_path: Path):
-        dirs = _make_run_dirs(tmp_path, 2)
-        pipeline = TrendifyPipeline(output_dir=tmp_path / "out")
-
-        pipeline.run(_generator, dirs, dpi=50, no_include_files=True)
-
-        assert not (pipeline.assets_dir / "include.md").exists()
 
     def test_all_assets_suppressed_skips_render_and_include(self, tmp_path: Path):
         dirs = _make_run_dirs(tmp_path, 2)

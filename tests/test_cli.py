@@ -100,7 +100,6 @@ class TestRenderCommand:
 
         assert result.exit_code == 0, result.output
         assert (out_dir / "assets" / "scatter.jpg").exists()
-        assert (out_dir / "assets" / "include.md").exists()
 
 
 class TestRunCommand:
@@ -126,27 +125,3 @@ class TestRunCommand:
 
         assert result.exit_code == 0, result.output
         assert (out_dir / "assets" / "scatter.jpg").exists()
-
-    def test_no_include_files_flag(self, tmp_path: Path):
-        glob_pattern = _make_run_dirs(tmp_path, 2)
-        gen_module = _write_generator_module(tmp_path / "gen.py")
-        out_dir = tmp_path / "out"
-
-        result = runner.invoke(
-            app,
-            [
-                "run",
-                "-i",
-                str(glob_pattern),
-                "-g",
-                f"{gen_module}:generate",
-                "-o",
-                str(out_dir),
-                "--dpi",
-                "50",
-                "--no-include-files",
-            ],
-        )
-
-        assert result.exit_code == 0, result.output
-        assert not (out_dir / "assets" / "include.md").exists()

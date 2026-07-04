@@ -49,8 +49,11 @@ def _leaf_type_names(object_type: type[DataProduct]) -> list[str]:
 
 
 def _tag_sort_key(tag: Tag):
+    # `Tag` elements may be `str` or `int`, which aren't comparable to each other; sorting
+    # each element on `(is_int, value)` keeps same-type elements ordered by value while
+    # elements of different types compare on the `is_int` flag instead of colliding.
     as_tuple = tag if isinstance(tag, tuple) else (tag,)
-    return (len(as_tuple), as_tuple)
+    return (len(as_tuple), tuple((isinstance(x, int), x) for x in as_tuple))
 
 
 @dataclass

@@ -9,6 +9,8 @@ description = "Tools for generating data products, storing, and interacting with
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.139.0",
+    "jinja2>=3.1.6",
     "matplotlib>=3.11.0",
     "numpy>=2.4.6",
     "numpydantic>=1.10.0",
@@ -16,7 +18,9 @@ dependencies = [
     "polars>=1.42.1",
     "pydantic>=2.13.4",
     "rich>=15.0.0",
+    "sse-starlette>=3.4.5",
     "typer>=0.26.8",
+    "uvicorn>=0.49.0",
 ]
 
 keywords = ["Data", "Products", "Process", "Post", "Database"]
@@ -102,7 +106,7 @@ ignore = ["typings"]
 exclude_also = ["if __name__ == .__main__.:", "@(abc\\.)?abstractmethod"]
 
 [dependency-groups]
-dev = ["mkinit>=1.2.0", "pytest>=9.1.1"]
+dev = ["httpx>=0.28.1", "mkinit>=1.2.0", "pytest>=9.1.1"]
 
 [project.urls]
 "Homepage" = "https://github.com/talbotknighton/trendify"

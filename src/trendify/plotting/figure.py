@@ -7,30 +7,26 @@ for Plotly).
 
 from __future__ import annotations
 
+import logging
+import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast
+
 import matplotlib.pyplot as plt
-import warnings
-import logging
-
-from typing import Any, cast
-
 import numpy as np
 import plotly.graph_objects as go
-
-from trendify.formats.format2d import AxisScale, PlottableData2D
-
-from typing import Self, TYPE_CHECKING
-
 from pydantic import ConfigDict
 
 from trendify.base.helpers import Tag
+from trendify.formats.format2d import AxisScale, PlottableData2D
 
 if TYPE_CHECKING:
-    from trendify.formats.format2d import Format2D
-    from trendify.styling.grid import Grid
     from matplotlib.axes import Axes
     from matplotlib.figure import Figure
+
+    from trendify.formats.format2d import Format2D
+    from trendify.styling.grid import Grid
 
 
 __all__ = ["PlotlyFigure", "SingleAxisFigure"]
@@ -336,7 +332,7 @@ class PlotlyFigure:
         self.fig.update_xaxes(**xaxis_updates)
         self.fig.update_yaxes(**yaxis_updates)
 
-    def add_data_product(self, product: PlottableData2D) -> Self:
+    def add_data_product(self, product: PlottableData2D) -> PlotlyFigure:
         """
         Add a data product to the figure
 

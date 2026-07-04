@@ -6,7 +6,7 @@ import pytest
 
 from trendify.base.pen import Pen
 from trendify.formats.table import TableEntry
-from trendify.generator.render import make_include_files, render_assets
+from trendify.generator.render import render_assets
 from trendify.plotting.histogram import HistogramEntry
 from trendify.plotting.point import Point2D
 from trendify.plotting.trace import Trace2D
@@ -100,32 +100,3 @@ class TestRenderAssets:
         out_dir = tmp_path / "out"
         render_assets(store, out_dir)
         assert (out_dir / "tag.jpg").exists()
-
-
-class TestMakeIncludeFiles:
-    def test_writes_include_md_referencing_figures_and_tables(self, tmp_path: Path):
-        (tmp_path / "fig.jpg").touch()
-        (tmp_path / "table_pivot.csv").touch()
-
-        make_include_files(tmp_path)
-
-        include_text = (tmp_path / "include.md").read_text()
-        assert "fig.jpg" in include_text
-        assert "table_pivot.csv" in include_text
-
-    def test_nested_directories_get_child_includes(self, tmp_path: Path):
-        child = tmp_path / "child"
-        child.mkdir()
-        (child / "fig.jpg").touch()
-
-        make_include_files(tmp_path)
-
-        parent_include = (tmp_path / "include.md").read_text()
-        assert "child" in parent_include
-        assert (child / "include.md").exists()
-
-    def test_empty_tree_is_a_noop(self, tmp_path: Path):
-        empty = tmp_path / "empty"
-        empty.mkdir()
-        make_include_files(empty)
-        assert (empty / "include.md").exists()

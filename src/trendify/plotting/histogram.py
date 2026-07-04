@@ -9,9 +9,10 @@ from __future__ import annotations
 import logging
 from typing import cast
 
+import numpy as np
 import plotly.graph_objects as go
 from matplotlib.colors import to_rgba
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, field_validator
 
 from trendify.base.helpers import HashableBase, Tags
 from trendify.formats.format2d import PlottableData2D
@@ -45,7 +46,19 @@ class HistogramStyle(HashableBase):
     alpha_face: float = 0.3
     linewidth: float = 2
     zorder: int = 1
-    bins: int | list[int] | tuple[int] | VecN | None = None
+    bins: int | tuple[int, ...] | None = None
+
+    @field_validator("bins", mode="before")
+    @classmethod
+    def _coerce_bins_to_hashable(
+        cls, value: int | list[int] | tuple[int] | VecN | None
+    ):
+        # `HistogramStyle` is a `HashableBase` (its instances are deduplicated via `set()` in
+        # `Histogrammer.handle_histogram_entries`), so `bins` can't be stored as a `list` or
+        # `np.ndarray`: both are unhashable and would break `HashableBase.__hash__`.
+        if isinstance(value, (list, np.ndarray)):
+            return tuple(int(v) for v in value)
+        return value
 
     def as_plot_kwargs(self):
         """
@@ -187,7 +200,7 @@ class HistogramEntry(PlottableData2D):
 
     model_config = ConfigDict(extra="forbid")
 
-    def add_to_plotly(self, plotly_figure: PlotlyFigure):
+    def add_to_plotly(self, plotly_figure: PlotlyFigure) -> PlotlyFigure:
         """Add histogram entry to plotly figure, merging with existing traces if possible"""
         if not self.style:
             logger.error("HistogramEntry style is not defined.")

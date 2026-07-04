@@ -35,23 +35,27 @@ def make_example_data(workdir: Path, n_folders: int = 10):
     models_dir = workdir.joinpath("models")
     models_dir.mkdir(parents=True, exist_ok=True)
 
+    if not (models_dir / ".gitignore").exists():
+        (models_dir / ".gitignore").write_text("*")
+
     for n in range(n_folders):
         subdir = models_dir.joinpath(str(n))
         subdir.mkdir(exist_ok=True, parents=True)
 
-        n_samples = np.random.randint(low=40, high=50)
+        rng = np.random.default_rng(seed=n)
+
+        n_samples = rng.integers(low=40, high=50)
         t = np.linspace(0, 1, n_samples)
         periods = [1, 2, 3]
-        amplitudes = np.random.uniform(low=0.5, high=1.5, size=3)
+        amplitudes = rng.uniform(low=0.5, high=1.5, size=3)
 
-        inputs = {"n_samples": n_samples}
+        inputs: dict[str, int | float] = {"n_samples": int(n_samples)}
         inputs.update({f"p{i}": p for i, p in enumerate(periods)})
-        inputs.update({f"a{i}": a for i, a in enumerate(amplitudes)})
+        inputs.update({f"a{i}": float(a) for i, a in enumerate(amplitudes)})
         pl.DataFrame(
             {"key": list(inputs.keys()), "value": [str(v) for v in inputs.values()]}
         ).write_csv(subdir.joinpath("stdin.csv"), include_header=False)
 
-        rng = np.random.default_rng(seed=42)
         noise_level = 0.05
         waves = [
             a * np.sin(t * (2 * np.pi / p)) + noise_level * rng.normal(size=len(t))
@@ -265,7 +269,7 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
     for i, trace in enumerate(traces):
         trendify.Point2D(
             x=workdir.name,
-            y=len(trace.points),
+            y=len(trace.x),
             marker=trendify.Marker(
                 size=10,
                 label=trace.pen.label,
@@ -276,13 +280,60 @@ def example_data_product_generator(workdir: Path) -> trendify.ProductList:
             tags=["scatter_plot"],
         ).append_to_list(products).set_metadata({"run_num": run_num})
 
+    trendify.Trace2D.from_xy(
+        x=time,
+        y=df[value_columns[0]].to_numpy(),
+        tags=[("nested_plots", "group_a", "deep_trace")],
+        pen=trendify.Pen(label=value_columns[0], color=colors[0]),
+        format2d=trendify.Format2D(
+            grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
+        ),
+    ).append_to_list(products).set_metadata({"run_num": run_num})
+    trendify.Trace2D.from_xy(
+        x=time,
+        y=df[value_columns[-1]].to_numpy(),
+        tags=[("nested_plots", "group_b", "deep_trace")],
+        pen=trendify.Pen(label=value_columns[-1], color=colors[-1]),
+        format2d=trendify.Format2D(
+            grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
+        ),
+    ).append_to_list(products).set_metadata({"run_num": run_num})
+
     for col in value_columns:
         series = df[col]
         trendify.TableEntry(
             row=workdir.name,
             col=col,
             value=series.len(),
-            tags=["table"],
+            tags=[("tables", "lengths")],
+            unit=None,
+        ).append_to_list(products)
+        trendify.TableEntry(
+            row=workdir.name,
+            col=col,
+            value=cast(float, series.mean()),
+            tags=[("tables", "means")],
+            unit=None,
+        ).append_to_list(products)
+        trendify.TableEntry(
+            row=workdir.name,
+            col=col,
+            value=cast(float, series.std()),
+            tags=[("tables", "std_devs")],
+            unit=None,
+        ).append_to_list(products)
+        trendify.TableEntry(
+            row=workdir.name,
+            col=col,
+            value=cast(float, series.max()),
+            tags=[("extrema", "max")],
+            unit=None,
+        ).append_to_list(products)
+        trendify.TableEntry(
+            row=workdir.name,
+            col=col,
+            value=cast(float, series.min()),
+            tags=[("extrema", "min")],
             unit=None,
         ).append_to_list(products)
 
