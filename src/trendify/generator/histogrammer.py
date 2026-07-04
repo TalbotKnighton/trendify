@@ -1,5 +1,5 @@
 """
-Draws `HistogramEntry` products onto a matplotlib figure. Fed directly by `ProductStore` query
+Draws `HistogramEntry` records onto a matplotlib figure. Fed directly by `RecordStore` query
 results, so there's no directory-loading state to manage.
 """
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class Histogrammer(BaseModel):
     """
-    Draws `HistogramEntry` products sharing a tag onto a matplotlib axes, grouped by style.
+    Draws `HistogramEntry` records sharing a tag onto a matplotlib axes, grouped by style.
     """
 
     @classmethod

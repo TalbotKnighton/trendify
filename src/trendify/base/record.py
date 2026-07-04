@@ -1,7 +1,7 @@
 """
-Base `DataProduct` pydantic model, the `ProductGenerator`/`ProductList` type aliases user code
-implements against, and the subclass registry `ProductStore` uses to deserialize a stored
-`product_type` string back into its concrete pydantic class.
+Base `Record` pydantic model, the `RecordGenerator`/`RecordList` type aliases user code
+implements against, and the subclass registry `RecordStore` uses to deserialize a stored
+`record_type` string back into its concrete pydantic class.
 """
 
 from __future__ import annotations
@@ -24,18 +24,18 @@ from trendify.base.helpers import Tags
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["DataProduct", "ProductGenerator", "ProductList"]
+__all__ = ["Record", "RecordGenerator", "RecordList"]
 
-_data_product_subclass_registry: dict[str, type[DataProduct]] = {}
+_record_subclass_registry: dict[str, type[Record]] = {}
 
 
-class DataProduct(BaseModel):
+class Record(BaseModel):
     """
-    Base class for data products to be generated and handled.
+    Base class for records to be generated and handled.
 
     Attributes:
-        product_type (str): Product type should be the same as the class name.
-            The product type is used to search for products from the store.
+        record_type (str): Record type should be the same as the class name.
+            The record type is used to search for records from the store.
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
 
@@ -63,11 +63,11 @@ class DataProduct(BaseModel):
 
     @computed_field
     @property
-    def product_type(self) -> str:
+    def record_type(self) -> str:
         """
         Returns:
-            (str): Product type should be the same as the class name.
-                The product type is used to search for products from the store.
+            (str): Record type should be the same as the class name.
+                The record type is used to search for records from the store.
 
         """
         return type(self).__name__
@@ -75,11 +75,11 @@ class DataProduct(BaseModel):
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """
         Registers child subclasses to be able to parse them from JSON payloads using the
-        [deserialize][trendify.base.data_product.DataProduct.deserialize] method
+        [deserialize][trendify.base.record.Record.deserialize] method
         """
         super().__init_subclass__(**kwargs)
-        _data_product_subclass_registry[cls.__name__] = cls
-        logger.debug(f"Registered DataProduct subclass {cls.__name__!r}")
+        _record_subclass_registry[cls.__name__] = cls
+        logger.debug(f"Registered Record subclass {cls.__name__!r}")
 
     model_config = ConfigDict(extra="allow")
 
@@ -98,35 +98,35 @@ class DataProduct(BaseModel):
         return self
 
     @classmethod
-    def registry(cls) -> dict[str, type[DataProduct]]:
+    def registry(cls) -> dict[str, type[Record]]:
         """
         Returns:
-            (dict[str, type[DataProduct]]): a copy of the product_type -> class registry,
-                used by the store to resolve which leaf `product_type` names correspond to a
+            (dict[str, type[Record]]): a copy of the record_type -> class registry,
+                used by the store to resolve which leaf `record_type` names correspond to a
                 given (possibly non-leaf) type when filtering by `object_type`.
 
         """
-        return dict(_data_product_subclass_registry)
+        return dict(_record_subclass_registry)
 
     @classmethod
-    def deserialize(cls, product_type: str, payload: str) -> DataProduct:
+    def deserialize(cls, record_type: str, payload: str) -> Record:
         """
-        Loads a stored JSON payload into the pydantic dataclass registered under `product_type`.
+        Loads a stored JSON payload into the pydantic dataclass registered under `record_type`.
 
         Args:
-            product_type (str): the `product_type` discriminator string (same as the class name)
-            payload (str): the raw JSON text (e.g. from the store's `products.payload` column)
+            record_type (str): the `record_type` discriminator string (same as the class name)
+            payload (str): the raw JSON text (e.g. from the store's `records.payload` column)
 
         Returns:
-            (DataProduct): the reconstructed, correctly-typed product instance
+            (Record): the reconstructed, correctly-typed record instance
 
         """
         try:
-            duck_type = _data_product_subclass_registry[product_type]
+            duck_type = _record_subclass_registry[record_type]
         except KeyError:
             logger.error(
-                f"No registered DataProduct subclass named {product_type!r}. Known types: "
-                f"{sorted(_data_product_subclass_registry)}. This usually means the module "
+                f"No registered Record subclass named {record_type!r}. Known types: "
+                f"{sorted(_record_subclass_registry)}. This usually means the module "
                 f"defining that subclass hasn't been imported in this process."
             )
             raise
@@ -137,16 +137,16 @@ class DataProduct(BaseModel):
         return self
 
 
-ProductList = list[SerializeAsAny[InstanceOf[DataProduct]]]
-"""List of serializable [DataProduct][trendify.base.data_product.DataProduct] or child classes thereof"""
+RecordList = list[SerializeAsAny[InstanceOf[Record]]]
+"""List of serializable [Record][trendify.base.record.Record] or child classes thereof"""
 
-ProductGenerator = Callable[[Path], ProductList]
+RecordGenerator = Callable[[Path], RecordList]
 """
-Callable method type.  Users must provide a `ProductGenerator` to map over raw data.
+Callable method type.  Users must provide a `RecordGenerator` to map over raw data.
 
 Args:
     path (Path): Workdir holding raw data (Should be one per run from a batch)
 
 Returns:
-    (ProductList): List of data products to be sorted and used to produce assets
+    (RecordList): List of records to be sorted and used to produce assets
 """

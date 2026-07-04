@@ -2,7 +2,7 @@
 `Scatter2D`: a bulk collection of (x, y) points sharing one `Marker`, drawn as unconnected
 scatter points.
 
-Use this instead of many individual `Point2D` products when a single generation call
+Use this instead of many individual `Point2D` records when a single generation call
 produces a large array of points that all share one style and don't need distinct per-point
 tags/metadata (e.g. a raw scatter of measurements from one run). `Point2D` remains the right
 choice when each point is its own taggable/hoverable entity, such as one point summarizing
@@ -25,8 +25,6 @@ from trendify.typing import VecN
 
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
-
-    from trendify.formats.format2d import Format2D
 
 __all__ = ["Scatter2D"]
 
@@ -60,21 +58,19 @@ class Scatter2D(XYData):
         x: VecN,
         y: VecN,
         marker: Marker = Marker(),
-        format2d: Format2D | None = None,
     ):
         """
-        Creates a new [Scatter2D][trendify.plotting.scatter.Scatter2D] product from xy data
+        Creates a new [Scatter2D][trendify.plotting.scatter.Scatter2D] record from xy data
         sharing one marker style.
 
         Args:
-            tags (Tags): Tags used to sort data products
+            tags (Tags): Tags used to sort records
             x (VecN): x values
             y (VecN): y values
             marker (Marker): Style and label shared by every point
-            format2d (Format2D | None): Format to apply to plot
 
         """
-        return cls(tags=tags, x=x, y=y, marker=marker, format2d=format2d)
+        return cls(tags=tags, x=x, y=y, marker=marker)
 
     def plot_to_ax(self, ax: Axes):
         """

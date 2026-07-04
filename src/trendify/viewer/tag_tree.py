@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from trendify.base.helpers import Tag
 from trendify.formats.format2d import PlottableData2D
-from trendify.store.product_store import ProductStore
+from trendify.store.record_store import RecordStore
 from trendify.store.tags import tag_to_path_parts
 
 __all__ = ["TagNode", "build_tag_tree"]
@@ -24,8 +24,8 @@ class TagNode(BaseModel):
     key: Tag
     label: str
     children: list[TagNode]
-    has_products: bool
-    product_kinds: list[Literal["plot", "table"]]
+    has_records: bool
+    record_kinds: list[Literal["plot", "table"]]
 
     def search_blob(self) -> str:
         """
@@ -39,24 +39,24 @@ class TagNode(BaseModel):
 
     def subtree_kinds(self) -> list[Literal["plot", "table"]]:
         """
-        Union of this node's own `product_kinds` and every descendant's, so a folder can be
-        filtered by product type without needing to walk the tree again client-side (a folder
-        should stay visible under a "table" filter if any product anywhere inside it is a
-        table, even if the folder itself has no products of its own).
+        Union of this node's own `record_kinds` and every descendant's, so a folder can be
+        filtered by record type without needing to walk the tree again client-side (a folder
+        should stay visible under a "table" filter if any record anywhere inside it is a
+        table, even if the folder itself has no records of its own).
         """
-        kinds = set(self.product_kinds)
+        kinds = set(self.record_kinds)
         for child in self.children:
             kinds.update(child.subtree_kinds())
         return sorted(kinds)
 
-    def product_count(self) -> int:
+    def record_count(self) -> int:
         """
-        Recursive count of self-and-descendant nodes with `has_products`, shown as a
+        Recursive count of self-and-descendant nodes with `has_records`, shown as a
         subtle badge next to folder labels in the sidebar.
         """
-        count = 1 if self.has_products else 0
+        count = 1 if self.has_records else 0
         for child in self.children:
-            count += child.product_count()
+            count += child.record_count()
         return count
 
 
@@ -66,9 +66,9 @@ class _TrieNode:
         self.tag: Tag | None = None
 
 
-def _product_kinds(store: ProductStore, tag: Tag) -> list[Literal["plot", "table"]]:
+def _record_kinds(store: RecordStore, tag: Tag) -> list[Literal["plot", "table"]]:
     kinds: list[Literal["plot", "table"]] = []
-    if store.get_products_of_type(PlottableData2D, tag=tag):
+    if store.get_records_of_type(PlottableData2D, tag=tag):
         kinds.append("plot")
     if store.get_table_entries(tag).height > 0:
         kinds.append("table")
@@ -79,18 +79,18 @@ def _category_rank(node: TagNode) -> int:
     """Folders sort before plot leaves, which sort before table leaves."""
     if node.children:
         return 0
-    if "plot" in node.product_kinds:
+    if "plot" in node.record_kinds:
         return 1
-    if "table" in node.product_kinds:
+    if "table" in node.record_kinds:
         return 2
     return 3
 
 
-def build_tag_tree(store: ProductStore) -> list[TagNode]:
+def build_tag_tree(store: RecordStore) -> list[TagNode]:
     """
     Walks `store.tag_tree()`'s flat, tuple-encoded tags into a nested `TagNode` hierarchy: a
     tag `("a", "b")` becomes a folder `"a"` containing a leaf `"b"`. A tuple prefix (e.g. `"a"`
-    from that same tag) may never itself have been used as a real tag, so `has_products` is
+    from that same tag) may never itself have been used as a real tag, so `has_records` is
     tracked separately from `children` being non-empty -- a node can be a pure folder, a pure
     leaf, or both at once.
     """
@@ -115,8 +115,8 @@ def build_tag_tree(store: ProductStore) -> list[TagNode]:
                     key=tag if tag is not None else label,
                     label=label,
                     children=to_nodes(node.children),
-                    has_products=tag is not None,
-                    product_kinds=_product_kinds(store, tag) if tag is not None else [],
+                    has_records=tag is not None,
+                    record_kinds=_record_kinds(store, tag) if tag is not None else [],
                 )
             )
         # Two stable sorts: alphabetical first, then by category -- the second sort's stability

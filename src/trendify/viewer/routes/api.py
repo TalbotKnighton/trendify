@@ -4,7 +4,7 @@ server-rendered from the same data, see `routes.pages` -- this endpoint exists f
 client-side refresh/polling use) and a liveness/db-change ping. Plot/table data endpoints land
 in later milestones.
 
-Every handler reads from the process-lifetime, read-only `ProductStore` on
+Every handler reads from the process-lifetime, read-only `RecordStore` on
 `request.app.state.store` and caches its response in `request.app.state.response_cache`. The
 `.db` file can be regenerated out from under a running `serve` process (e.g. someone re-runs
 `trendify generate`/`run`); `/ping` detects that via the file's mtime and clears the cache, so
@@ -22,7 +22,7 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 from trendify.generator.table_builder import TableBuilder
-from trendify.store.product_store import ProductStore
+from trendify.store.record_store import RecordStore
 from trendify.store.tags import decode_tag
 from trendify.viewer.tag_tree import TagNode, build_tag_tree
 
@@ -41,7 +41,7 @@ class TableResponse(BaseModel):
     rows: list[dict[str, Any]]
 
 
-def _get_store(request: Request) -> ProductStore:
+def _get_store(request: Request) -> RecordStore:
     return request.app.state.store
 
 
@@ -60,7 +60,7 @@ def _cached[T](request: Request, cache_key: tuple, build: Callable[[], T]) -> T:
 @router.get("/tags", response_model=list[TagNode])
 async def get_tags(request: Request) -> list[TagNode]:
     # async def, not def -- see routes.pages.index's comment: keeps this on the event loop's
-    # thread, matching the ProductStore connection's thread affinity.
+    # thread, matching the RecordStore connection's thread affinity.
     store = _get_store(request)
     return _cached(request, ("tags",), lambda: build_tag_tree(store))
 
@@ -72,7 +72,7 @@ async def ping(request: Request) -> dict[str, bool | float | None]:
 
     Also reports the `.db` file's mtime, so the client can detect that someone regenerated it
     (e.g. re-ran `trendify generate`/`run` while this server is still up) and prompt a refresh.
-    The underlying `ProductStore` connection itself stays valid across a regeneration (the
+    The underlying `RecordStore` connection itself stays valid across a regeneration (the
     generate pipeline writes into the same file/inode via WAL, it doesn't replace it) -- only
     this process's *response cache* goes stale, so an mtime change clears it here.
     """

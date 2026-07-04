@@ -3,39 +3,46 @@
 from pathlib import Path
 
 import pytest
+from trendify.store.record_store import RecordStore
 
 from trendify.base.pen import Pen
+from trendify.formats.format2d import Format2D
 from trendify.formats.table import TableEntry
 from trendify.generator.render import render_assets
+from trendify.generator.xy_data_plotter import XYDataPlotter
 from trendify.plotting.histogram import HistogramEntry
 from trendify.plotting.point import Point2D
 from trendify.plotting.trace import Trace2D
-from trendify.store.product_store import ProductStore
 
 
 @pytest.fixture
-def store(tmp_path: Path):
-    with ProductStore.open(tmp_path / "trendify.db") as s:
+def db_path(tmp_path: Path) -> Path:
+    return tmp_path / "trendify.db"
+
+
+@pytest.fixture
+def store(db_path: Path):
+    with RecordStore.open(db_path) as s:
         yield s
 
 
 class TestRenderAssets:
     def test_xy_plot_and_histogram_write_separate_files_for_shared_tag(
-        self, store: ProductStore, tmp_path: Path
+        self, store: RecordStore, db_path: Path, tmp_path: Path
     ):
-        # A tag used for both XY and histogram products is precisely the v1 bug
+        # A tag used for both XY and histogram records is precisely the v1 bug
         # (rewrite_reference/OVERVIEW.md #8 item 9): they must not overlay on one figure/file.
-        products = [
+        records = [
             Trace2D.from_xy(
                 tags=["shared"], x=[0, 1, 2], y=[0, 1, 4], pen=Pen(label="trace")
             ),
             HistogramEntry(tags=["shared"], value=1.0),
             HistogramEntry(tags=["shared"], value=2.0),
         ]
-        store.write_run(tmp_path / "run1", products)
+        store.write_run(tmp_path / "run1", records)
 
         out_dir = tmp_path / "out"
-        render_assets(store, out_dir)
+        render_assets(db_path, out_dir)
 
         xy_path = out_dir / "shared.jpg"
         hist_path = out_dir / "shared_histogram.jpg"
@@ -44,59 +51,116 @@ class TestRenderAssets:
         assert xy_path != hist_path
 
     def test_renders_table_xy_and_histogram_for_distinct_tags(
-        self, store: ProductStore, tmp_path: Path
+        self, store: RecordStore, db_path: Path, tmp_path: Path
     ):
-        products = [
+        records = [
             TableEntry(tags=["tbl"], row="r1", col="c1", value=1.0),
             Point2D(tags=["scatter"], x=1.0, y=2.0),
             HistogramEntry(tags=["hist"], value=1.0),
         ]
-        store.write_run(tmp_path / "run1", products)
+        store.write_run(tmp_path / "run1", records)
 
         out_dir = tmp_path / "out"
-        render_assets(store, out_dir)
+        render_assets(db_path, out_dir)
 
         assert (out_dir / "tbl_melted.csv").exists()
         assert (out_dir / "scatter.jpg").exists()
         assert (out_dir / "hist_histogram.jpg").exists()
 
-    def test_tuple_tag_nests_output_path(self, store: ProductStore, tmp_path: Path):
+    def test_tuple_tag_nests_output_path(
+        self, store: RecordStore, db_path: Path, tmp_path: Path
+    ):
         store.write_run(
             tmp_path / "run1", [Point2D(tags=[("group", "scatter")], x=1.0, y=2.0)]
         )
 
         out_dir = tmp_path / "out"
-        render_assets(store, out_dir)
+        render_assets(db_path, out_dir)
 
         assert (out_dir / "group" / "scatter.jpg").exists()
 
     def test_no_flags_suppress_corresponding_output(
-        self, store: ProductStore, tmp_path: Path
+        self, store: RecordStore, db_path: Path, tmp_path: Path
     ):
-        products = [
+        records = [
             TableEntry(tags=["tag"], row="r1", col="c1", value=1.0),
             Point2D(tags=["tag"], x=1.0, y=2.0),
             HistogramEntry(tags=["tag"], value=1.0),
         ]
-        store.write_run(tmp_path / "run1", products)
+        store.write_run(tmp_path / "run1", records)
 
         out_dir = tmp_path / "out"
         render_assets(
-            store, out_dir, no_tables=True, no_xy_plots=True, no_histograms=True
+            db_path, out_dir, skip_tables=True, skip_xy_plots=True, skip_histograms=True
         )
 
         assert list(out_dir.glob("**/*")) == []
 
-    def test_mismatched_format2d_across_products_does_not_crash(
-        self, store: ProductStore, tmp_path: Path
+    def test_tag_with_no_format2d_at_all_still_renders(
+        self, store: RecordStore, db_path: Path, tmp_path: Path
     ):
-        # Products sharing a tag with no explicit format2d (all None) previously crashed
-        # Format2D.union_from_iterable with "not enough values to unpack" in v1; render_assets
-        # should just skip applying a format rather than error.
+        # A tag with plotted records but no Format2D record at all (the common case)
+        # must still render fine, with matplotlib's own autoscale in effect.
         store.write_run(
             tmp_path / "run1",
             [Point2D(tags=["tag"], x=1.0, y=2.0), Point2D(tags=["tag"], x=2.0, y=3.0)],
         )
         out_dir = tmp_path / "out"
-        render_assets(store, out_dir)
+        render_assets(db_path, out_dir)
         assert (out_dir / "tag.jpg").exists()
+
+
+class TestFormat2DResolution:
+    def test_upsert_by_tag_keeps_only_one_format2d_per_tag(
+        self, store: RecordStore, tmp_path: Path
+    ):
+        store.write_run(tmp_path / "run1", [Format2D(tags=["tag"], title_fig="first")])
+        store.write_run(tmp_path / "run2", [Format2D(tags=["tag"], title_fig="second")])
+
+        format2ds = store.get_records_of_type(Format2D, tag="tag")
+
+        assert len(format2ds) == 1
+        assert format2ds[0].title_fig == "second"
+
+    def test_tag_with_no_format2d_autofits_to_combined_record_range(
+        self, store: RecordStore, tmp_path: Path
+    ):
+        store.write_run(
+            tmp_path / "run1",
+            [
+                Point2D(tags=["tag"], x=0.0, y=0.0),
+                Point2D(tags=["tag"], x=10.0, y=20.0),
+            ],
+        )
+        points = store.get_records_of_type(Point2D, tag="tag")
+
+        saf = XYDataPlotter.handle_points_and_traces(
+            tag="tag", points=points, traces=[], axlines=[], scatters=[]
+        )
+
+        x_min, x_max = saf.ax.get_xlim()
+        y_min, y_max = saf.ax.get_ylim()
+        assert x_min < 0.0 and x_max > 10.0
+        assert y_min < 0.0 and y_max > 20.0
+
+    def test_explicit_lim_x_overrides_while_lim_y_still_autofits(
+        self, store: RecordStore, tmp_path: Path
+    ):
+        store.write_run(
+            tmp_path / "run1",
+            [
+                Format2D(tags=["tag"], lim_x=(-5.0, 5.0)),
+                Point2D(tags=["tag"], x=0.0, y=0.0),
+                Point2D(tags=["tag"], x=10.0, y=20.0),
+            ],
+        )
+        points = store.get_records_of_type(Point2D, tag="tag")
+        format2d = store.get_records_of_type(Format2D, tag="tag")[0]
+
+        saf = XYDataPlotter.handle_points_and_traces(
+            tag="tag", points=points, traces=[], axlines=[], scatters=[]
+        )
+        saf.apply_format(format2d)
+
+        assert saf.ax.get_xlim() == (-5.0, 5.0)
+        assert saf.ax.get_ylim()[1] > 20.0

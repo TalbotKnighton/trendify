@@ -5,16 +5,12 @@ via `Grid.from_theme`, plus the per-axis `GridAxis` settings a `Grid` is built f
 
 from __future__ import annotations
 
-import logging
-from collections.abc import Iterable
 from enum import StrEnum
 
 from pydantic import ConfigDict
 
 from trendify.base.helpers import HashableBase
 from trendify.base.pen import Pen
-
-logger = logging.getLogger(__name__)
 
 __all__ = ["Grid", "GridAxis", "GridTheme"]
 
@@ -128,33 +124,3 @@ class Grid(HashableBase):
             return themes[name]
         except KeyError:
             raise ValueError(f"Unknown grid theme: {name!r}")
-
-    @classmethod
-    def union_from_iterable(cls, grids: Iterable[Grid]) -> Grid:
-        """
-        Gets the most inclusive grid format from a list of Grid objects.
-        Requires that all GridAxis fields (major/minor) are consistent across the objects.
-        """
-        grids = list(set(grids) - {None})
-        if not grids:
-            return cls()
-
-        # Enforce consistent GridAxis settings
-        try:
-            [major] = set(g.major for g in grids)
-            [minor] = set(g.minor for g in grids)
-            [enable_minor_ticks] = set(g.enable_minor_ticks for g in grids)
-            [zorder] = set(g.zorder for g in grids)
-        except ValueError:
-            logger.error(
-                f"Grid.union_from_iterable: products sharing a tag disagree on "
-                f"major/minor/enable_minor_ticks/zorder. {grids = }"
-            )
-            raise
-
-        return cls(
-            major=major,
-            minor=minor,
-            enable_minor_ticks=enable_minor_ticks,
-            zorder=zorder,
-        )

@@ -1,6 +1,6 @@
 """
 Canonical encoding between the pydantic-facing `Tag` type and the `tag_key` string
-stored/indexed in the `product_tags` and `table_entries` SQL tables.
+stored/indexed in the `record_tags` and `table_entries` SQL tables.
 
 The same `encode_tag` function must be used at write time and query time so lookups are
 exact-match index seeks.

@@ -1,13 +1,10 @@
-from trendify.store import db
-from trendify.store import product_store
-from trendify.store import tags
-
+from trendify.store import db, record_store, tags
 from trendify.store.db import (
     SCHEMA_VERSION,
     connect,
 )
-from trendify.store.product_store import (
-    ProductStore,
+from trendify.store.record_store import (
+    RecordStore,
 )
 from trendify.store.tags import (
     decode_tag,
@@ -17,12 +14,12 @@ from trendify.store.tags import (
 
 __all__ = [
     "SCHEMA_VERSION",
-    "ProductStore",
+    "RecordStore",
     "connect",
     "db",
     "decode_tag",
     "encode_tag",
-    "product_store",
+    "record_store",
     "tag_to_path_parts",
     "tags",
 ]

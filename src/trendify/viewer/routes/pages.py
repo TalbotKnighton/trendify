@@ -24,7 +24,7 @@ router = APIRouter()
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request) -> HTMLResponse:
     # `async def`, not `def`: FastAPI runs sync route handlers in a threadpool, but the
-    # ProductStore's sqlite3 connection is thread-affine to whatever thread opened it (the
+    # RecordStore's sqlite3 connection is thread-affine to whatever thread opened it (the
     # main thread, in create_app). An `async def` handler that never awaits stays on the
     # event loop's thread instead, matching the connection's affinity.
     store = request.app.state.store

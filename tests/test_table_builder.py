@@ -4,15 +4,15 @@ from pathlib import Path
 
 import polars as pl
 import pytest
+from trendify.store.record_store import RecordStore
 
 from trendify.formats.table import TableEntry
 from trendify.generator.table_builder import TableBuilder
-from trendify.store.product_store import ProductStore
 
 
 @pytest.fixture
 def store(tmp_path: Path):
-    with ProductStore.open(tmp_path / "trendify.db") as s:
+    with RecordStore.open(tmp_path / "trendify.db") as s:
         yield s
 
 
@@ -91,7 +91,7 @@ class TestProcessTableEntries:
         assert list(tmp_path.iterdir()) == []
 
     def test_heterogeneous_value_types_write_csv_without_error(self, tmp_path: Path):
-        # Object-dtype "value" column, as returned by ProductStore.get_table_entries.
+        # Object-dtype "value" column, as returned by RecordStore.get_table_entries.
         melted = pl.DataFrame(
             {
                 "row": ["r1", "r1", "r2"],
@@ -115,16 +115,14 @@ class TestProcessTableEntries:
 
 
 class TestProcessTableEntriesFromStore:
-    def test_round_trips_through_product_store(
-        self, store: ProductStore, tmp_path: Path
-    ):
-        products = [
+    def test_round_trips_through_record_store(self, store: RecordStore, tmp_path: Path):
+        records = [
             TableEntry(tags=["tbl"], row="r1", col="c1", value=1.0),
             TableEntry(tags=["tbl"], row="r1", col="c2", value=2.0),
             TableEntry(tags=["tbl"], row="r2", col="c1", value=3.0),
             TableEntry(tags=["tbl"], row="r2", col="c2", value=4.0),
         ]
-        store.write_run(tmp_path / "run1", products)
+        store.write_run(tmp_path / "run1", records)
 
         melted = store.get_table_entries("tbl")
         out_dir = tmp_path / "out"

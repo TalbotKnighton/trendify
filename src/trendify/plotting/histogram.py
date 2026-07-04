@@ -188,7 +188,7 @@ class HistogramEntry(PlottableData2D):
     Use this class to specify a value to be collected into a matplotlib histogram.
 
     Attributes:
-        tags (Tags): Tags used to sort data products
+        tags (Tags): Tags used to sort records
         value (float | str): Value to be binned
         style (HistogramStyle): Style of histogram display
 

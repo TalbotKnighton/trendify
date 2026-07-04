@@ -1,22 +1,22 @@
 """
-`Format2D` (axis/legend/grid/scale/limit settings shared by every 2D plot type) and the
-`PlottableData2D`/`XYData` base classes that carry an optional `Format2D` and know how to draw
-themselves onto a Plotly figure.
+`Format2D` (axis/legend/grid/scale/limit settings for a plot) and the `PlottableData2D`/
+`XYData` base classes that know how to draw themselves onto a Plotly figure.
+
+`Format2D` is a `Record` in its own right, written once per tag (like any other
+record) rather than embedded in every plotted record -- see `RecordStore.write_run`'s
+upsert-by-tag handling for it, and `render.py`'s single per-tag lookup.
 """
 
 from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
 from enum import StrEnum
 from typing import TYPE_CHECKING
 
-import numpy as np
 from pydantic import ConfigDict
 
-from trendify.base.data_product import DataProduct
-from trendify.base.helpers import HashableBase
+from trendify.base.record import Record
 from trendify.styling.grid import Grid
 from trendify.styling.legend import Legend
 
@@ -34,9 +34,9 @@ class AxisScale(StrEnum):
     """Format axis with log base 10"""
 
 
-class Format2D(HashableBase):
+class Format2D(Record):
     """
-    Formatting data for matplotlib figure and axes
+    Formatting data for matplotlib figure and axes. Written once per tag.
 
     Attributes:
         title_fig (Optional[str], optional): Sets [figure title][matplotlib.figure.Figure.suptitle]. Defaults to None.
@@ -44,10 +44,10 @@ class Format2D(HashableBase):
         title_ax (Optional[str], optional): Sets [axis title][matplotlib.axes.Axes.set_title]. Defaults to None.
         label_x (Optional[str], optional): Sets [x-axis label][matplotlib.axes.Axes.set_xlabel]. Defaults to None.
         label_y (Optional[str], optional): Sets [y-axis label][matplotlib.axes.Axes.set_ylabel]. Defaults to None.
-        lim_x_min (float | None, optional): Sets [x-axis lower bound][matplotlib.axes.Axes.set_xlim]. Defaults to None.
-        lim_x_max (float | None, optional): Sets [x-axis upper bound][matplotlib.axes.Axes.set_xlim]. Defaults to None.
-        lim_y_min (float | None, optional): Sets [y-axis lower bound][matplotlib.axes.Axes.set_ylim]. Defaults to None.
-        lim_y_max (float | None, optional): Sets [y-axis upper bound][matplotlib.axes.Axes.set_ylim]. Defaults to None.
+        lim_x (tuple[float | None, float | None]): x-axis (lower, upper) bound. Either side
+            `None` means autofit that side to whatever's plotted. Defaults to `(None, None)`.
+        lim_y (tuple[float | None, float | None]): y-axis (lower, upper) bound, same semantics
+            as `lim_x`. Defaults to `(None, None)`.
         grid (Grid | None,optional): Sets the [grid][matplotlib.pyplot.grid]. Defaults to None.
         scale_x (AxisScale, optional): Sets the x axis scale to an option from [AxisScale][trendify.formats.format2d.AxisScale]. Defaults to AxisScale.LINEAR
         scale_y (AxisScale, optional): Sets the y axis scale to an option from [AxisScale][trendify.formats.format2d.AxisScale]. Defaults to AxisScale.LINEAR
@@ -61,106 +61,32 @@ class Format2D(HashableBase):
     title_ax: str | None = None
     label_x: str | None = None
     label_y: str | None = None
-    lim_x_min: float | None = None
-    lim_x_max: float | None = None
-    lim_y_min: float | None = None
-    lim_y_max: float | None = None
+    lim_x: tuple[float | None, float | None] = (None, None)
+    lim_y: tuple[float | None, float | None] = (None, None)
     grid: Grid | None = None
     scale_x: AxisScale = AxisScale.LINEAR
     scale_y: AxisScale = AxisScale.LINEAR
     figure_width: float = 6.4
     figure_height: float = 4.8
+    dpi: int = 500
 
     model_config = ConfigDict(extra="forbid")
 
-    @classmethod
-    def union_from_iterable(cls, format2ds: Iterable[Format2D]):
-        """
-        Gets the most inclusive format object (in terms of limits) from a list of `Format2D` objects.
-        Requires that the label and title fields are identical for all format objects in the list.
 
-        Args:
-            format2ds (Iterable[Format2D]): Iterable of `Format2D` objects.
-
-        Returns:
-            (Format2D): Single format object from list of objects.
-
-        """
-        formats = list(set(format2ds) - {None})
-
-        try:
-            [title_fig] = set(i.title_fig for i in formats if i is not None)
-            [legend] = set(i.legend for i in formats if i is not None)
-            [title_ax] = set(i.title_ax for i in formats if i is not None)
-            [label_x] = set(i.label_x for i in formats if i is not None)
-            [label_y] = set(i.label_y for i in formats if i is not None)
-            [figure_width] = set(i.figure_width for i in formats)
-            [figure_height] = set(i.figure_height for i in formats)
-        except ValueError:
-            logger.error(
-                "Format2D.union_from_iterable: products sharing a tag disagree on a field "
-                "that must be identical across all of them (title_fig, legend, title_ax, "
-                f"label_x, label_y, figure_width, or figure_height). {formats = }"
-            )
-            raise
-
-        x_min = [i.lim_x_min for i in formats if i.lim_x_min is not None]
-        x_max = [i.lim_x_max for i in formats if i.lim_x_max is not None]
-        y_min = [i.lim_y_min for i in formats if i.lim_y_min is not None]
-        y_max = [i.lim_y_max for i in formats if i.lim_y_max is not None]
-
-        lim_x_min = np.min(x_min) if len(x_min) > 0 else None
-        lim_x_max = np.max(x_max) if len(x_max) > 0 else None
-        lim_y_min = np.min(y_min) if len(y_min) > 0 else None
-        lim_y_max = np.max(y_max) if len(y_max) > 0 else None
-
-        grid = Grid.union_from_iterable(f.grid for f in formats if f.grid is not None)
-
-        try:
-            [scale_x] = set(i.scale_x for i in formats)
-            [scale_y] = set(i.scale_y for i in formats)
-        except ValueError:
-            logger.error(
-                f"Format2D.union_from_iterable: products sharing a tag disagree on "
-                f"scale_x/scale_y. {formats = }"
-            )
-            raise
-
-        return cls(
-            title_fig=title_fig,
-            legend=legend,
-            title_ax=title_ax,
-            label_x=label_x,
-            label_y=label_y,
-            lim_x_min=lim_x_min,
-            lim_x_max=lim_x_max,
-            lim_y_min=lim_y_min,
-            lim_y_max=lim_y_max,
-            grid=grid,
-            scale_x=scale_x,
-            scale_y=scale_y,
-            figure_width=figure_width,
-            figure_height=figure_height,
-        )
-
-
-class PlottableData2D(DataProduct, ABC):
+class PlottableData2D(Record, ABC):
     """
-    Base class for children of DataProduct to be plotted ax xy data on a 2D plot
+    Base class for children of Record to be plotted ax xy data on a 2D plot
 
     Attributes:
-        format2d (Format2D|None): Format to apply to plot
         tags (Tags): Tags to be used for sorting data.
         metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
 
     """
 
-    format2d: Format2D | None = None
-
     @abstractmethod
     def add_to_plotly(self, plotly_figure: PlotlyFigure) -> PlotlyFigure:
         """
-        Add this data product to a plotly figure
+        Add this record to a plotly figure
 
         Args:
             plotly_figure (PlotlyFigure): Plotly figure to add data to
@@ -170,5 +96,5 @@ class PlottableData2D(DataProduct, ABC):
 
 class XYData(PlottableData2D):
     """
-    Base class for children of DataProduct to be plotted ax xy data on a 2D plot
+    Base class for children of Record to be plotted ax xy data on a 2D plot
     """

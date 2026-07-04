@@ -22,8 +22,6 @@ from trendify.typing import VecN
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
 
-    from trendify.formats.format2d import Format2D
-
 __all__ = ["Trace2D"]
 
 logger = logging.getLogger(__name__)
@@ -65,19 +63,17 @@ class Trace2D(XYData):
         x: VecN,
         y: VecN,
         pen: Pen = Pen(),
-        format2d: Format2D | None = None,
         marker: Marker | None = None,
         markevery: int | None = None,
     ):
         """
-        Creates a new [Trace2D][trendify.plotting.trace.Trace2D] product from xy data.
+        Creates a new [Trace2D][trendify.plotting.trace.Trace2D] record from xy data.
 
         Args:
-            tags (Tags): Tags used to sort data products
+            tags (Tags): Tags used to sort records
             x (VecN): x values
             y (VecN): y values
             pen (Pen): Style and label for trace
-            format2d (Format2D | None): Format to apply to plot
             marker (Marker | None): Shared marker style drawn along the line
             markevery (int | None): Draw a marker every Nth point when `marker` is set
 
@@ -87,7 +83,6 @@ class Trace2D(XYData):
             x=x,
             y=y,
             pen=pen,
-            format2d=format2d,
             marker=marker,
             markevery=markevery,
         )

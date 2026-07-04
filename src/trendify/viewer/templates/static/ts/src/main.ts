@@ -25,7 +25,7 @@ document.addEventListener("alpine:init", () => {
   Alpine.data("appShell", () => ({
     sidebarOpen: true,
     selectedTag: null as Tag | null,
-    selectedProductKinds: [] as string[],
+    selectedRecordKinds: [] as string[],
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
     },
@@ -42,7 +42,7 @@ document.addEventListener("alpine:init", () => {
       const stored = loadSelectionFromUrl();
       if (stored) {
         this.selectedTag = stored.tag;
-        this.selectedProductKinds = stored.productKinds;
+        this.selectedRecordKinds = stored.recordKinds;
       }
       startConnectionMonitor({
         pingUrl: "/api/ping",
@@ -61,16 +61,18 @@ document.addEventListener("alpine:init", () => {
         },
       });
     },
-    onTagSelected(detail: { tag: Tag; productKinds: string[] }) {
+    onTagSelected(detail: { tag: Tag; recordKinds: string[] }) {
       this.selectedTag = detail.tag;
-      this.selectedProductKinds = detail.productKinds;
-      saveSelectionToUrl(detail.tag, detail.productKinds);
+      this.selectedRecordKinds = detail.recordKinds;
+      saveSelectionToUrl(detail.tag, detail.recordKinds);
       this.push(`Viewing ${formatTag(detail.tag)}`, "info", 2000);
     },
     async copyDbPath(path: string) {
       const ok = await copyToClipboard(path);
       this.push(
-        ok ? "Copied database path to clipboard" : "Could not copy to clipboard",
+        ok
+          ? "Copied database path to clipboard"
+          : "Could not copy to clipboard",
         ok ? "success" : "error",
         2000,
       );

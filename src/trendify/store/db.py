@@ -27,26 +27,26 @@ CREATE TABLE IF NOT EXISTS runs (
     generated_at TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS records (
     id INTEGER PRIMARY KEY,
     run_id INTEGER NOT NULL REFERENCES runs(id) ON DELETE CASCADE,
-    product_type TEXT NOT NULL,
+    record_type TEXT NOT NULL,
     payload TEXT NOT NULL,
     created_at TEXT NOT NULL
 );
-CREATE INDEX IF NOT EXISTS idx_products_run ON products(run_id);
+CREATE INDEX IF NOT EXISTS idx_records_run ON records(run_id);
 
-CREATE TABLE IF NOT EXISTS product_tags (
-    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS record_tags (
+    record_id INTEGER NOT NULL REFERENCES records(id) ON DELETE CASCADE,
     tag_key TEXT NOT NULL,
-    product_type TEXT NOT NULL,
-    PRIMARY KEY (product_id, tag_key)
+    record_type TEXT NOT NULL,
+    PRIMARY KEY (record_id, tag_key)
 );
-CREATE INDEX IF NOT EXISTS idx_product_tags_lookup ON product_tags(tag_key, product_type);
+CREATE INDEX IF NOT EXISTS idx_record_tags_lookup ON record_tags(tag_key, record_type);
 
 CREATE TABLE IF NOT EXISTS table_entries (
     id INTEGER PRIMARY KEY,
-    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    record_id INTEGER NOT NULL REFERENCES records(id) ON DELETE CASCADE,
     tag_key TEXT NOT NULL,
     row_key TEXT NOT NULL,
     col_key TEXT NOT NULL,

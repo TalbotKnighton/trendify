@@ -1,7 +1,7 @@
 """
 Small shared building blocks used across the rest of the package: the `Tag`/`Tags` type
-aliases every `DataProduct` and the store's tag-encoding logic build on, `HashableBase` for
-pydantic models that need to go in a `set`, and the `ProductType` enum.
+aliases every `Record` and the store's tag-encoding logic build on, `HashableBase` for
+pydantic models that need to go in a `set`, and the `RecordType` enum.
 """
 
 from __future__ import annotations
@@ -13,21 +13,21 @@ from typing import TYPE_CHECKING, TypeVar
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from trendify.base.data_product import DataProduct
+    from trendify.base.record import Record
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
     "HashableBase",
-    "ProductType",
     "R",
+    "RecordType",
     "Tag",
     "Tags",
 ]
 
-R = TypeVar("R", bound="DataProduct")
-"""Bound to `DataProduct`: used by `ProductStore.get_products`/`get_products_of_type` so a
-call like `get_products_of_type(Point2D)` returns `list[Point2D]` rather than `list[DataProduct]`.
+R = TypeVar("R", bound="Record")
+"""Bound to `Record`: used by `RecordStore.get_records`/`get_records_of_type` so a
+call like `get_records_of_type(Point2D)` returns `list[Point2D]` rather than `list[Record]`.
 """
 
 Tag = str | int | tuple[str | int, ...]
@@ -57,12 +57,12 @@ class HashableBase(BaseModel):
         return hash((type(self), *tuple(self.__dict__.values())))
 
 
-class ProductType(StrEnum):
+class RecordType(StrEnum):
     """
-    Defines all product types.  Used to type-cast URL info in server to validate.
+    Defines all record types.  Used to type-cast URL info in server to validate.
 
     Attributes:
-        DataProduct (str): class name
+        Record (str): class name
         XYData (str): class name
         Trace2D (str): class name
         Point2D (str): class name
@@ -71,7 +71,6 @@ class ProductType(StrEnum):
 
     """
 
-    DATA_PRODUCT = "data_product"
     XY_DATA = "xy_data"
     TRACE_2D = "trace_2d"
     POINT_2D = "point_2d"

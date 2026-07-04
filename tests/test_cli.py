@@ -3,11 +3,11 @@
 import textwrap
 from pathlib import Path
 
+from trendify.store.record_store import RecordStore
 from typer.testing import CliRunner
 
 from trendify.cli import app
 from trendify.plotting.point import Point2D
-from trendify.store.product_store import ProductStore
 
 runner = CliRunner()
 
@@ -34,7 +34,7 @@ def _make_run_dirs(tmp_path: Path, n: int) -> Path:
 
 
 class TestGenerateCommand:
-    def test_writes_products_to_store(self, tmp_path: Path):
+    def test_writes_records_to_store(self, tmp_path: Path):
         glob_pattern = _make_run_dirs(tmp_path, 3)
         gen_module = _write_generator_module(tmp_path / "gen.py")
         out_dir = tmp_path / "out"
@@ -53,10 +53,10 @@ class TestGenerateCommand:
         )
 
         assert result.exit_code == 0, result.output
-        with ProductStore.open(out_dir / "trendify.db", readonly=True) as store:
-            assert len(store.get_products_of_type(Point2D)) == 3
+        with RecordStore.open(out_dir / "trendify.db", readonly=True) as store:
+            assert len(store.get_records_of_type(Point2D)) == 3
 
-    def test_bad_product_generator_spec_errors(self, tmp_path: Path):
+    def test_bad_record_generator_spec_errors(self, tmp_path: Path):
         glob_pattern = _make_run_dirs(tmp_path, 1)
         out_dir = tmp_path / "out"
 
@@ -94,9 +94,7 @@ class TestRenderCommand:
                 str(out_dir),
             ],
         )
-        result = runner.invoke(
-            app, ["render", "-o", str(out_dir), "--dpi", "50", "--no-tables"]
-        )
+        result = runner.invoke(app, ["render", "-o", str(out_dir), "--skip-tables"])
 
         assert result.exit_code == 0, result.output
         assert (out_dir / "assets" / "scatter.jpg").exists()
@@ -118,8 +116,6 @@ class TestRunCommand:
                 f"{gen_module}:generate",
                 "-o",
                 str(out_dir),
-                "--dpi",
-                "50",
             ],
         )
 

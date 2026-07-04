@@ -111,8 +111,8 @@ class SingleAxisFigure:
         if format2d.label_y is not None:
             self.ax.set_ylabel(ylabel=format2d.label_y)
 
-        self.ax.set_xlim(left=format2d.lim_x_min, right=format2d.lim_x_max)
-        self.ax.set_ylim(bottom=format2d.lim_y_min, top=format2d.lim_y_max)
+        self.ax.set_xlim(left=format2d.lim_x[0], right=format2d.lim_x[1])
+        self.ax.set_ylim(bottom=format2d.lim_y[0], top=format2d.lim_y[1])
 
         self.ax.set_xscale(format2d.scale_x.value)
         self.ax.set_yscale(format2d.scale_y.value)
@@ -211,13 +211,17 @@ class PlotlyFigure:
         """
         layout_updates: dict[str, Any] = {}
 
-        # Set titles
-        if format2d.title_fig is not None and format2d.title_ax is not None:
-            layout_updates["title"] = f"{format2d.title_fig} | {format2d.title_ax}"
-        elif format2d.title_fig is None and format2d.title_ax is not None:
-            layout_updates["title"] = f"{format2d.title_ax}"
-        elif format2d.title_fig is not None and format2d.title_ax is None:
-            layout_updates["title"] = f"{format2d.title_fig}"
+        # `title_fig` maps to Plotly's main `title.text` (matches matplotlib's
+        # `fig.suptitle`); `title_ax` maps to Plotly's `title.subtitle.text` (matches
+        # matplotlib's `ax.set_title` sitting just below it), rather than concatenating
+        # both into one string.
+        title: dict[str, Any] = {}
+        if format2d.title_fig is not None:
+            title["text"] = format2d.title_fig
+        if format2d.title_ax is not None:
+            title["subtitle"] = {"text": format2d.title_ax}
+        if title:
+            layout_updates["title"] = title
 
         # Set axis labels
         if format2d.label_x is not None:
@@ -229,37 +233,37 @@ class PlotlyFigure:
         def _log10(v: float | None):
             return None if v is None else np.log10(v)
 
-        if format2d.lim_x_min is not None or format2d.lim_x_max is not None:
+        if format2d.lim_x[0] is not None or format2d.lim_x[1] is not None:
             if "xaxis" not in layout_updates:
                 layout_updates["xaxis"] = cast(dict[str, Any], {})
 
             if format2d.scale_x == AxisScale.LOG:
                 layout_updates["xaxis"]["range"] = [
-                    _log10(format2d.lim_x_min),
-                    _log10(format2d.lim_x_max),
+                    _log10(format2d.lim_x[0]),
+                    _log10(format2d.lim_x[1]),
                 ]
             elif format2d.scale_x == AxisScale.LINEAR:
                 # Deliberately checks LINEAR explicitly rather than falling through an
                 # unconditional else, so a third AxisScale value can't silently reuse the
                 # log-scaled range below.
                 layout_updates["xaxis"]["range"] = [
-                    format2d.lim_x_min,
-                    format2d.lim_x_max,
+                    format2d.lim_x[0],
+                    format2d.lim_x[1],
                 ]
 
-        if format2d.lim_y_min is not None or format2d.lim_y_max is not None:
+        if format2d.lim_y[0] is not None or format2d.lim_y[1] is not None:
             if "yaxis" not in layout_updates:
                 layout_updates["yaxis"] = cast(dict[str, Any], {})
             if format2d.scale_y == AxisScale.LOG:
                 layout_updates["yaxis"]["range"] = [
-                    _log10(format2d.lim_y_min),
-                    _log10(format2d.lim_y_max),
+                    _log10(format2d.lim_y[0]),
+                    _log10(format2d.lim_y[1]),
                 ]
             elif format2d.scale_y == AxisScale.LINEAR:
                 # Same reasoning as the x-axis branch above.
                 layout_updates["yaxis"]["range"] = [
-                    format2d.lim_y_min,
-                    format2d.lim_y_max,
+                    format2d.lim_y[0],
+                    format2d.lim_y[1],
                 ]
 
         # Set axis scales
@@ -332,15 +336,15 @@ class PlotlyFigure:
         self.fig.update_xaxes(**xaxis_updates)
         self.fig.update_yaxes(**yaxis_updates)
 
-    def add_data_product(self, product: PlottableData2D) -> PlotlyFigure:
+    def add_record(self, record: PlottableData2D) -> PlotlyFigure:
         """
-        Add a data product to the figure
+        Add a record to the figure
 
         Args:
-            product (PlottableData2D): Data product to add to figure
+            record (PlottableData2D): Record to add to figure
 
         Returns:
             Self: Returns self for method chaining
 
         """
-        return product.add_to_plotly(self)
+        return record.add_to_plotly(self)

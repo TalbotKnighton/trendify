@@ -24,10 +24,10 @@
                     Select a tag from the sidebar to view its data.
                 </p>
             </template>
-            <template x-if="selectedTag && selectedProductKinds.includes('table')">
+            <template x-if="selectedTag && selectedRecordKinds.includes('table')">
                 {% include "partials/table_view.html" %}
             </template>
-            <template x-if="selectedTag && !selectedProductKinds.includes('table') && selectedProductKinds.includes('plot')">
+            <template x-if="selectedTag && !selectedRecordKinds.includes('table') && selectedRecordKinds.includes('plot')">
                 <p class="text-base text-slate-500 dark:text-slate-400">Plot viewer coming soon.</p>
             </template>
         </main>
@@ -37,7 +37,8 @@
 
     <div x-cloak
          class="pointer-events-none fixed right-4 top-16 z-50 flex w-80 flex-col">
-        <template x-for="toast in toasts" :key="toast.id">
+        <template x-for="toast in toasts"
+                  :key="toast.id">
             <div x-show="toast.visible"
                  x-transition:enter="transition-all duration-200 ease-out"
                  x-transition:enter-start="opacity-0 max-h-0 mb-0 -translate-y-2"

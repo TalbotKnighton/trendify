@@ -1,6 +1,6 @@
 """
-Draws `Point2D`/`Trace2D`/`AxLine` products onto a matplotlib figure. Fed directly by
-`ProductStore` query results, so there's no directory-loading state to manage.
+Draws `Point2D`/`Trace2D`/`AxLine` records onto a matplotlib figure. Fed directly by
+`RecordStore` query results, so there's no directory-loading state to manage.
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class XYDataPlotter(BaseModel):
     """
-    Draws `Point2D`/`Scatter2D`/`Trace2D`/`AxLine` products sharing a tag onto a matplotlib
+    Draws `Point2D`/`Scatter2D`/`Trace2D`/`AxLine` records sharing a tag onto a matplotlib
     axes.
     """
 
@@ -41,7 +41,7 @@ class XYDataPlotter(BaseModel):
         Plots points (scattered, grouped by marker), scatters, traces, and axlines onto `saf`.
 
         Args:
-            tag (Tag): tag these products belong to (used only if a new figure is created)
+            tag (Tag): tag these records belong to (used only if a new figure is created)
             points (list[Point2D]): points to scatter, grouped by `Marker` (each distinct
                 marker becomes one `ax.scatter` call/series)
             traces (list[Trace2D]): traces to plot

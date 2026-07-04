@@ -1,6 +1,6 @@
 """
-Builds melted/pivot/stats CSV tables for `TableEntry` products, from `ProductStore` query
-results, using Polars. `ProductStore.get_table_entries` already hands back the melted
+Builds melted/pivot/stats CSV tables for `TableEntry` records, from `RecordStore` query
+results, using Polars. `RecordStore.get_table_entries` already hands back the melted
 row/col/value/unit shape as a `pl.DataFrame` via one indexed SQL query, so this module only
 needs to pivot and compute statistics, not reparse or reshape raw records.
 """
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class TableBuilder(BaseModel):
     """
-    Builds tables (melted, pivot, and stats) from `TableEntry` products for a given tag.
+    Builds tables (melted, pivot, and stats) from `TableEntry` records for a given tag.
     """
 
     @classmethod
@@ -37,9 +37,9 @@ class TableBuilder(BaseModel):
         `<tag>_pivot.csv`, `<tag>_stats.csv`.
 
         Args:
-            tag (Tag): product tag these entries belong to
+            tag (Tag): record tag these entries belong to
             melted (pl.DataFrame): row/col/value/unit table, as returned by
-                `ProductStore.get_table_entries`
+                `RecordStore.get_table_entries`
             out_dir (Path): directory under which the CSVs are saved (nested per tag)
 
         """
@@ -162,7 +162,7 @@ def _write_csv(df: pl.DataFrame, path: Path) -> None:
     """
     Writes `df` to CSV, stringifying any `Object`-dtype columns first. Polars' CSV writer
     doesn't support `Object` directly, and `TableEntry.value`'s heterogeneous float/str/bool
-    union is stored as `Object` by `ProductStore.get_table_entries`.
+    union is stored as `Object` by `RecordStore.get_table_entries`.
     """
     object_cols = [c for c, dtype in df.schema.items() if dtype == pl.Object]
     if object_cols:

@@ -1,5 +1,5 @@
 """
-`TableEntry`: the one `DataProduct` subclass the store gives real SQL columns instead of an
+`TableEntry`: the one `Record` subclass the store gives real SQL columns instead of an
 opaque JSON payload, since its whole purpose (pivoting into a wide table, then computing
 per-column stats) is naturally SQL-shaped. See `trendify.generator.table_builder`.
 """
@@ -10,21 +10,21 @@ import logging
 
 from pydantic import ConfigDict
 
-from trendify.base.data_product import DataProduct
+from trendify.base.record import Record
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["TableEntry"]
 
 
-class TableEntry(DataProduct):
+class TableEntry(Record):
     """
     Defines an entry to be collected into a table.
 
     Collected table entries will be printed in three forms when possible: melted, pivot (when possible), and stats (on pivot columns, when possible).
 
     Attributes:
-        tags (Tags): Tags used to sort data products
+        tags (Tags): Tags used to sort records
         row (float | str): Row Label
         col (float | str): Column Label
         value (float | str | bool): Value

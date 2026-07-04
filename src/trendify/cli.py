@@ -22,12 +22,12 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
-from trendify.base.data_product import ProductGenerator
+from trendify.base.record import RecordGenerator
 from trendify.color import Color
 from trendify.examples import make_example_data
 from trendify.log import setup_logger
 from trendify.pipeline import TrendifyPipeline
-from trendify.store.product_store import ProductStore
+from trendify.store.record_store import RecordStore
 
 __all__ = ["app"]
 
@@ -72,7 +72,7 @@ def print_logo():
 
 app = typer.Typer(
     name="trendify",
-    help="Generate visual data products and static assets from raw data.",
+    help="Generate visual records and static assets from raw data.",
     rich_markup_mode="rich",
     no_args_is_help=True,
 )
@@ -100,7 +100,7 @@ def main(
     ),
 ):
     """
-    [bold indian_red1]Trendify:[/bold indian_red1] Generate visual data products and static assets from raw data.
+    [bold indian_red1]Trendify:[/bold indian_red1] Generate visual records and static assets from raw data.
     """
 
 
@@ -108,14 +108,14 @@ InputDirectoriesOption = typer.Option(
     ...,
     "-i",
     "--input-directories",
-    help="Raw data directories (or glob patterns) to map the product generator over.",
+    help="Raw data directories (or glob patterns) to map the record generator over.",
 )
-ProductGeneratorOption = typer.Option(
+RecordGeneratorOption = typer.Option(
     ...,
     "-g",
-    "--product-generator",
+    "--record-generator",
     help=(
-        "ProductGenerator to map over input directories, given as 'module:function', "
+        "RecordGenerator to map over input directories, given as 'module:function', "
         "'module:Class.method', or '/path/to/file.py:function'."
     ),
 )
@@ -139,23 +139,17 @@ VerboseOption = typer.Option(
 QuietOption = typer.Option(
     0, "--quiet", "-q", count=True, help="Decrease log verbosity."
 )
-DpiOption = typer.Option(
-    500,
-    "--dpi",
-    help="Resolution (dots per inch) for saved matplotlib figures.",
-    min=1,
+SkipTablesOption = typer.Option(
+    False, "--skip-tables", help="Suppress TableEntry CSV output."
 )
-NoTablesOption = typer.Option(
-    False, "--no-tables", help="Suppress TableEntry CSV output."
-)
-NoXyPlotsOption = typer.Option(
+SkipXyPlotsOption = typer.Option(
     False,
-    "--no-xy-plots",
+    "--skip-xy-plots",
     help="Suppress Point2D/Scatter2D/Trace2D/AxLine plot output.",
 )
-NoHistogramsOption = typer.Option(
+SkipHistogramsOption = typer.Option(
     False,
-    "--no-histograms",
+    "--skip-histograms",
     help="Suppress HistogramEntry plot output.",
 )
 DbPathArgument = typer.Argument(
@@ -191,7 +185,7 @@ def _configure_logging(verbose: int, quiet: int, logo: bool = True) -> None:
     Configures the root logger via `trendify.log.setup_logger` (Rich console output plus a
     rotating `trendify.log` file) rather than a one-off `logging.basicConfig`. This way a CLI
     run gets the same beautiful, concurrent-safe logging setup a Python caller gets by calling
-    `setup_logger()` themselves, and `generate_products`'s multiprocess path picks up these
+    `setup_logger()` themselves, and `generate_records`'s multiprocess path picks up these
     same handlers via its `QueueListener` (see `trendify.generator.generate`).
     """
     if logo:
@@ -223,7 +217,7 @@ def _import_from_path(module_name: str, file_path: Path):
     return module
 
 
-def _resolve_product_generator(spec: str) -> ProductGenerator:
+def _resolve_record_generator(spec: str) -> RecordGenerator:
     """
     Resolves a `"module:function"` / `"module:Class.method"` / `"/path/to/file.py:function"`
     spec string into a callable.
@@ -236,7 +230,7 @@ def _resolve_product_generator(spec: str) -> ProductGenerator:
 
     if Path(module_path).exists():
         file_path = Path(module_path).resolve()
-        # `n_procs > 1` sends `product_generator` to worker processes via pickle, which
+        # `n_procs > 1` sends `record_generator` to worker processes via pickle, which
         # serializes a module-level function as a `(module_name, qualname)` reference, not
         # the code itself. Worker processes (forkserver/spawn) re-import that module by name
         # using the `sys.path` snapshotted when the process pool starts, so the file's parent
@@ -252,24 +246,24 @@ def _resolve_product_generator(spec: str) -> ProductGenerator:
     obj: object = module
     for part in attr_path.split("."):
         obj = getattr(obj, part)
-    return cast(ProductGenerator, obj)
+    return cast(RecordGenerator, obj)
 
 
 @app.command(name="generate")
 def generate(
     ctx: typer.Context,
     input_directories: list[str] = InputDirectoriesOption,
-    product_generator: str = ProductGeneratorOption,
+    record_generator: str = RecordGeneratorOption,
     output_directory: Path = OutputDirectoryOption,
     n_procs: int = NProcsOption,
     verbose: int = VerboseOption,
     quiet: int = QuietOption,
 ) -> None:
-    """Generate tagged data products from raw data directories."""
+    """Generate tagged records from raw data directories."""
     _configure_logging(verbose, quiet)
     pipeline = TrendifyPipeline(output_dir=output_directory, n_procs=n_procs)
     _total = pipeline.generate(
-        product_generator=_resolve_product_generator(product_generator),
+        record_generator=_resolve_record_generator(record_generator),
         data_dirs=_resolve_input_directories(input_directories),
     )
 
@@ -278,21 +272,19 @@ def generate(
 def render(
     ctx: typer.Context,
     output_directory: Path = OutputDirectoryOption,
-    dpi: int = DpiOption,
-    no_tables: bool = NoTablesOption,
-    no_xy_plots: bool = NoXyPlotsOption,
-    no_histograms: bool = NoHistogramsOption,
+    skip_tables: bool = SkipTablesOption,
+    skip_xy_plots: bool = SkipXyPlotsOption,
+    skip_histograms: bool = SkipHistogramsOption,
     verbose: int = VerboseOption,
     quiet: int = QuietOption,
 ) -> None:
-    """Render CSV tables and matplotlib figures from already-generated products."""
+    """Render CSV tables and matplotlib figures from already-generated records."""
     _configure_logging(verbose, quiet)
     pipeline = TrendifyPipeline(output_dir=output_directory)
     pipeline.render(
-        dpi=dpi,
-        no_tables=no_tables,
-        no_xy_plots=no_xy_plots,
-        no_histograms=no_histograms,
+        skip_tables=skip_tables,
+        skip_xy_plots=skip_xy_plots,
+        skip_histograms=skip_histograms,
     )
     typer.echo(f"Rendered assets to {pipeline.assets_dir}")
 
@@ -301,28 +293,26 @@ def render(
 def run(
     ctx: typer.Context,
     input_directories: list[str] = InputDirectoriesOption,
-    product_generator: str = ProductGeneratorOption,
+    record_generator: str = RecordGeneratorOption,
     output_directory: Path = OutputDirectoryOption,
     n_procs: int = NProcsOption,
-    dpi: int = DpiOption,
-    no_tables: bool = NoTablesOption,
-    no_xy_plots: bool = NoXyPlotsOption,
-    no_histograms: bool = NoHistogramsOption,
+    skip_tables: bool = SkipTablesOption,
+    skip_xy_plots: bool = SkipXyPlotsOption,
+    skip_histograms: bool = SkipHistogramsOption,
     verbose: int = VerboseOption,
     quiet: int = QuietOption,
 ) -> None:
-    """Generate products and render assets in one step."""
+    """Generate records and render assets in one step."""
     _configure_logging(verbose, quiet)
     pipeline = TrendifyPipeline(output_dir=output_directory, n_procs=n_procs)
     total = pipeline.run(
-        product_generator=_resolve_product_generator(product_generator),
+        record_generator=_resolve_record_generator(record_generator),
         data_dirs=_resolve_input_directories(input_directories),
-        dpi=dpi,
-        no_tables=no_tables,
-        no_xy_plots=no_xy_plots,
-        no_histograms=no_histograms,
+        skip_tables=skip_tables,
+        skip_xy_plots=skip_xy_plots,
+        skip_histograms=skip_histograms,
     )
-    typer.echo(f"Wrote {total} products; assets under {pipeline.assets_dir}")
+    typer.echo(f"Wrote {total} records; assets under {pipeline.assets_dir}")
 
 
 @app.command(name="example-data")
@@ -369,14 +359,14 @@ def serve(
     verbose: int = VerboseOption,
     quiet: int = QuietOption,
 ) -> None:
-    """Launch a local web dashboard for browsing a trendify.db's data products."""
+    """Launch a local web dashboard for browsing a trendify.db's records."""
     _configure_logging(verbose, quiet, logo=False)
     db_path = db_path.resolve()
     if not db_path.exists():
         raise typer.BadParameter(f"No such database file: {db_path}")
 
     # Fail fast on a bad/corrupt db before uvicorn even starts, rather than a 500 on first request.
-    with ProductStore.open(db_path, readonly=True):
+    with RecordStore.open(db_path, readonly=True):
         pass
 
     # Deferred import: keeps `trendify.cli` import light for callers of generate/render/run

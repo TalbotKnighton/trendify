@@ -17,7 +17,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from trendify.store.product_store import ProductStore
+from trendify.store.record_store import RecordStore
 from trendify.viewer.routes import api, pages
 
 __all__ = ["create_app", "create_app_from_env"]
@@ -42,7 +42,7 @@ def create_app(db_path: Path) -> FastAPI:
     """
     Builds the dashboard FastAPI app for `db_path`.
 
-    Opens one read-only `ProductStore` connection, held for the app's lifetime and closed on
+    Opens one read-only `RecordStore` connection, held for the app's lifetime and closed on
     shutdown. This app is only ever meant to be run with a single uvicorn worker process: a
     local, single-user dashboard has no reason for more, and multiple worker processes would
     each need their own store connection (`fork`/`spawn` doesn't share a live sqlite3
@@ -69,7 +69,7 @@ def create_app(db_path: Path) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-        app.state.store = ProductStore.open(db_path, readonly=True)
+        app.state.store = RecordStore.open(db_path, readonly=True)
         try:
             yield
         finally:

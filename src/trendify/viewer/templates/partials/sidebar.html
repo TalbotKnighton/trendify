@@ -7,8 +7,14 @@
         else if (!autoExpanded && {{ node.search_blob() | tojson }}.includes(search.toLowerCase())) { open = true; autoExpanded = true }
     '>
     <div class="flex w-full cursor-pointer items-center gap-1 rounded px-1 py-1 transition-colors duration-150 hover:text-rose-500 hover:bg-slate-400/20"
-         {% if node.has_products %}:class='JSON.stringify(selectedTag) === JSON.stringify({{ node.key | tojson }}) ? "bg-rose-500/20 text-rose-500" : ""'{% endif %}
-         @click='{% if node.has_products %}$dispatch("tag-selected", { tag: {{ node.key | tojson }}, productKinds: {{ node.product_kinds | tojson }} }){% elif node.children %}toggle(){% endif %}'>
+         {%
+         if
+         node.has_records
+         %}:class='JSON.stringify(selectedTag) === JSON.stringify({{ node.key | tojson }}) ? "bg-rose-500/20 text-rose-500" : ""'
+         {%
+         endif
+         %}
+         @click='{% if node.has_records %}$dispatch("tag-selected", { tag: {{ node.key | tojson }}, recordKinds: {{ node.record_kinds | tojson }} }){% elif node.children %}toggle(){% endif %}'>
         {% if node.children %}
         <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center"
               @click.stop="toggle()">
@@ -28,9 +34,9 @@
         <span class="w-6 flex-shrink-0"></span>
         {% endif %}
 
-        {% if node.has_products %}
+        {% if node.has_records %}
         <span class="flex flex-1 items-center gap-1 truncate px-1 text-left text-base">
-            {% if "plot" in node.product_kinds %}
+            {% if "plot" in node.record_kinds %}
             <svg class="h-4 w-4 flex-shrink-0"
                  fill="none"
                  stroke="currentColor"
@@ -41,7 +47,7 @@
                       fill="currentColor"></path>
             </svg>
             {% endif %}
-            {% if "table" in node.product_kinds %}
+            {% if "table" in node.record_kinds %}
             <svg class="h-4 w-4 flex-shrink-0"
                  fill="none"
                  stroke="currentColor"
@@ -56,7 +62,8 @@
                       stroke-width="2"></path>
             </svg>
             {% endif %}
-            <span class="truncate" title="{{ node.label }}">{{ node.label }}</span>
+            <span class="truncate"
+                  title="{{ node.label }}">{{ node.label }}</span>
         </span>
         {% else %}
         <span class="flex-1 truncate px-1 text-base text-slate-500 dark:text-slate-400"
@@ -64,7 +71,7 @@
         {% endif %}
 
         {% if node.children %}
-        <span class="flex-shrink-0 px-1 text-sm text-slate-400 dark:text-slate-500">{{ node.product_count() }}</span>
+        <span class="flex-shrink-0 px-1 text-sm text-slate-400 dark:text-slate-500">{{ node.record_count() }}</span>
         {% endif %}
     </div>
 
@@ -150,7 +157,7 @@
         {{ render_node(node) }}
         {% endfor %}
         {% else %}
-        <p class="p-2 text-base text-slate-500 dark:text-slate-400">No tagged products found.</p>
+        <p class="p-2 text-base text-slate-500 dark:text-slate-400">No tagged records found.</p>
         {% endif %}
     </div>
 </aside>

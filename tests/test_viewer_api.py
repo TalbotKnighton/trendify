@@ -5,18 +5,18 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from trendify.store.record_store import RecordStore
 
 from trendify.formats.table import TableEntry
 from trendify.plotting.point import Point2D
 from trendify.plotting.trace import Trace2D
-from trendify.store.product_store import ProductStore
 from trendify.viewer.app import create_app
 
 
 @pytest.fixture
 def db_path(tmp_path: Path) -> Path:
     path = tmp_path / "trendify.db"
-    with ProductStore.open(path) as store:
+    with RecordStore.open(path) as store:
         store.write_run(
             tmp_path / "run1",
             [
@@ -66,18 +66,18 @@ class TestTagsApi:
         assert response.status_code == 200
         nodes = {n["label"]: n for n in response.json()}
         assert "scatter" in nodes
-        assert nodes["scatter"]["has_products"] is True
-        assert nodes["scatter"]["product_kinds"] == ["plot"]
+        assert nodes["scatter"]["has_records"] is True
+        assert nodes["scatter"]["record_kinds"] == ["plot"]
 
         assert "table" in nodes
-        assert nodes["table"]["product_kinds"] == ["table"]
+        assert nodes["table"]["record_kinds"] == ["table"]
 
         assert "group" in nodes
-        assert nodes["group"]["has_products"] is False
+        assert nodes["group"]["has_records"] is False
         [child] = nodes["group"]["children"]
         assert child["label"] == "trace"
         assert child["key"] == ["group", "trace"]
-        assert child["product_kinds"] == ["plot"]
+        assert child["record_kinds"] == ["plot"]
 
     def test_response_is_cached(self, client: TestClient):
         first = client.get("/api/tags").json()

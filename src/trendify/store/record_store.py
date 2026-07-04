@@ -1,13 +1,15 @@
 """
-`ProductStore`: the SQLite-backed store for tagged `DataProduct`s.
+`RecordStore`: the SQLite-backed store for tagged `Record`s.
 
 Pydantic objects are what flow in and out everywhere; storage and querying happen entirely
-underneath that interface. Every product's full JSON payload is stored opaquely, so new
-`DataProduct` subclasses are storable and queryable the moment they're registered, with no
-schema migration required. Tags are normalized into an indexed join table, so a product with N
+underneath that interface. Every record's full JSON payload is stored opaquely, so new
+`Record` subclasses are storable and queryable the moment they're registered, with no
+schema migration required. Tags are normalized into an indexed join table, so a record with N
 tags costs one payload row plus N small index rows rather than N duplicated payloads. `TableEntry`
-is the one exception: it gets real SQL columns (row/col/value/unit) instead of an opaque payload,
-since pivoting and computing per-column statistics is naturally SQL-shaped.
+is one exception: it gets real SQL columns (row/col/value/unit) instead of an opaque payload,
+since pivoting and computing per-column statistics is naturally SQL-shaped. `Format2D` is the
+other exception: it's a singleton per tag, so `write_run` deletes any existing `Format2D` row(s)
+sharing a tag (from any run) before inserting a new one, rather than accumulating duplicates.
 """
 
 from __future__ import annotations
@@ -22,29 +24,28 @@ from typing import cast
 
 import polars as pl
 
-from trendify.base.data_product import DataProduct
 from trendify.base.helpers import R, Tag
+from trendify.base.record import Record
+from trendify.formats.format2d import Format2D
 from trendify.formats.table import TableEntry
 from trendify.store import db
 from trendify.store.tags import decode_tag, encode_tag
 
-__all__ = ["ProductStore"]
+__all__ = ["RecordStore"]
 
 logger = logging.getLogger(__name__)
 
 
-def _leaf_type_names(object_type: type[DataProduct]) -> list[str]:
+def _leaf_type_names(object_type: type[Record]) -> list[str]:
     """
-    Expands a (possibly non-leaf) `DataProduct` type into the list of registered leaf
-    `product_type` names that are instances of it: `PlottableData2D`, for example, expands to
+    Expands a (possibly non-leaf) `Record` type into the list of registered leaf
+    `record_type` names that are instances of it: `PlottableData2D`, for example, expands to
     `["Point2D", "Trace2D", "AxLine", "HistogramEntry"]`. This lets tag/type filtering happen
-    as a plain SQL `product_type IN (...)` clause instead of deserializing every tag-matched
+    as a plain SQL `record_type IN (...)` clause instead of deserializing every tag-matched
     row just to run an `isinstance` check in Python.
     """
     return [
-        name
-        for name, cls in DataProduct.registry().items()
-        if issubclass(cls, object_type)
+        name for name, cls in Record.registry().items() if issubclass(cls, object_type)
     ]
 
 
@@ -57,50 +58,50 @@ def _tag_sort_key(tag: Tag):
 
 
 @dataclass
-class ProductStore:
+class RecordStore:
     """
-    SQLite-backed store for `DataProduct`s, grouped by run and queryable by tag/type.
+    SQLite-backed store for `Record`s, grouped by run and queryable by tag/type.
 
     Usage:
-        with ProductStore.open(db_path) as store:
-            store.write_run(run_path, products)
-            traces = store.get_products_of_type(Trace2D, tag="my_tag")
+        with RecordStore.open(db_path) as store:
+            store.write_run(run_path, records)
+            traces = store.get_records_of_type(Trace2D, tag="my_tag")
     """
 
     _conn: sqlite3.Connection
 
     @classmethod
-    def open(cls, db_path: Path, *, readonly: bool = False) -> ProductStore:
+    def open(cls, db_path: Path, *, readonly: bool = False) -> RecordStore:
         return cls(db.connect(Path(db_path), readonly=readonly))
 
-    def __enter__(self) -> ProductStore:
+    def __enter__(self) -> RecordStore:
         return self
 
     def __exit__(self, *exc_info) -> None:
         self.close()
 
     def close(self) -> None:
-        logger.debug("Closing ProductStore connection")
+        logger.debug("Closing RecordStore connection")
         self._conn.close()
 
-    def write_run(self, run_path: Path, products: Iterable[DataProduct]) -> int:
+    def write_run(self, run_path: Path, records: Iterable[Record]) -> int:
         """
-        Replaces all products for `run_path` in a single transaction. Idempotent: calling this
+        Replaces all records for `run_path` in a single transaction. Idempotent: calling this
         again for the same `run_path` (e.g. re-running a generator on the same input directory)
         deletes and replaces that run's rows rather than accumulating duplicates.
 
         Args:
-            run_path (Path): the raw-data run directory these products were generated from
-            products (Iterable[DataProduct]): products returned by the user's `ProductGenerator`
+            run_path (Path): the raw-data run directory these records were generated from
+            records (Iterable[Record]): records returned by the user's `RecordGenerator`
 
         Returns:
-            (int): number of products written
+            (int): number of records written
 
         """
-        products = list(products)
+        records = list(records)
         run_path_str = str(Path(run_path).resolve())
         now = datetime.datetime.now(datetime.UTC).isoformat()
-        logger.debug(f"Writing {len(products)} product(s) for run {run_path_str}")
+        logger.debug(f"Writing {len(records)} record(s) for run {run_path_str}")
 
         conn = self._conn
         with conn:  # transaction: commits on success, rolls back on exception
@@ -118,83 +119,97 @@ class ProductStore:
                     "UPDATE runs SET generated_at = ? WHERE id = ?", (now, run_id)
                 )
 
-            # ON DELETE CASCADE (product_tags, table_entries) requires PRAGMA foreign_keys=ON,
+            # ON DELETE CASCADE (record_tags, table_entries) requires PRAGMA foreign_keys=ON,
             # set in db.connect().
-            conn.execute("DELETE FROM products WHERE run_id = ?", (run_id,))
+            conn.execute("DELETE FROM records WHERE run_id = ?", (run_id,))
 
-            for product in products:
-                product_id = conn.execute(
-                    "INSERT INTO products(run_id, product_type, payload, created_at) "
+            for record in records:
+                tag_keys = [encode_tag(t) for t in record.tags]
+
+                if isinstance(record, Format2D):
+                    # Format2D is a singleton per tag: delete any existing Format2D row(s)
+                    # sharing any of these tags (from any run, not just this one) before
+                    # inserting the new one, so re-emitting the same tag-level styling from
+                    # every run (unavoidable given `RecordGenerator` is called once per run
+                    # with no cross-run coordination) never accumulates duplicate rows.
+                    for tk in tag_keys:
+                        conn.execute(
+                            "DELETE FROM records WHERE record_type = 'Format2D' AND id IN "
+                            "(SELECT record_id FROM record_tags WHERE tag_key = ?)",
+                            (tk,),
+                        )
+
+                record_id = conn.execute(
+                    "INSERT INTO records(run_id, record_type, payload, created_at) "
                     "VALUES (?, ?, ?, ?)",
-                    (run_id, product.product_type, product.model_dump_json(), now),
+                    (run_id, record.record_type, record.model_dump_json(), now),
                 ).lastrowid
 
-                tag_keys = [encode_tag(t) for t in product.tags]
                 conn.executemany(
-                    "INSERT INTO product_tags(product_id, tag_key, product_type) "
+                    "INSERT INTO record_tags(record_id, tag_key, record_type) "
                     "VALUES (?, ?, ?)",
-                    [(product_id, tk, product.product_type) for tk in tag_keys],
+                    [(record_id, tk, record.record_type) for tk in tag_keys],
                 )
 
-                if isinstance(product, TableEntry):
+                if isinstance(record, TableEntry):
                     value_num = value_text = value_bool = None
-                    if isinstance(product.value, bool):
-                        value_bool = int(product.value)
-                    elif isinstance(product.value, (int, float)):
-                        value_num = float(product.value)
+                    if isinstance(record.value, bool):
+                        value_bool = int(record.value)
+                    elif isinstance(record.value, (int, float)):
+                        value_num = float(record.value)
                     else:
-                        value_text = product.value
+                        value_text = record.value
 
                     conn.executemany(
                         "INSERT INTO table_entries("
-                        "product_id, tag_key, row_key, col_key, "
+                        "record_id, tag_key, row_key, col_key, "
                         "value_num, value_text, value_bool, unit) "
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                         [
                             (
-                                product_id,
+                                record_id,
                                 tk,
-                                str(product.row),
-                                str(product.col),
+                                str(record.row),
+                                str(record.col),
                                 value_num,
                                 value_text,
                                 value_bool,
-                                product.unit,
+                                record.unit,
                             )
                             for tk in tag_keys
                         ],
                     )
 
         logger.debug(
-            f"Wrote {len(products)} product(s) for run {run_path_str} (run_id={run_id})"
+            f"Wrote {len(records)} record(s) for run {run_path_str} (run_id={run_id})"
         )
-        return len(products)
+        return len(records)
 
-    def get_tags(self, object_type: type[DataProduct] | None = None) -> set[Tag]:
+    def get_tags(self, object_type: type[Record] | None = None) -> set[Tag]:
         """
         Args:
-            object_type (type[DataProduct] | None): restrict to tags used by products of this
-                type (or any registered subclass of it); `None` matches every product type.
+            object_type (type[Record] | None): restrict to tags used by records of this
+                type (or any registered subclass of it); `None` matches every record type.
 
         Returns:
             (set[Tag]): the set of tags in use
 
         """
         if object_type is None:
-            rows = self._conn.execute("SELECT DISTINCT tag_key FROM product_tags")
+            rows = self._conn.execute("SELECT DISTINCT tag_key FROM record_tags")
         else:
             names = _leaf_type_names(object_type)
             if not names:
                 return set()
             placeholders = ",".join("?" * len(names))
             rows = self._conn.execute(
-                f"SELECT DISTINCT tag_key FROM product_tags "
-                f"WHERE product_type IN ({placeholders})",
+                f"SELECT DISTINCT tag_key FROM record_tags "
+                f"WHERE record_type IN ({placeholders})",
                 names,
             )
         return {decode_tag(r["tag_key"]) for r in rows}
 
-    def tag_tree(self, object_type: type[DataProduct] | None = None) -> list[Tag]:
+    def tag_tree(self, object_type: type[Record] | None = None) -> list[Tag]:
         """
         Returns:
             (list[Tag]): tags sorted for display in a nested sidebar or tree view: shallow
@@ -203,14 +218,14 @@ class ProductStore:
         """
         return sorted(self.get_tags(object_type=object_type), key=_tag_sort_key)
 
-    def get_products(
+    def get_records(
         self,
         tag: Tag | None = None,
         object_type: type[R] | None = None,
     ) -> Iterator[R]:
         """
-        Streams matching products, deserialized to their concrete pydantic type. Filtering by
-        `tag` and/or `object_type` happens in SQL (indexed tag lookup, `product_type IN (...)`
+        Streams matching records, deserialized to their concrete pydantic type. Filtering by
+        `tag` and/or `object_type` happens in SQL (indexed tag lookup, `record_type IN (...)`
         for the type hierarchy) before anything is deserialized, so this only ever parses JSON
         for rows that actually match.
 
@@ -220,17 +235,17 @@ class ProductStore:
                 every type
 
         Yields:
-            (R): matching products, in insertion order
+            (R): matching records, in insertion order
 
         """
-        logger.debug(f"Querying products ({tag = }, {object_type = })")
-        select = "SELECT p.product_type, p.payload FROM products p"
+        logger.debug(f"Querying records ({tag = }, {object_type = })")
+        select = "SELECT p.record_type, p.payload FROM records p"
         joins = []
         where = []
         params: list[object] = []
 
         if tag is not None:
-            joins.append("JOIN product_tags pt ON pt.product_id = p.id")
+            joins.append("JOIN record_tags pt ON pt.record_id = p.id")
             where.append("pt.tag_key = ?")
             params.append(encode_tag(tag))
 
@@ -238,7 +253,7 @@ class ProductStore:
             names = _leaf_type_names(object_type)
             if not names:
                 return
-            where.append(f"p.product_type IN ({','.join('?' * len(names))})")
+            where.append(f"p.record_type IN ({','.join('?' * len(names))})")
             params.extend(names)
 
         query = " ".join([select, *joins])
@@ -247,20 +262,20 @@ class ProductStore:
 
         cursor = self._conn.execute(query, params)
         for row in cursor:
-            yield cast(R, DataProduct.deserialize(row["product_type"], row["payload"]))
+            yield cast(R, Record.deserialize(row["record_type"], row["payload"]))
 
-    def get_products_of_type(
+    def get_records_of_type(
         self, object_type: type[R], tag: Tag | None = None
     ) -> list[R]:
         """
-        Same as `get_products`, but eager (a `list`), for callers that don't need streaming.
+        Same as `get_records`, but eager (a `list`), for callers that don't need streaming.
         """
-        return list(self.get_products(tag=tag, object_type=object_type))
+        return list(self.get_records(tag=tag, object_type=object_type))
 
     def get_table_entries(self, tag: Tag) -> pl.DataFrame:
         """
         Fetches `TableEntry` rows for `tag` directly from the `table_entries` table, skipping
-        full `DataProduct` payload deserialization entirely since row/col/value/unit are already
+        full `Record` payload deserialization entirely since row/col/value/unit are already
         real columns.
 
         Note: `value` is resolved to a single Python value per row (whichever of
@@ -274,7 +289,7 @@ class ProductStore:
 
         Returns:
             (pl.DataFrame): a "melted" table with columns `row`, `col`, `value`, `unit`, one
-                row per `TableEntry` product matching `tag`.
+                row per `TableEntry` record matching `tag`.
 
         """
         rows = self._conn.execute(

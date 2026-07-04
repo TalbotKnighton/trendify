@@ -1,34 +1,31 @@
-from trendify.base import data_product
-from trendify.base import helpers
-from trendify.base import pen
-
-from trendify.base.data_product import (
-    DataProduct,
-    ProductGenerator,
-    ProductList,
-)
+from trendify.base import helpers, pen, record
 from trendify.base.helpers import (
     HashableBase,
-    ProductType,
     R,
+    RecordType,
     Tag,
     Tags,
 )
 from trendify.base.pen import (
     Pen,
 )
+from trendify.base.record import (
+    Record,
+    RecordGenerator,
+    RecordList,
+)
 
 __all__ = [
-    "DataProduct",
     "HashableBase",
     "Pen",
-    "ProductGenerator",
-    "ProductList",
-    "ProductType",
     "R",
+    "Record",
+    "RecordGenerator",
+    "RecordList",
+    "RecordType",
     "Tag",
     "Tags",
-    "data_product",
     "helpers",
     "pen",
+    "record",
 ]

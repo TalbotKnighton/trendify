@@ -2,13 +2,14 @@
 
 from pathlib import Path
 
-from trendify.base.data_product import DataProduct
+from trendify.store.record_store import RecordStore
+
+from trendify.base.record import Record
 from trendify.pipeline import TrendifyPipeline
 from trendify.plotting.point import Point2D
-from trendify.store.product_store import ProductStore
 
 
-def _generator(run_dir: Path) -> list[DataProduct]:
+def _generator(run_dir: Path) -> list[Record]:
     n = int(run_dir.name)
     return [Point2D(tags=["scatter"], x=float(n), y=float(n) ** 2)]
 
@@ -30,15 +31,15 @@ class TestTrendifyPipelinePaths:
 
 
 class TestGenerate:
-    def test_writes_products(self, tmp_path: Path):
+    def test_writes_records(self, tmp_path: Path):
         dirs = _make_run_dirs(tmp_path, 3)
         pipeline = TrendifyPipeline(output_dir=tmp_path / "out")
 
         total = pipeline.generate(_generator, dirs)
 
         assert total == 3
-        with ProductStore.open(pipeline.db_path, readonly=True) as store:
-            assert len(store.get_products_of_type(Point2D)) == 3
+        with RecordStore.open(pipeline.db_path, readonly=True) as store:
+            assert len(store.get_records_of_type(Point2D)) == 3
 
 
 class TestRender:
@@ -47,7 +48,7 @@ class TestRender:
         pipeline = TrendifyPipeline(output_dir=tmp_path / "out")
         pipeline.generate(_generator, dirs)
 
-        pipeline.render(dpi=50)
+        pipeline.render()
 
         assert (pipeline.assets_dir / "scatter.jpg").exists()
 
@@ -56,7 +57,7 @@ class TestRender:
         pipeline = TrendifyPipeline(output_dir=tmp_path / "out")
         pipeline.generate(_generator, dirs)
 
-        pipeline.render(no_xy_plots=True)
+        pipeline.render(skip_xy_plots=True)
 
         assert not (pipeline.assets_dir / "scatter.jpg").exists()
 
@@ -66,7 +67,7 @@ class TestRun:
         dirs = _make_run_dirs(tmp_path, 3)
         pipeline = TrendifyPipeline(output_dir=tmp_path / "out", n_procs=2)
 
-        total = pipeline.run(_generator, dirs, dpi=50)
+        total = pipeline.run(_generator, dirs)
 
         assert total == 3
         assert (pipeline.assets_dir / "scatter.jpg").exists()
@@ -76,7 +77,7 @@ class TestRun:
         pipeline = TrendifyPipeline(output_dir=tmp_path / "out")
 
         pipeline.run(
-            _generator, dirs, no_tables=True, no_xy_plots=True, no_histograms=True
+            _generator, dirs, skip_tables=True, skip_xy_plots=True, skip_histograms=True
         )
 
         assert not pipeline.assets_dir.exists()

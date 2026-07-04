@@ -6,7 +6,7 @@ from trendify.generator import (
     xy_data_plotter,
 )
 from trendify.generator.generate import (
-    generate_products,
+    generate_records,
     get_sorted_dirs,
 )
 from trendify.generator.histogrammer import (
@@ -27,7 +27,7 @@ __all__ = [
     "TableBuilder",
     "XYDataPlotter",
     "generate",
-    "generate_products",
+    "generate_records",
     "get_sorted_dirs",
     "histogrammer",
     "render",
