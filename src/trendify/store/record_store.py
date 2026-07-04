@@ -123,7 +123,24 @@ class RecordStore:
             # set in db.connect().
             conn.execute("DELETE FROM records WHERE run_id = ?", (run_id,))
 
-            for record in records:
+            # `records.id` is a plain `INTEGER PRIMARY KEY` (rowid alias, no AUTOINCREMENT),
+            # so SQLite's own rule for an auto-assigned rowid is just "one more than the
+            # current max" -- reading that once and assigning a contiguous block of ids
+            # ourselves is equivalent to what N individual inserts would each get via
+            # `lastrowid`, and it's what lets everything below be batched into a handful of
+            # `executemany` calls instead of one `execute` round trip per record (this is
+            # where the bulk of write_run's time was going).
+            next_id = conn.execute(
+                "SELECT COALESCE(MAX(id), 0) + 1 FROM records"
+            ).fetchone()[0]
+
+            pending_record_rows: list[tuple] = []
+            pending_tag_rows: list[tuple] = []
+            table_entry_rows: list[tuple] = []
+
+            for record_id, record in zip(
+                range(next_id, next_id + len(records)), records
+            ):
                 tag_keys = [encode_tag(t) for t in record.tags]
 
                 if isinstance(record, Format2D):
@@ -131,25 +148,46 @@ class RecordStore:
                     # sharing any of these tags (from any run, not just this one) before
                     # inserting the new one, so re-emitting the same tag-level styling from
                     # every run (unavoidable given `RecordGenerator` is called once per run
-                    # with no cross-run coordination) never accumulates duplicate rows.
+                    # with no cross-run coordination) never accumulates duplicate rows. This
+                    # stays row-by-row (unlike the batching below) because a later Format2D
+                    # record's dedup delete must see an earlier same-tag Format2D record
+                    # *from this same call* as already inserted, which only holds if that
+                    # earlier row's insert has actually happened by the time this check runs.
                     for tk in tag_keys:
                         conn.execute(
                             "DELETE FROM records WHERE record_type = 'Format2D' AND id IN "
                             "(SELECT record_id FROM record_tags WHERE tag_key = ?)",
                             (tk,),
                         )
-
-                record_id = conn.execute(
-                    "INSERT INTO records(run_id, record_type, payload, created_at) "
-                    "VALUES (?, ?, ?, ?)",
-                    (run_id, record.record_type, record.model_dump_json(), now),
-                ).lastrowid
-
-                conn.executemany(
-                    "INSERT INTO record_tags(record_id, tag_key, record_type) "
-                    "VALUES (?, ?, ?)",
-                    [(record_id, tk, record.record_type) for tk in tag_keys],
-                )
+                    conn.execute(
+                        "INSERT INTO records(id, run_id, record_type, payload, created_at) "
+                        "VALUES (?, ?, ?, ?, ?)",
+                        (
+                            record_id,
+                            run_id,
+                            record.record_type,
+                            record.model_dump_json(),
+                            now,
+                        ),
+                    )
+                    conn.executemany(
+                        "INSERT INTO record_tags(record_id, tag_key, record_type) "
+                        "VALUES (?, ?, ?)",
+                        [(record_id, tk, record.record_type) for tk in tag_keys],
+                    )
+                else:
+                    pending_record_rows.append(
+                        (
+                            record_id,
+                            run_id,
+                            record.record_type,
+                            record.model_dump_json(),
+                            now,
+                        )
+                    )
+                    pending_tag_rows.extend(
+                        (record_id, tk, record.record_type) for tk in tag_keys
+                    )
 
                 if isinstance(record, TableEntry):
                     value_num = value_text = value_bool = None
@@ -160,25 +198,40 @@ class RecordStore:
                     else:
                         value_text = record.value
 
-                    conn.executemany(
-                        "INSERT INTO table_entries("
-                        "record_id, tag_key, row_key, col_key, "
-                        "value_num, value_text, value_bool, unit) "
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                        [
-                            (
-                                record_id,
-                                tk,
-                                str(record.row),
-                                str(record.col),
-                                value_num,
-                                value_text,
-                                value_bool,
-                                record.unit,
-                            )
-                            for tk in tag_keys
-                        ],
+                    table_entry_rows.extend(
+                        (
+                            record_id,
+                            tk,
+                            str(record.row),
+                            str(record.col),
+                            value_num,
+                            value_text,
+                            value_bool,
+                            record.unit,
+                        )
+                        for tk in tag_keys
                     )
+
+            if pending_record_rows:
+                conn.executemany(
+                    "INSERT INTO records(id, run_id, record_type, payload, created_at) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    pending_record_rows,
+                )
+            if pending_tag_rows:
+                conn.executemany(
+                    "INSERT INTO record_tags(record_id, tag_key, record_type) "
+                    "VALUES (?, ?, ?)",
+                    pending_tag_rows,
+                )
+            if table_entry_rows:
+                conn.executemany(
+                    "INSERT INTO table_entries("
+                    "record_id, tag_key, row_key, col_key, "
+                    "value_num, value_text, value_bool, unit) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    table_entry_rows,
+                )
 
         logger.debug(
             f"Wrote {len(records)} record(s) for run {run_path_str} (run_id={run_id})"

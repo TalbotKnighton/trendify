@@ -1,4 +1,7 @@
-from trendify.store import db, record_store, tags
+from trendify.store import db
+from trendify.store import record_store
+from trendify.store import tags
+
 from trendify.store.db import (
     SCHEMA_VERSION,
     connect,

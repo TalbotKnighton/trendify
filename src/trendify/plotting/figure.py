@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import plotly.graph_objects as go
@@ -32,6 +33,13 @@ if TYPE_CHECKING:
 __all__ = ["PlotlyFigure", "SingleAxisFigure"]
 
 logger = logging.getLogger(__name__)
+
+# This pipeline only ever renders headlessly (batch CLI/worker processes, no interactive
+# window), so pin the backend explicitly before the first figure is ever created. Left
+# unset, pyplot's lazy backend auto-selection probes for a live GUI display on the very
+# first `plt.figure()` call (`matplotlib._c_internal_utils.display_is_valid`), which is a
+# multi-second stall on some systems for a check whose answer we don't care about anyway.
+matplotlib.use("Agg")
 
 
 @dataclass
@@ -160,16 +168,21 @@ class SingleAxisFigure:
         else:
             self.ax.grid(visible=False, which="minor")
 
-    def savefig(self, path: Path, dpi: int = 500):
+    def savefig(self, path: Path, dpi: int | None = None):
         """
-        Wrapper on matplotlib savefig method.  Saves figure to given path with given dpi resolution.
+        Wrapper on matplotlib savefig method. Saves figure to given path, at the given `dpi`
+        for raster output. `dpi` is meaningless for vector output (e.g. `.svg`), so `None`
+        leaves it unset and matplotlib infers the format from `path`'s suffix either way.
 
         Returns:
             (Self): Returns self
 
         """
         logger.debug(f"Saving matplotlib figure for {self.tag = } to {path} ({dpi = })")
-        self.fig.savefig(path, dpi=dpi)
+        if dpi is not None:
+            self.fig.savefig(path, dpi=dpi)
+        else:
+            self.fig.savefig(path)
         return self
 
     def __del__(self):

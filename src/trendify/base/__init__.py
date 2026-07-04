@@ -1,4 +1,7 @@
-from trendify.base import helpers, pen, record
+from trendify.base import helpers
+from trendify.base import pen
+from trendify.base import record
+
 from trendify.base.helpers import (
     HashableBase,
     R,

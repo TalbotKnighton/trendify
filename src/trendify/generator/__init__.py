@@ -1,10 +1,9 @@
-from trendify.generator import (
-    generate,
-    histogrammer,
-    render,
-    table_builder,
-    xy_data_plotter,
-)
+from trendify.generator import generate
+from trendify.generator import histogrammer
+from trendify.generator import render
+from trendify.generator import table_builder
+from trendify.generator import xy_data_plotter
+
 from trendify.generator.generate import (
     generate_records,
     get_sorted_dirs,

@@ -12,9 +12,9 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 from enum import StrEnum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
-from pydantic import ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from trendify.base.record import Record
 from trendify.styling.grid import Grid
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from trendify.plotting.figure import PlotlyFigure
 logger = logging.getLogger(__name__)
 
-__all__ = ["AxisScale", "Format2D", "PlottableData2D", "XYData"]
+__all__ = ["AxisScale", "Format2D", "PlottableData2D", "Rastered", "Vector", "XYData"]
 
 
 class AxisScale(StrEnum):
@@ -32,6 +32,21 @@ class AxisScale(StrEnum):
     """Format axis as linear"""
     LOG = "log"
     """Format axis with log base 10"""
+
+
+class Rastered(BaseModel):
+    """Renders to a raster image format (matplotlib's `dpi` setting applies)."""
+
+    type: Literal["rastered"] = "rastered"
+    filetype: str = ".jpg"
+    dpi: int = 500
+
+
+class Vector(BaseModel):
+    """Renders to a vector image format (matplotlib's `dpi` setting doesn't apply)."""
+
+    type: Literal["vector"] = "vector"
+    filetype: str = ".svg"
 
 
 class Format2D(Record):
@@ -53,6 +68,9 @@ class Format2D(Record):
         scale_y (AxisScale, optional): Sets the y axis scale to an option from [AxisScale][trendify.formats.format2d.AxisScale]. Defaults to AxisScale.LINEAR
         figure_width (float, optional): Sets the of the width of rendered figure in inches. Defaults to 6.4.
         figure_height (float, optional): Sets the of the height of rendered figure in inches. Defaults to 4.8.
+        renderer (Rastered | Vector, optional): Chooses the saved file format: `Rastered`
+            (default) for a raster image (`.jpg` by default, at a configurable `dpi`), or
+            `Vector` for a vector image (`.svg` by default). Defaults to `Rastered()`.
 
     """
 
@@ -68,7 +86,7 @@ class Format2D(Record):
     scale_y: AxisScale = AxisScale.LINEAR
     figure_width: float = 6.4
     figure_height: float = 4.8
-    dpi: int = 500
+    renderer: Rastered | Vector = Field(default_factory=Rastered, discriminator="type")
 
     model_config = ConfigDict(extra="forbid")
 

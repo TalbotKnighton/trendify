@@ -7,12 +7,12 @@ used by both renderers).
 from __future__ import annotations
 
 import logging
-from typing import cast
+from typing import Literal, cast
 
 import numpy as np
 import plotly.graph_objects as go
 from matplotlib.colors import to_rgba
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Field, field_validator, model_validator
 
 from trendify.base.helpers import HashableBase, Tags
 from trendify.formats.format2d import PlottableData2D
@@ -41,7 +41,7 @@ class HistogramStyle(HashableBase):
 
     color: str = "k"
     label: str | None = None
-    histtype: str = "stepfilled"
+    histtype: Literal["bar", "step", "stepfilled"] = "stepfilled"
     alpha_edge: float = 0
     alpha_face: float = 0.3
     linewidth: float = 2
@@ -59,6 +59,20 @@ class HistogramStyle(HashableBase):
         if isinstance(value, (list, np.ndarray)):
             return tuple(int(v) for v in value)
         return value
+
+    @model_validator(mode="after")
+    def _visible_edge_for_step_histtype(self) -> HistogramStyle:
+        # `histtype="step"` draws an edge-only patch (`fill=False`), so `alpha_edge` is the
+        # only thing that can make it visible at all, unlike "bar"/"stepfilled" where the
+        # face fill carries the color and a zero-alpha edge is just borderless.
+        # `alpha_edge`'s class default of 0 is right for those other histtypes but leaves a
+        # "step" histogram completely invisible, so bump it to opaque if left at zero.
+        if self.histtype == "step" and self.alpha_edge == 0:
+            logger.warning(
+                "Histogram type was set to 'step' but alpha_edge was 0, coercing edge transparency to 1"
+            )
+            self.alpha_edge = 1
+        return self
 
     def as_plot_kwargs(self):
         """

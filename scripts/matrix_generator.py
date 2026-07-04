@@ -18,6 +18,7 @@ in a test and handed to `RecordStore.write_run`.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 
@@ -430,7 +431,12 @@ def _add_axline_orientation_combinations(records: RecordList) -> None:
 
 def _add_histogram_histtype_combinations(records: RecordList) -> None:
     rng = np.random.default_rng(seed=1)
-    for histtype in ["bar", "barstacked", "step", "stepfilled"]:
+    histtypes: list[Literal["bar", "step", "stepfilled"]] = [
+        "bar",
+        "step",
+        "stepfilled",
+    ]
+    for histtype in histtypes:
         tag_name = f"histogram_histtype_{histtype}"
         for value in rng.normal(size=30):
             HistogramEntry(
@@ -810,7 +816,7 @@ def _add_mixed_record_type_combinations(records: RecordList) -> None:
 
 
 if __name__ == "__main__":
-    import cProfile  # noqa: F401
+    import cProfile
     import datetime
     import shutil
 
@@ -821,7 +827,7 @@ if __name__ == "__main__":
 
     output_directory = Path(__file__).parent / "example_data" / "trendify"
 
-    n_proc_sweep: dict[int, datetime.datetime | None] = {i: None for i in range(1, 1)}
+    n_proc_sweep: dict[int, datetime.datetime | None] = {i: None for i in range(1, 2)}
     # NPROC: 1, Delta t = 00m 28s
     # NPROC: 2, Delta t = 00m 20s
     # NPROC: 3, Delta t = 00m 20s
@@ -854,13 +860,14 @@ if __name__ == "__main__":
             )
 
         start = datetime.datetime.now()
-        run()
-        # with cProfile.Profile() as profiler:
-        #     run()
+        # run()
+        with cProfile.Profile() as profiler:
+            assert n_proc == 1
+            run()
         stop = datetime.datetime.now()
+        profiler.dump_stats("program.prof")
         n_proc_sweep[n_proc] = datetime.datetime(1, 1, 1) + (stop - start)
 
     for n_proc, delta_time in n_proc_sweep.items():
         assert delta_time
         print(f"NPROC: {n_proc}, Delta t = {delta_time.strftime('%Mm %Ss')}")
-    # profiler.dump_stats("program.prof")

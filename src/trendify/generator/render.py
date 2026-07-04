@@ -23,7 +23,7 @@ from typing import Any
 import matplotlib.pyplot as plt
 
 from trendify.base.helpers import Tag
-from trendify.formats.format2d import Format2D
+from trendify.formats.format2d import Format2D, Rastered
 from trendify.generator.histogrammer import Histogrammer
 from trendify.generator.table_builder import TableBuilder
 from trendify.generator.xy_data_plotter import XYDataPlotter
@@ -129,15 +129,13 @@ def _render_tag_assets(
     if format2d is not None:
         saf.apply_format(format2d)
 
-    save_path = output_dir.joinpath(*tag_to_path_parts(tag)).with_suffix(".jpg")
+    renderer = format2d.renderer if format2d is not None else Rastered()
+    save_path = output_dir.joinpath(*tag_to_path_parts(tag)).with_suffix(
+        renderer.filetype
+    )
     save_path.parent.mkdir(parents=True, exist_ok=True)
     logger.info(f"Saving to {save_path}")
-    saf.savefig(
-        save_path,
-        dpi=format2d.dpi
-        if format2d is not None
-        else Format2D.model_fields["dpi"].default,
-    )
+    saf.savefig(save_path, dpi=renderer.dpi if isinstance(renderer, Rastered) else None)
     plt.close(saf.fig)
     logger.info(f"Finished plot for {tag = }")
 

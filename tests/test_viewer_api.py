@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from trendify.store.record_store import RecordStore
 
 from trendify.formats.table import TableEntry
 from trendify.plotting.point import Point2D
 from trendify.plotting.trace import Trace2D
+from trendify.store.record_store import RecordStore
 from trendify.viewer.app import create_app
 
 
