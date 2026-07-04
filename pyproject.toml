@@ -7,7 +7,7 @@ name = "trendify"
 dynamic = ["version"]
 description = "Tools for generating data products, storing, and interacting with them"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.11.0",
     "numpy>=2.4.6",
@@ -29,7 +29,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Natural Language :: English",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
@@ -103,10 +102,7 @@ ignore = ["typings"]
 exclude_also = ["if __name__ == .__main__.:", "@(abc\\.)?abstractmethod"]
 
 [dependency-groups]
-dev = [
-    "mkinit>=1.2.0",
-    "pytest>=9.1.1",
-]
+dev = ["mkinit>=1.2.0", "pytest>=9.1.1"]
 
 [project.urls]
 "Homepage" = "https://github.com/talbotknighton/trendify"
@@ -117,4 +113,4 @@ dev = [
 
 [project.scripts]
 trendify_make_sample_data = "trendify.examples:make_sample_data"
-trendify = "trendify.CLI:trendify"
+trendify = "trendify.cli:app"

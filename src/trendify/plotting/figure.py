@@ -1,3 +1,10 @@
+"""
+`SingleAxisFigure` (matplotlib) and `PlotlyFigure` (Plotly) wrap a figure/axes pair and know how
+to apply a `Format2D`/`Grid` to it and save it to disk. These are the two rendering targets
+every `PlottableData2D` subclass draws itself onto (`plot_to_ax` for matplotlib, `add_to_plotly`
+for Plotly).
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -5,6 +12,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import warnings
 import logging
+
+from typing import Any, cast
 
 import numpy as np
 import plotly.graph_objects as go
@@ -163,6 +172,7 @@ class SingleAxisFigure:
             (Self): Returns self
 
         """
+        logger.debug(f"Saving matplotlib figure for {self.tag = } to {path} ({dpi = })")
         self.fig.savefig(path, dpi=dpi)
         return self
 
@@ -203,7 +213,7 @@ class PlotlyFigure:
             format2d (Format2D): format information to apply to the figure
 
         """
-        layout_updates = {}
+        layout_updates: dict[str, Any] = {}
 
         # Set titles
         if format2d.title_fig is not None and format2d.title_ax is not None:
@@ -215,9 +225,9 @@ class PlotlyFigure:
 
         # Set axis labels
         if format2d.label_x is not None:
-            layout_updates["xaxis"] = {"title": format2d.label_x}
+            layout_updates["xaxis"] = cast(dict[str, Any], {"title": format2d.label_x})
         if format2d.label_y is not None:
-            layout_updates["yaxis"] = {"title": format2d.label_y}
+            layout_updates["yaxis"] = cast(dict[str, Any], {"title": format2d.label_y})
 
         # Set axis ranges
         def _log10(v: float | None):
@@ -225,7 +235,7 @@ class PlotlyFigure:
 
         if format2d.lim_x_min is not None or format2d.lim_x_max is not None:
             if "xaxis" not in layout_updates:
-                layout_updates["xaxis"] = {}
+                layout_updates["xaxis"] = cast(dict[str, Any], {})
 
             if format2d.scale_x == AxisScale.LOG:
                 layout_updates["xaxis"]["range"] = [
@@ -233,8 +243,9 @@ class PlotlyFigure:
                     _log10(format2d.lim_x_max),
                 ]
             elif format2d.scale_x == AxisScale.LINEAR:
-                # v1 bugfix: this branch previously re-checked `== AxisScale.LOG`,
-                # making the plain (non-log) range-setting path unreachable.
+                # Deliberately checks LINEAR explicitly rather than falling through an
+                # unconditional else, so a third AxisScale value can't silently reuse the
+                # log-scaled range below.
                 layout_updates["xaxis"]["range"] = [
                     format2d.lim_x_min,
                     format2d.lim_x_max,
@@ -242,14 +253,14 @@ class PlotlyFigure:
 
         if format2d.lim_y_min is not None or format2d.lim_y_max is not None:
             if "yaxis" not in layout_updates:
-                layout_updates["yaxis"] = {}
+                layout_updates["yaxis"] = cast(dict[str, Any], {})
             if format2d.scale_y == AxisScale.LOG:
                 layout_updates["yaxis"]["range"] = [
                     _log10(format2d.lim_y_min),
                     _log10(format2d.lim_y_max),
                 ]
             elif format2d.scale_y == AxisScale.LINEAR:
-                # same fix as above, for the y axis
+                # Same reasoning as the x-axis branch above.
                 layout_updates["yaxis"]["range"] = [
                     format2d.lim_y_min,
                     format2d.lim_y_max,
@@ -258,12 +269,12 @@ class PlotlyFigure:
         # Set axis scales
         if format2d.scale_x is not None:
             if "xaxis" not in layout_updates:
-                layout_updates["xaxis"] = {}
+                layout_updates["xaxis"] = cast(dict[str, Any], {})
             layout_updates["xaxis"]["type"] = format2d.scale_x.value
 
         if format2d.scale_y is not None:
             if "yaxis" not in layout_updates:
-                layout_updates["yaxis"] = {}
+                layout_updates["yaxis"] = cast(dict[str, Any], {})
             layout_updates["yaxis"]["type"] = format2d.scale_y.value
 
         # Set legend

@@ -1,7 +1,11 @@
+"""
+`AxLine`: a horizontal or vertical reference line drawn on a plot, styled with a `Pen`.
+"""
+
 from __future__ import annotations
 
 import logging
-from enum import Enum
+from enum import StrEnum
 
 from matplotlib.axes import Axes
 from pydantic import ConfigDict
@@ -15,7 +19,7 @@ __all__ = ["AxLine", "LineOrientation"]
 logger = logging.getLogger(__name__)
 
 
-class LineOrientation(Enum):
+class LineOrientation(StrEnum):
     """
     Defines orientation for axis lines
 

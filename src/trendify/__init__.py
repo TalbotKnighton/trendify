@@ -2,12 +2,20 @@
 Provides top-level imports
 """
 
-from trendify import base
-from trendify import formats
-from trendify import plotting
-from trendify import store
-from trendify import styling
-
+from trendify import (
+    base,
+    cli,
+    color,
+    examples,
+    formats,
+    generator,
+    log,
+    pipeline,
+    plotting,
+    store,
+    styling,
+    typing,
+)
 from trendify.base import (
     DataProduct,
     HashableBase,
@@ -22,6 +30,16 @@ from trendify.base import (
     helpers,
     pen,
 )
+from trendify.cli import (
+    app,
+)
+from trendify.color import (
+    Color,
+)
+from trendify.examples import (
+    example_data_product_generator,
+    make_example_data,
+)
 from trendify.formats import (
     AxisScale,
     Format2D,
@@ -30,6 +48,30 @@ from trendify.formats import (
     XYData,
     format2d,
     table,
+)
+from trendify.generator import (
+    Histogrammer,
+    TableBuilder,
+    XYDataPlotter,
+    generate,
+    generate_products,
+    get_sorted_dirs,
+    histogrammer,
+    make_include_files,
+    render,
+    render_assets,
+    table_builder,
+    xy_data_plotter,
+)
+from trendify.log import (
+    create_queue_listener,
+    get_logger,
+    set_log_level,
+    setup_logger,
+    worker_init,
+)
+from trendify.pipeline import (
+    TrendifyPipeline,
 )
 from trendify.plotting import (
     AxLine,
@@ -47,13 +89,14 @@ from trendify.plotting import (
     trace,
 )
 from trendify.store import (
-    ProductStore,
     SCHEMA_VERSION,
+    ProductStore,
     connect,
     db,
     decode_tag,
     encode_tag,
     product_store,
+    tag_to_path_parts,
     tags,
 )
 from trendify.styling import (
@@ -67,11 +110,16 @@ from trendify.styling import (
     legend,
     marker,
 )
+from trendify.typing import (
+    MatN,
+    VecN,
+)
 
 __all__ = [
     "SCHEMA_VERSION",
     "AxLine",
     "AxisScale",
+    "Color",
     "DataProduct",
     "Format2D",
     "Grid",
@@ -80,10 +128,12 @@ __all__ = [
     "HashableBase",
     "HistogramEntry",
     "HistogramStyle",
+    "Histogrammer",
     "Legend",
     "LegendLocation",
     "LineOrientation",
     "Marker",
+    "MatN",
     "Pen",
     "PlotlyFigure",
     "PlottableData2D",
@@ -94,33 +144,62 @@ __all__ = [
     "ProductType",
     "R",
     "SingleAxisFigure",
+    "TableBuilder",
     "TableEntry",
     "Tag",
     "Tags",
     "Trace2D",
+    "TrendifyPipeline",
+    "VecN",
     "XYData",
+    "XYDataPlotter",
+    "app",
     "axline",
     "base",
+    "cli",
+    "color",
     "connect",
+    "create_queue_listener",
     "data_product",
     "db",
     "decode_tag",
     "encode_tag",
+    "example_data_product_generator",
+    "examples",
     "figure",
     "format2d",
     "formats",
+    "generate",
+    "generate_products",
+    "generator",
+    "get_logger",
+    "get_sorted_dirs",
     "grid",
     "helpers",
     "histogram",
+    "histogrammer",
     "legend",
+    "log",
+    "make_example_data",
+    "make_include_files",
     "marker",
     "pen",
+    "pipeline",
     "plotting",
     "point",
     "product_store",
+    "render",
+    "render_assets",
+    "set_log_level",
+    "setup_logger",
     "store",
     "styling",
     "table",
+    "table_builder",
+    "tag_to_path_parts",
     "tags",
     "trace",
+    "typing",
+    "worker_init",
+    "xy_data_plotter",
 ]

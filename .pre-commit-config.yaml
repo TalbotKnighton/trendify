@@ -4,15 +4,6 @@ repos:
     hooks:
       - id: check-added-large-files
         args: ["--maxkb=500"]
-  - repo: local
-    hooks:
-      - id: mkinit
-        name: auto-generate __init__.py files
-        entry: uv run mkinit
-        args: ["src/trendify", "-w", "--recursive"]
-        language: system
-        files: ^(src/trendify.*\.py)$
-        pass_filenames: false
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.17
     hooks:

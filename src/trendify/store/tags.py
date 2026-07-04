@@ -2,10 +2,8 @@
 Canonical encoding between the pydantic-facing `Tag` type and the `tag_key` string
 stored/indexed in the `product_tags` and `table_entries` SQL tables.
 
-This is the direct successor to v1's tuple-tag -> nested-folder-path convention: instead of
-turning a tag into a filesystem path, we turn it into a single indexed string key. The same
-`encode_tag` function must be used at write time and query time so lookups are exact-match
-index seeks.
+The same `encode_tag` function must be used at write time and query time so lookups are
+exact-match index seeks.
 """
 
 from __future__ import annotations
@@ -14,7 +12,7 @@ import json
 
 from trendify.base.helpers import Tag
 
-__all__ = ["decode_tag", "encode_tag"]
+__all__ = ["decode_tag", "encode_tag", "tag_to_path_parts"]
 
 
 def encode_tag(tag: Tag) -> str:
@@ -49,3 +47,19 @@ def decode_tag(tag_key: str) -> Tag:
     if isinstance(decoded, list):
         return tuple(decoded)
     return decoded
+
+
+def tag_to_path_parts(tag: Tag) -> tuple[str, ...]:
+    """
+    Converts a `Tag` into output-path parts: a tuple tag `("a", "b")` becomes nested path
+    segments `("a", "b")`, and a scalar tag `"a"` becomes a single segment `("a",)`.
+
+    Args:
+        tag (Tag): tag to convert
+
+    Returns:
+        (tuple[str, ...]): path parts, last one being the file stem
+
+    """
+    parts = tag if isinstance(tag, tuple) else (tag,)
+    return tuple(str(p) for p in parts)

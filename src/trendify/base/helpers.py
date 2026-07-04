@@ -1,10 +1,19 @@
+"""
+Small shared building blocks used across the rest of the package: the `Tag`/`Tags` type
+aliases every `DataProduct` and the store's tag-encoding logic build on, `HashableBase` for
+pydantic models that need to go in a `set`, and the `ProductType` enum.
+"""
+
 from __future__ import annotations
 
 import logging
-from enum import StrEnum, auto
-from typing import TypeVar
+from enum import StrEnum
+from typing import TYPE_CHECKING, TypeVar
 
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from trendify.base.data_product import DataProduct
 
 logger = logging.getLogger(__name__)
 
@@ -16,16 +25,18 @@ __all__ = [
     "Tags",
 ]
 
-R = TypeVar("R")
+R = TypeVar("R", bound="DataProduct")
+"""Bound to `DataProduct`: used by `ProductStore.get_products`/`get_products_of_type` so a
+call like `get_products_of_type(Point2D)` returns `list[Point2D]` rather than `list[DataProduct]`.
+"""
 
 Tag = str | int | tuple[str | int, ...]
 """
 Determines what types can be used to define a tag.
 
-Narrower than v1's ``Union[tuple[Hashable, ...], Hashable]``: tags must be reliably
-JSON-encodable (str/int, or tuples thereof) because the store canonicalizes a tag into a
-`tag_key` via `json.dumps` for indexed lookup (see `trendify.store.tags`). A bare `Hashable`
-can't guarantee a stable, 1:1 JSON encoding.
+Tags must be reliably JSON-encodable (str/int, or tuples thereof) because the store
+canonicalizes a tag into a `tag_key` via `json.dumps` for indexed lookup (see
+`trendify.store.tags`).
 """
 
 Tags = list[Tag]
@@ -60,9 +71,9 @@ class ProductType(StrEnum):
 
     """
 
-    DataProduct = auto()
-    XYData = auto()
-    Trace2D = auto()
-    Point2D = auto()
-    TableEntry = auto()
-    HistogramEntry = auto()
+    DATA_PRODUCT = "data_product"
+    XY_DATA = "xy_data"
+    TRACE_2D = "trace_2d"
+    POINT_2D = "point_2d"
+    TABLE_ENTRY = "table_entry"
+    HISTOGRAM_ENTRY = "histogram_entry"

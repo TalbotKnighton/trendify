@@ -12,6 +12,7 @@ from trendify.store.product_store import (
 from trendify.store.tags import (
     decode_tag,
     encode_tag,
+    tag_to_path_parts,
 )
 
 __all__ = [
@@ -22,5 +23,6 @@ __all__ = [
     "decode_tag",
     "encode_tag",
     "product_store",
+    "tag_to_path_parts",
     "tags",
 ]

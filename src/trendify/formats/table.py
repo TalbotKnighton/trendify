@@ -1,3 +1,9 @@
+"""
+`TableEntry`: the one `DataProduct` subclass the store gives real SQL columns instead of an
+opaque JSON payload, since its whole purpose (pivoting into a wide table, then computing
+per-column stats) is naturally SQL-shaped. See `trendify.generator.table_builder`.
+"""
+
 from __future__ import annotations
 
 import logging

@@ -1,24 +1,28 @@
+"""
+`Grid` (major/minor gridline styling for a plot axes) and its `GridTheme` presets, selectable
+via `Grid.from_theme`, plus the per-axis `GridAxis` settings a `Grid` is built from.
+"""
+
 from __future__ import annotations
 
-from enum import Enum, auto
-from collections.abc import Iterable
 import logging
+from collections.abc import Iterable
+from enum import StrEnum
 
 from pydantic import ConfigDict
 
 from trendify.base.helpers import HashableBase
 from trendify.base.pen import Pen
 
-
 logger = logging.getLogger(__name__)
 
 __all__ = ["Grid", "GridAxis", "GridTheme"]
 
 
-class GridTheme(Enum):
-    MATLAB = auto()
-    LIGHT = auto()
-    DARK = auto()
+class GridTheme(StrEnum):
+    MATLAB = "matlab"
+    LIGHT = "light"
+    DARK = "dark"
 
 
 class GridAxis(HashableBase):
@@ -136,10 +140,17 @@ class Grid(HashableBase):
             return cls()
 
         # Enforce consistent GridAxis settings
-        [major] = set(g.major for g in grids)
-        [minor] = set(g.minor for g in grids)
-        [enable_minor_ticks] = set(g.enable_minor_ticks for g in grids)
-        [zorder] = set(g.zorder for g in grids)
+        try:
+            [major] = set(g.major for g in grids)
+            [minor] = set(g.minor for g in grids)
+            [enable_minor_ticks] = set(g.enable_minor_ticks for g in grids)
+            [zorder] = set(g.zorder for g in grids)
+        except ValueError:
+            logger.error(
+                f"Grid.union_from_iterable: products sharing a tag disagree on "
+                f"major/minor/enable_minor_ticks/zorder. {grids = }"
+            )
+            raise
 
         return cls(
             major=major,

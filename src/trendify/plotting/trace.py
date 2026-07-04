@@ -1,3 +1,8 @@
+"""
+`Trace2D`: a line/scatter trace built from a list of `Point2D`s, styled with a `Pen`. Use the
+`Trace2D.from_xy` constructor rather than building the `points` list by hand.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -5,7 +10,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import plotly.graph_objects as go
-from numpydantic import NDArray, Shape
 from pydantic import ConfigDict
 
 from trendify.base.helpers import Tags
@@ -14,6 +18,7 @@ from trendify.formats.format2d import XYData
 from trendify.plotting.figure import PlotlyFigure
 from trendify.plotting.point import Point2D
 from trendify.styling.marker import Marker
+from trendify.typing import VecN
 
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
@@ -47,23 +52,23 @@ class Trace2D(XYData):
     pen: Pen = Pen()
 
     @property
-    def x(self) -> NDArray[Shape["*"], float]:
+    def x(self) -> VecN:
         """
         Returns an array of x values from `self.points`
 
         Returns:
-            (NDArray[Shape["*"], float]): array of x values from `self.points`
+            (VecN): array of x values from `self.points`
 
         """
         return np.array([p.x for p in self.points])
 
     @property
-    def y(self) -> NDArray[Shape["*"], float]:
+    def y(self) -> VecN:
         """
         Returns an array of y values from `self.points`
 
         Returns:
-            (NDArray[Shape["*"], float]): array of y values from `self.points`
+            (VecN): array of y values from `self.points`
 
         """
         return np.array([p.y for p in self.points])
@@ -91,8 +96,8 @@ class Trace2D(XYData):
     def from_xy(
         cls,
         tags: Tags,
-        x: NDArray[Shape["*"], float],
-        y: NDArray[Shape["*"], float],
+        x: VecN,
+        y: VecN,
         pen: Pen = Pen(),
         format2d: Format2D | None = None,
     ):
@@ -101,8 +106,8 @@ class Trace2D(XYData):
 
         Args:
             tags (Tags): Tags used to sort data products
-            x (NDArray[Shape["*"], float]): x values
-            y (NDArray[Shape["*"], float]): y values
+            x (VecN): x values
+            y (VecN): y values
             pen (Pen): Style and label for trace
             format2d (Format2D | None): Format to apply to plot
 

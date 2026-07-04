@@ -1,3 +1,7 @@
+"""
+`Point2D`: a single scattered (x, y) point, styled with a `Marker`.
+"""
+
 from __future__ import annotations
 
 import logging

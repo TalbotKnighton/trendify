@@ -1,3 +1,8 @@
+"""
+`Legend` (matplotlib/Plotly legend styling: location, title, opacity, border) and the
+`LegendLocation` enum of matplotlib-recognized location strings it validates against.
+"""
+
 from __future__ import annotations
 
 from enum import StrEnum

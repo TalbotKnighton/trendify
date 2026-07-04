@@ -1,3 +1,9 @@
+"""
+`Format2D` (axis/legend/grid/scale/limit settings shared by every 2D plot type) and the
+`PlottableData2D`/`XYData` base classes that carry an optional `Format2D` and know how to draw
+themselves onto a Plotly figure.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -81,13 +87,21 @@ class Format2D(HashableBase):
         """
         formats = list(set(format2ds) - {None})
 
-        [title_fig] = set(i.title_fig for i in formats if i is not None)
-        [legend] = set(i.legend for i in formats if i is not None)
-        [title_ax] = set(i.title_ax for i in formats if i is not None)
-        [label_x] = set(i.label_x for i in formats if i is not None)
-        [label_y] = set(i.label_y for i in formats if i is not None)
-        [figure_width] = set(i.figure_width for i in formats)
-        [figure_height] = set(i.figure_height for i in formats)
+        try:
+            [title_fig] = set(i.title_fig for i in formats if i is not None)
+            [legend] = set(i.legend for i in formats if i is not None)
+            [title_ax] = set(i.title_ax for i in formats if i is not None)
+            [label_x] = set(i.label_x for i in formats if i is not None)
+            [label_y] = set(i.label_y for i in formats if i is not None)
+            [figure_width] = set(i.figure_width for i in formats)
+            [figure_height] = set(i.figure_height for i in formats)
+        except ValueError:
+            logger.error(
+                "Format2D.union_from_iterable: products sharing a tag disagree on a field "
+                "that must be identical across all of them (title_fig, legend, title_ax, "
+                f"label_x, label_y, figure_width, or figure_height). {formats = }"
+            )
+            raise
 
         x_min = [i.lim_x_min for i in formats if i.lim_x_min is not None]
         x_max = [i.lim_x_max for i in formats if i.lim_x_max is not None]
@@ -101,8 +115,15 @@ class Format2D(HashableBase):
 
         grid = Grid.union_from_iterable(f.grid for f in formats if f.grid is not None)
 
-        [scale_x] = set(i.scale_x for i in formats)
-        [scale_y] = set(i.scale_y for i in formats)
+        try:
+            [scale_x] = set(i.scale_x for i in formats)
+            [scale_y] = set(i.scale_y for i in formats)
+        except ValueError:
+            logger.error(
+                f"Format2D.union_from_iterable: products sharing a tag disagree on "
+                f"scale_x/scale_y. {formats = }"
+            )
+            raise
 
         return cls(
             title_fig=title_fig,

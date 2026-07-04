@@ -1,3 +1,5 @@
+"""Tests for data product store"""
+
 from pathlib import Path
 
 import polars as pl
@@ -5,12 +7,12 @@ import pytest
 
 from trendify.base.data_product import DataProduct
 from trendify.base.pen import Pen
+from trendify.formats.format2d import XYData
 from trendify.formats.table import TableEntry
 from trendify.plotting.axline import AxLine, LineOrientation
 from trendify.plotting.histogram import HistogramEntry
 from trendify.plotting.point import Point2D
 from trendify.plotting.trace import Trace2D
-from trendify.formats.format2d import XYData
 from trendify.store.product_store import ProductStore
 from trendify.store.tags import decode_tag, encode_tag
 
@@ -121,7 +123,7 @@ class TestGetProducts:
     def test_multi_tag_product_is_not_duplicated_in_storage(
         self, store: ProductStore, tmp_path: Path
     ):
-        # Point2D above carries two tags ("a" and ("a","b")) -- this is precisely the
+        # Point2D above carries two tags ("a" and ("a","b")), which is precisely the
         # v1 disk-duplication complaint: assert there's exactly one `products` row for
         # it, with two matching `product_tags` index rows, not two payload copies.
         store.write_run(tmp_path / "run1", _sample_products())

@@ -1,3 +1,8 @@
+"""
+`Marker`: scatter-point styling (color, size, alpha, symbol) for `Point2D`, including the
+`from_pen` conversion used when a `Trace2D`'s `Pen` needs to render as scattered markers.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -18,7 +23,7 @@ class Marker(HashableBase):
     Defines marker for scattering to matplotlib
 
     Attributes:
-        color (str): Color of line
+        color (tuple[float, float, float] | tuple[float, float, float, float] | str): Color of line
         size (float): Line width
         alpha (float): Opacity from 0 to 1 (inclusive)
         zorder (float): Prioritization
@@ -27,7 +32,7 @@ class Marker(HashableBase):
 
     """
 
-    color: str = "k"
+    color: tuple[float, float, float] | tuple[float, float, float, float] | str = "k"
     size: float = 5
     alpha: float = 1
     zorder: float = 0
@@ -43,12 +48,9 @@ class Marker(HashableBase):
         """
         Converts Pen to marker with the option to specify a symbol.
 
-        Note (v1 bugfix): v1 did `pen.model_dump().pop("linestyle")`, which pops and
-        returns a single value (discarding the rest of the dict) and then tries to
-        splat that scalar as `**kwargs` -- guaranteed `TypeError` on any real call.
-        The fix is to dump the dict, drop the one field (`linestyle`) that `Pen` has
-        and `Marker` doesn't, and splat what's left (color/size/alpha/zorder/label,
-        which line up 1:1 with `Marker`'s fields).
+        `Pen` has one field (`linestyle`) that `Marker` doesn't, so its dumped dict can't be
+        splatted directly as `**kwargs` into `Marker`. This drops that one field and splats
+        what's left (color/size/alpha/zorder/label, which line up 1:1 with `Marker`'s fields).
         """
         data = pen.model_dump()
         data.pop("linestyle", None)

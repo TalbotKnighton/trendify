@@ -1,33 +1,42 @@
 """
-ProductStore: the SQLite-backed replacement for v1's DataProductCollection file-glob methods.
+`ProductStore`: the SQLite-backed store for tagged `DataProduct`s.
 
-Pydantic objects remain what flows in and out everywhere -- only the storage/query mechanics
-change. See rewrite_reference/OVERVIEW.md and the v2 architecture plan for the full design
-rationale (why SQLite/WAL, why this schema shape, why no merge phase).
+Pydantic objects are what flow in and out everywhere; storage and querying happen entirely
+underneath that interface. Every product's full JSON payload is stored opaquely, so new
+`DataProduct` subclasses are storable and queryable the moment they're registered, with no
+schema migration required. Tags are normalized into an indexed join table, so a product with N
+tags costs one payload row plus N small index rows rather than N duplicated payloads. `TableEntry`
+is the one exception: it gets real SQL columns (row/col/value/unit) instead of an opaque payload,
+since pivoting and computing per-column statistics is naturally SQL-shaped.
 """
 
 from __future__ import annotations
 
 import datetime
+import logging
 import sqlite3
 from collections.abc import Iterable, Iterator
+from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 
 import polars as pl
 
 from trendify.base.data_product import DataProduct
-from trendify.base.helpers import Tag
+from trendify.base.helpers import R, Tag
 from trendify.formats.table import TableEntry
 from trendify.store import db
 from trendify.store.tags import decode_tag, encode_tag
 
 __all__ = ["ProductStore"]
 
+logger = logging.getLogger(__name__)
+
 
 def _leaf_type_names(object_type: type[DataProduct]) -> list[str]:
     """
     Expands a (possibly non-leaf) `DataProduct` type into the list of registered leaf
-    `product_type` names that are instances of it -- e.g. `PlottableData2D` expands to
+    `product_type` names that are instances of it: `PlottableData2D`, for example, expands to
     `["Point2D", "Trace2D", "AxLine", "HistogramEntry"]`. This lets tag/type filtering happen
     as a plain SQL `product_type IN (...)` clause instead of deserializing every tag-matched
     row just to run an `isinstance` check in Python.
@@ -44,6 +53,7 @@ def _tag_sort_key(tag: Tag):
     return (len(as_tuple), as_tuple)
 
 
+@dataclass
 class ProductStore:
     """
     SQLite-backed store for `DataProduct`s, grouped by run and queryable by tag/type.
@@ -54,8 +64,7 @@ class ProductStore:
             traces = store.get_products_of_type(Trace2D, tag="my_tag")
     """
 
-    def __init__(self, conn: sqlite3.Connection):
-        self._conn = conn
+    _conn: sqlite3.Connection
 
     @classmethod
     def open(cls, db_path: Path, *, readonly: bool = False) -> ProductStore:
@@ -68,15 +77,14 @@ class ProductStore:
         self.close()
 
     def close(self) -> None:
+        logger.debug("Closing ProductStore connection")
         self._conn.close()
 
     def write_run(self, run_path: Path, products: Iterable[DataProduct]) -> int:
         """
         Replaces all products for `run_path` in a single transaction. Idempotent: calling this
         again for the same `run_path` (e.g. re-running a generator on the same input directory)
-        deletes and replaces that run's rows rather than accumulating duplicates -- this is what
-        replaces v1's `ProductIndexMap`/`FileLock` stable-indexing dance, since there's no
-        per-tag file to keep numbered anymore.
+        deletes and replaces that run's rows rather than accumulating duplicates.
 
         Args:
             run_path (Path): the raw-data run directory these products were generated from
@@ -89,6 +97,7 @@ class ProductStore:
         products = list(products)
         run_path_str = str(Path(run_path).resolve())
         now = datetime.datetime.now(datetime.UTC).isoformat()
+        logger.debug(f"Writing {len(products)} product(s) for run {run_path_str}")
 
         conn = self._conn
         with conn:  # transaction: commits on success, rolls back on exception
@@ -153,6 +162,9 @@ class ProductStore:
                         ],
                     )
 
+        logger.debug(
+            f"Wrote {len(products)} product(s) for run {run_path_str} (run_id={run_id})"
+        )
         return len(products)
 
     def get_tags(self, object_type: type[DataProduct] | None = None) -> set[Tag]:
@@ -182,10 +194,8 @@ class ProductStore:
     def tag_tree(self, object_type: type[DataProduct] | None = None) -> list[Tag]:
         """
         Returns:
-            (list[Tag]): tags sorted the way v1's Streamlit sidebar expects (shallow tags
-                first, then lexicographically) -- direct replacement for v1's
-                `streamlit.get_tags()`, which discovered this list by globbing for files
-                literally named `index_map` in the sorted-products directory tree.
+            (list[Tag]): tags sorted for display in a nested sidebar or tree view: shallow
+                tags first, then lexicographically within each depth.
 
         """
         return sorted(self.get_tags(object_type=object_type), key=_tag_sort_key)
@@ -193,24 +203,24 @@ class ProductStore:
     def get_products(
         self,
         tag: Tag | None = None,
-        object_type: type[DataProduct] | None = None,
-    ) -> Iterator[DataProduct]:
+        object_type: type[R] | None = None,
+    ) -> Iterator[R]:
         """
         Streams matching products, deserialized to their concrete pydantic type. Filtering by
         `tag` and/or `object_type` happens in SQL (indexed tag lookup, `product_type IN (...)`
         for the type hierarchy) before anything is deserialized, so this only ever parses JSON
-        for rows that actually match -- unlike v1, which reparsed every JSON in a tag directory
-        before filtering in Python.
+        for rows that actually match.
 
         Args:
             tag (Tag | None): tag to filter by; `None` matches every tag
-            object_type (type[DataProduct] | None): type (or base type) to filter by;
-                `None` matches every type
+            object_type (type[R] | None): type (or base type) to filter by; `None` matches
+                every type
 
         Yields:
-            (DataProduct): matching products, in insertion order
+            (R): matching products, in insertion order
 
         """
+        logger.debug(f"Querying products ({tag = }, {object_type = })")
         select = "SELECT p.product_type, p.payload FROM products p"
         joins = []
         where = []
@@ -234,27 +244,25 @@ class ProductStore:
 
         cursor = self._conn.execute(query, params)
         for row in cursor:
-            yield DataProduct.deserialize(row["product_type"], row["payload"])
+            yield cast(R, DataProduct.deserialize(row["product_type"], row["payload"]))
 
     def get_products_of_type(
-        self, object_type: type[DataProduct], tag: Tag | None = None
-    ) -> list[DataProduct]:
+        self, object_type: type[R], tag: Tag | None = None
+    ) -> list[R]:
         """
-        Same as `get_products`, but eager (a `list`) -- convenience for callers that don't need
-        streaming, mirroring v1's `DataProductCollection.get_products_of_type`.
+        Same as `get_products`, but eager (a `list`), for callers that don't need streaming.
         """
         return list(self.get_products(tag=tag, object_type=object_type))
 
     def get_table_entries(self, tag: Tag) -> pl.DataFrame:
         """
-        Fetches `TableEntry` rows for `tag` directly from the `table_entries` table -- skips
-        deserializing full `DataProduct` payloads entirely, since row/col/value/unit are already
-        real columns. This is the direct replacement for `TableBuilder.load_table`'s "reparse
-        every JSON in every input dir" step.
+        Fetches `TableEntry` rows for `tag` directly from the `table_entries` table, skipping
+        full `DataProduct` payload deserialization entirely since row/col/value/unit are already
+        real columns.
 
         Note: `value` is resolved to a single Python value per row (whichever of
         `value_num`/`value_text`/`value_bool` is populated) before handing rows to Polars,
-        rather than asking Polars/SQLite to reconcile a mixed-type SQL column -- Polars expects
+        rather than asking Polars/SQLite to reconcile a mixed-type SQL column. Polars expects
         one dtype per column, so resolving the union type in Python first is the well-defined
         choice.
 
@@ -262,8 +270,8 @@ class ProductStore:
             tag (Tag): tag to filter by
 
         Returns:
-            (pl.DataFrame): columns `row`, `col`, `value`, `unit` -- same shape as v1's
-                `TableEntry.get_entry_dict()`.
+            (pl.DataFrame): a "melted" table with columns `row`, `col`, `value`, `unit`, one
+                row per `TableEntry` product matching `tag`.
 
         """
         rows = self._conn.execute(
@@ -271,6 +279,7 @@ class ProductStore:
             "FROM table_entries WHERE tag_key = ?",
             (encode_tag(tag),),
         ).fetchall()
+        logger.debug(f"Fetched {len(rows)} table_entries row(s) for {tag = }")
 
         records = []
         for r in rows:

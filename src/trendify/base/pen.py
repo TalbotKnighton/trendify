@@ -1,3 +1,8 @@
+"""
+`Pen`: shared line/marker styling (color, size, alpha, linestyle, zorder, label) used by
+`Trace2D`, `AxLine`, and anything else that draws a line to matplotlib or Plotly.
+"""
+
 from __future__ import annotations
 
 

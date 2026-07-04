@@ -1,9 +1,15 @@
+"""
+Base `DataProduct` pydantic model, the `ProductGenerator`/`ProductList` type aliases user code
+implements against, and the subclass registry `ProductStore` uses to deserialize a stored
+`product_type` string back into its concrete pydantic class.
+"""
+
 from __future__ import annotations
 
+import logging
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
-from collections.abc import Callable
-import logging
 
 from pydantic import (
     BaseModel,
@@ -15,7 +21,6 @@ from pydantic import (
 )
 
 from trendify.base.helpers import Tags
-
 
 logger = logging.getLogger(__name__)
 
@@ -74,21 +79,22 @@ class DataProduct(BaseModel):
         """
         super().__init_subclass__(**kwargs)
         _data_product_subclass_registry[cls.__name__] = cls
+        logger.debug(f"Registered DataProduct subclass {cls.__name__!r}")
 
     model_config = ConfigDict(extra="allow")
 
-    def append_to_list(self, l: list):
+    def append_to_list(self, to_add_to: list):
         """
         Appends self to list.
 
         Args:
-            l (List): list to which `self` will be appended
+            to_add_to (List): list to which `self` will be appended
 
         Returns:
             (Self): returns instance of `self`
 
         """
-        l.append(self)
+        to_add_to.append(self)
         return self
 
     @classmethod
@@ -115,7 +121,15 @@ class DataProduct(BaseModel):
             (DataProduct): the reconstructed, correctly-typed product instance
 
         """
-        duck_type = _data_product_subclass_registry[product_type]
+        try:
+            duck_type = _data_product_subclass_registry[product_type]
+        except KeyError:
+            logger.error(
+                f"No registered DataProduct subclass named {product_type!r}. Known types: "
+                f"{sorted(_data_product_subclass_registry)}. This usually means the module "
+                f"defining that subclass hasn't been imported in this process."
+            )
+            raise
         return duck_type.model_validate_json(payload)
 
     def set_metadata(self, new: dict[str, str]):

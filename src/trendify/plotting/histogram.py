@@ -1,3 +1,9 @@
+"""
+`HistogramEntry` (a single value to be binned into a matplotlib/Plotly histogram) and its
+`HistogramStyle` (bar color, opacity, bin count, and the derived RGBA/contrast-color helpers
+used by both renderers).
+"""
+
 from __future__ import annotations
 
 import logging
@@ -5,12 +11,12 @@ from typing import cast
 
 import plotly.graph_objects as go
 from matplotlib.colors import to_rgba
-from numpydantic import NDArray, Shape
 from pydantic import ConfigDict, Field
 
 from trendify.base.helpers import HashableBase, Tags
 from trendify.formats.format2d import PlottableData2D
 from trendify.plotting.figure import PlotlyFigure
+from trendify.typing import VecN
 
 __all__ = ["HistogramEntry", "HistogramStyle"]
 
@@ -28,7 +34,7 @@ class HistogramStyle(HashableBase):
         alpha_edge (float): Opacity of bar edge
         alpha_face (float): Opacity of bar face
         linewidth (float): Line width of bar outline
-        bins (int | list[int] | Tuple[int] | NDArray[Shape["*"], int] | None): Number of bins (see [matplotlib docs][matplotlib.pyplot.hist])
+        bins (int | list[int] | Tuple[int] | None): Number of bins (see [matplotlib docs][matplotlib.pyplot.hist])
 
     """
 
@@ -39,7 +45,7 @@ class HistogramStyle(HashableBase):
     alpha_face: float = 0.3
     linewidth: float = 2
     zorder: int = 1
-    bins: int | list[int] | tuple[int] | NDArray[Shape["*"], int] | None = None
+    bins: int | list[int] | tuple[int] | VecN | None = None
 
     def as_plot_kwargs(self):
         """
@@ -197,7 +203,7 @@ class HistogramEntry(PlottableData2D):
         for trace in traces:
             if trace.legendgroup == legend_key:
                 # Append the value to the existing trace's x data
-                trace.x = list(trace.x) + [self.value]
+                trace.x = [*(trace.x or ()), self.value]
                 return plotly_figure
 
         metadata_html = (
