@@ -9,7 +9,7 @@ before rendering can start.
 Worker processes only ever *compute* records; exactly one connection (in this process) ever
 writes. SQLite allows a single writer at a time no matter how many connections are open, so
 having every worker process open its own writing connection (the earlier design) doesn't buy
-any write throughput -- it only adds lock contention, which gets worse, not better, as
+any write throughput; it only adds lock contention, which gets worse, not better, as
 `n_procs` goes up. Splitting the pool into N compute workers feeding one writer lets
 `n_procs` control the part that actually parallelizes (running `record_generator`) without
 touching the part that can't (writing to the shared `.db` file).
@@ -32,7 +32,7 @@ __all__ = ["generate_records", "get_sorted_dirs"]
 logger = logging.getLogger(__name__)
 
 # Per-process global set by `_init_worker`: the one thing a compute worker needs. Workers
-# never open a `RecordStore` -- only the caller of `generate_records` writes.
+# never open a `RecordStore`; only the caller of `generate_records` writes.
 _worker_generator: RecordGenerator | None = None
 
 
@@ -139,6 +139,7 @@ def generate_records(
             for run_dir in sorted_dirs:
                 _, records = _compute(run_dir)
                 total += store.write_run(run_dir, records)
+                logger.info(f"Wrote records for run_dir = {run_dir}")
 
     logger.info(
         f"Finished generating Records: {total} records written across "

@@ -807,3 +807,60 @@ def _add_mixed_record_type_combinations(records: RecordList) -> None:
         HistogramEntry(tags=[every_record_type_tag], value=float(value)).append_to_list(
             records
         )
+
+
+if __name__ == "__main__":
+    import cProfile  # noqa: F401
+    import datetime
+    import shutil
+
+    from trendify.log import setup_logger
+    from trendify.pipeline import TrendifyPipeline
+
+    setup_logger()
+
+    output_directory = Path(__file__).parent / "example_data" / "trendify"
+
+    n_proc_sweep: dict[int, datetime.datetime | None] = {i: None for i in range(1, 1)}
+    # NPROC: 1, Delta t = 00m 28s
+    # NPROC: 2, Delta t = 00m 20s
+    # NPROC: 3, Delta t = 00m 20s
+    # NPROC: 4, Delta t = 00m 22s
+    # NPROC: 5, Delta t = 00m 25s
+    # NPROC: 6, Delta t = 00m 28s
+    # NPROC: 7, Delta t = 00m 32s
+    # NPROC: 8, Delta t = 00m 36s
+    # NPROC: 9, Delta t = 00m 40s
+
+    dirs: list[Path] = []
+    root = Path.cwd()
+    for pattern in ["scripts/example_data/models/*"]:
+        matches = root.rglob(pattern) if "**" in pattern else root.glob(pattern)
+
+        for path in matches:
+            dirs.append((path.parent if path.is_file() else path).resolve())
+
+    for n_proc in n_proc_sweep.keys():
+        try:
+            shutil.rmtree(output_directory)
+        except FileNotFoundError:
+            pass
+
+        def run():
+            pipeline = TrendifyPipeline(output_dir=output_directory, n_procs=n_proc)
+            pipeline.run(
+                record_generator=build_configuration_matrix,
+                data_dirs=dirs,
+            )
+
+        start = datetime.datetime.now()
+        run()
+        # with cProfile.Profile() as profiler:
+        #     run()
+        stop = datetime.datetime.now()
+        n_proc_sweep[n_proc] = datetime.datetime(1, 1, 1) + (stop - start)
+
+    for n_proc, delta_time in n_proc_sweep.items():
+        assert delta_time
+        print(f"NPROC: {n_proc}, Delta t = {delta_time.strftime('%Mm %Ss')}")
+    # profiler.dump_stats("program.prof")

@@ -27,11 +27,11 @@ def store(db_path: Path):
 
 
 class TestRenderAssets:
-    def test_xy_plot_and_histogram_write_separate_files_for_shared_tag(
+    def test_xy_plot_and_histogram_share_one_figure_for_shared_tag(
         self, store: RecordStore, db_path: Path, tmp_path: Path
     ):
-        # A tag used for both XY and histogram records is precisely the v1 bug
-        # (rewrite_reference/OVERVIEW.md #8 item 9): they must not overlay on one figure/file.
+        # A tag used for both XY and histogram records is treated like any other tag: one
+        # shared figure, saved once.
         records = [
             Trace2D.from_xy(
                 tags=["shared"], x=[0, 1, 2], y=[0, 1, 4], pen=Pen(label="trace")
@@ -44,11 +44,8 @@ class TestRenderAssets:
         out_dir = tmp_path / "out"
         render_assets(db_path, out_dir)
 
-        xy_path = out_dir / "shared.jpg"
-        hist_path = out_dir / "shared_histogram.jpg"
-        assert xy_path.exists()
-        assert hist_path.exists()
-        assert xy_path != hist_path
+        assert (out_dir / "shared.jpg").exists()
+        assert list(out_dir.glob("**/*.jpg")) == [out_dir / "shared.jpg"]
 
     def test_renders_table_xy_and_histogram_for_distinct_tags(
         self, store: RecordStore, db_path: Path, tmp_path: Path
@@ -65,7 +62,7 @@ class TestRenderAssets:
 
         assert (out_dir / "tbl_melted.csv").exists()
         assert (out_dir / "scatter.jpg").exists()
-        assert (out_dir / "hist_histogram.jpg").exists()
+        assert (out_dir / "hist.jpg").exists()
 
     def test_tuple_tag_nests_output_path(
         self, store: RecordStore, db_path: Path, tmp_path: Path

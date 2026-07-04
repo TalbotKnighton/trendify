@@ -53,7 +53,7 @@ class TestIndexPage:
         self, client: TestClient
     ):
         # A tojson-rendered JSON string embedded inside a double-quoted HTML attribute
-        # breaks at the first inner quote -- these must use single-quoted attributes.
+        # breaks at the first inner quote, so these must use single-quoted attributes.
         response = client.get("/")
         assert 'x-show="' not in response.text or "tojson" not in response.text
         assert '$dispatch("tag-selected"' in response.text

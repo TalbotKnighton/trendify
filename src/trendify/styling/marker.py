@@ -66,7 +66,7 @@ class Marker(HashableBase):
         """
         return {
             "marker": self.symbol,
-            "c": self.color,
+            "color": self.color,
             "s": self.size,
             "alpha": self.alpha,
             "zorder": self.zorder,

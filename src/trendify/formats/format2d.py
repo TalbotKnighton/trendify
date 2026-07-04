@@ -3,7 +3,7 @@
 `XYData` base classes that know how to draw themselves onto a Plotly figure.
 
 `Format2D` is a `Record` in its own right, written once per tag (like any other
-record) rather than embedded in every plotted record -- see `RecordStore.write_run`'s
+record) rather than embedded in every plotted record; see `RecordStore.write_run`'s
 upsert-by-tag handling for it, and `render.py`'s single per-tag lookup.
 """
 

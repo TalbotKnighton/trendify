@@ -27,10 +27,12 @@ node_modules/
 
 **/*.code-workspace
 
-trendify.log
+trendify.log*
 
 # Test output files
 discriminator_tests.json
 discriminator_tests.log
 
 /**/.DS_Store
+
+*.prof

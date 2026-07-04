@@ -6,7 +6,7 @@ caller would use directly, so the CLI and the Python API can never drift apart.
 
 from __future__ import annotations
 
-import glob as glob_module
+import glob
 import importlib
 import importlib.util
 import logging
@@ -180,7 +180,7 @@ PortOption = typer.Option(
 )
 
 
-def _configure_logging(verbose: int, quiet: int, logo: bool = True) -> None:
+def _configure_logging(verbose: int, quiet: int, logo: bool = True) -> logging.Logger:
     """
     Configures the root logger via `trendify.log.setup_logger` (Rich console output plus a
     rotating `trendify.log` file) rather than a one-off `logging.basicConfig`. This way a CLI
@@ -191,7 +191,7 @@ def _configure_logging(verbose: int, quiet: int, logo: bool = True) -> None:
     if logo:
         print_logo()
     level = logging.INFO - (verbose * 10) + (quiet * 10)
-    setup_logger(level=level)
+    return setup_logger(level=level)
 
 
 def _resolve_input_directories(patterns: list[str]) -> list[Path]:
@@ -201,7 +201,7 @@ def _resolve_input_directories(patterns: list[str]) -> list[Path]:
     """
     dirs: list[Path] = []
     for pattern in patterns:
-        for match in glob_module.glob(pattern, root_dir=Path.cwd(), recursive=True):
+        for match in glob.glob(pattern, root_dir=Path.cwd(), recursive=True):
             path = Path(match)
             dirs.append((path.parent if path.is_file() else path).resolve())
     return dirs
@@ -303,7 +303,7 @@ def run(
     quiet: int = QuietOption,
 ) -> None:
     """Generate records and render assets in one step."""
-    _configure_logging(verbose, quiet)
+    logger = _configure_logging(verbose, quiet)
     pipeline = TrendifyPipeline(output_dir=output_directory, n_procs=n_procs)
     total = pipeline.run(
         record_generator=_resolve_record_generator(record_generator),
@@ -312,7 +312,7 @@ def run(
         skip_xy_plots=skip_xy_plots,
         skip_histograms=skip_histograms,
     )
-    typer.echo(f"Wrote {total} records; assets under {pipeline.assets_dir}")
+    logger.info(f"Wrote {total} records; assets under {pipeline.assets_dir}")
 
 
 @app.command(name="example-data")
@@ -324,9 +324,9 @@ def example_data(
     quiet: int = QuietOption,
 ) -> None:
     """Generate sample raw-data directories for exercising the trendify pipeline."""
-    _configure_logging(verbose, quiet)
+    logger = _configure_logging(verbose, quiet)
     make_example_data(workdir=workdir, n_folders=n_folders)
-    typer.echo(f"Wrote {n_folders} sample data folders under {workdir / 'models'}")
+    logger.info(f"Wrote {n_folders} sample data folders under {workdir / 'models'}")
 
 
 def get_local_ip():
@@ -407,7 +407,7 @@ def serve(
     if reload:
         # uvicorn's reload mode re-imports the app in a fresh subprocess on every source change,
         # so it needs an importable factory string rather than the live `create_app(db_path)`
-        # instance -- the db_path is handed across that boundary via an env var instead
+        # instance, so the db_path is handed across that boundary via an env var instead
         # (`create_app_from_env` reads it back on the reloaded side).
         os.environ["TRENDIFY_DB_PATH"] = str(db_path)
         uvicorn.run(

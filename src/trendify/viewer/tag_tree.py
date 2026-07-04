@@ -91,8 +91,8 @@ def build_tag_tree(store: RecordStore) -> list[TagNode]:
     Walks `store.tag_tree()`'s flat, tuple-encoded tags into a nested `TagNode` hierarchy: a
     tag `("a", "b")` becomes a folder `"a"` containing a leaf `"b"`. A tuple prefix (e.g. `"a"`
     from that same tag) may never itself have been used as a real tag, so `has_records` is
-    tracked separately from `children` being non-empty -- a node can be a pure folder, a pure
-    leaf, or both at once.
+    tracked separately from `children` being non-empty, since a node can be a pure folder, a
+    pure leaf, or both at once.
     """
     root: dict[str, _TrieNode] = {}
 
@@ -119,7 +119,7 @@ def build_tag_tree(store: RecordStore) -> list[TagNode]:
                     record_kinds=_record_kinds(store, tag) if tag is not None else [],
                 )
             )
-        # Two stable sorts: alphabetical first, then by category -- the second sort's stability
+        # Two stable sorts: alphabetical first, then by category. The second sort's stability
         # preserves the alphabetical order within each category group.
         nodes.sort(key=lambda n: n.label.lower())
         nodes.sort(key=_category_rank)

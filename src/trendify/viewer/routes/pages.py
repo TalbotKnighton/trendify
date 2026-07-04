@@ -1,8 +1,8 @@
 """
 HTML page routes for the dashboard. The index page server-renders the full tag tree (see
-`trendify.viewer.tag_tree`) directly into the sidebar via a recursive Jinja2 macro -- simpler
-and more robust than fetching it client-side and building the recursive structure in Alpine,
-which has no solid native support for recursive components.
+`trendify.viewer.tag_tree`) directly into the sidebar via a recursive Jinja2 macro, which is
+simpler and more robust than fetching it client-side and building the recursive structure in
+Alpine, which has no solid native support for recursive components.
 """
 
 from __future__ import annotations

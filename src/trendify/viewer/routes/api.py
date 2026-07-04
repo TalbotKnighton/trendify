@@ -1,6 +1,6 @@
 """
 JSON API for the dashboard frontend. Currently just the tag tree (the actual sidebar is
-server-rendered from the same data, see `routes.pages` -- this endpoint exists for any future
+server-rendered from the same data, see `routes.pages`; this endpoint exists for any future
 client-side refresh/polling use) and a liveness/db-change ping. Plot/table data endpoints land
 in later milestones.
 
@@ -59,7 +59,7 @@ def _cached[T](request: Request, cache_key: tuple, build: Callable[[], T]) -> T:
 
 @router.get("/tags", response_model=list[TagNode])
 async def get_tags(request: Request) -> list[TagNode]:
-    # async def, not def -- see routes.pages.index's comment: keeps this on the event loop's
+    # async def, not def: see routes.pages.index's comment, this keeps it on the event loop's
     # thread, matching the RecordStore connection's thread affinity.
     store = _get_store(request)
     return _cached(request, ("tags",), lambda: build_tag_tree(store))
@@ -73,7 +73,7 @@ async def ping(request: Request) -> dict[str, bool | float | None]:
     Also reports the `.db` file's mtime, so the client can detect that someone regenerated it
     (e.g. re-ran `trendify generate`/`run` while this server is still up) and prompt a refresh.
     The underlying `RecordStore` connection itself stays valid across a regeneration (the
-    generate pipeline writes into the same file/inode via WAL, it doesn't replace it) -- only
+    generate pipeline writes into the same file/inode via WAL, it doesn't replace it); only
     this process's *response cache* goes stale, so an mtime change clears it here.
     """
     db_path: Path = request.app.state.db_path
@@ -95,12 +95,12 @@ async def get_table(tag: str, view: TableView, request: Request) -> TableRespons
     Table data for the table viewer's Melted/Pivot/Statistics tabs, as DataTables-ready
     `{available, columns, rows}` JSON.
 
-    `tag` is the tag's `encode_tag` (JSON) form -- the same string the sidebar's `tojson`-
-    rendered `tag-selected` payload already produces client-side -- since a tuple tag has no
+    `tag` is the tag's `encode_tag` (JSON) form, the same string the sidebar's `tojson`-
+    rendered `tag-selected` payload already produces client-side, since a tuple tag has no
     single unambiguous plain-string/path encoding to put directly in a URL path segment.
 
     `pivot`/`stats` report `available: false` (not a 500) rather than raising when the pivot
-    fails (a repeated `(row, col)` pair) or there are no numeric pivoted columns -- both are
+    fails (a repeated `(row, col)` pair) or there are no numeric pivoted columns: both are
     normal, expected shapes for some tags' data, not error conditions.
     """
     store = _get_store(request)

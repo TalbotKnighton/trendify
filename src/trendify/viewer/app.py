@@ -101,7 +101,7 @@ def create_app_from_env() -> FastAPI:
     This exists solely as a uvicorn ASGI factory target (`uvicorn.run(..., factory=True)`) for
     `trendify serve --reload`: uvicorn's reload mode re-imports the app in a fresh subprocess on
     every file change, so it needs an importable `module:attribute` string rather than a live app
-    instance -- there is no other way to hand it a runtime value like `db_path` across that
+    instance; there is no other way to hand it a runtime value like `db_path` across that
     re-import boundary.
     """
     db_path = os.environ[_DB_PATH_ENV_VAR]

@@ -106,7 +106,12 @@ ignore = ["typings"]
 exclude_also = ["if __name__ == .__main__.:", "@(abc\\.)?abstractmethod"]
 
 [dependency-groups]
-dev = ["httpx2>=2.5.0", "mkinit>=1.2.0", "pytest>=9.1.1"]
+dev = [
+    "httpx2>=2.5.0",
+    "mkinit>=1.2.0",
+    "pytest>=9.1.1",
+    "snakeviz>=2.2.2",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/talbotknighton/trendify"
