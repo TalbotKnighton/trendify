@@ -26,6 +26,11 @@ function filtersStorageKey(tag: Tag, view: TableViewKind): string {
   return `trendify:table-filters:${JSON.stringify(tag)}:${view}`;
 }
 
+/** Per-tag, so each table product remembers which tab (Melted/Pivot/Statistics) it was last on. */
+function viewStorageKey(tag: Tag): string {
+  return `trendify:table-view:${JSON.stringify(tag)}`;
+}
+
 /** Adds a small draggable handle to the right edge of every header cell for manual column resize. */
 function attachColumnResizeHandles(tableEl: HTMLTableElement): void {
   const headerCells =
@@ -61,8 +66,10 @@ function attachColumnResizeHandles(tableEl: HTMLTableElement): void {
 /**
  * Adds a per-column text filter input below each header cell's title, wired to DataTables'
  * column search. Prefills from (and persists to) `storageKey` in localStorage, so filters
- * survive a refresh -- keyed by column name (via `dataSrc()`), not position, since pivot
- * tables have differently-named columns per tag.
+ * survive a refresh -- keyed by column title (via `column.title()`), not position, since
+ * pivot tables have differently-named columns per tag. Not keyed by `dataSrc()`: every
+ * column's `data` is a same-shaped `(row) => row[col]` closure (see `render()`), so its
+ * stringified source is identical across columns and can't disambiguate them.
  */
 function attachColumnFilters(this: Api<any>, storageKey: string): void {
   const savedFilters = loadJSON<Record<string, string>>(storageKey) ?? {};
@@ -70,7 +77,7 @@ function attachColumnFilters(this: Api<any>, storageKey: string): void {
 
   api.columns().every(function () {
     const column = this;
-    const columnName = String(column.dataSrc());
+    const columnName = column.title();
     const initialValue = savedFilters[columnName] ?? "";
     const header = $(column.header());
 
@@ -117,13 +124,22 @@ export function tableView() {
     setView(this: TableViewContext, view: TableViewKind) {
       this.view = view;
       saveTableViewToUrl(view);
+      if (this.selectedTag !== null) {
+        saveJSON(viewStorageKey(this.selectedTag), view);
+      }
     },
     init(this: TableViewContext) {
       const storedView = loadTableViewFromUrl();
       if (storedView) this.view = storedView;
 
       this.$watch("view", () => this.render());
-      this.$watch("selectedTag", () => this.setView("stats"));
+      this.$watch("selectedTag", (tag) => {
+        const remembered =
+          tag !== null
+            ? loadJSON<TableViewKind>(viewStorageKey(tag as Tag))
+            : null;
+        this.setView(remembered ?? "stats");
+      });
       this.render();
     },
     async render(this: TableViewContext) {
@@ -153,7 +169,14 @@ export function tableView() {
       const filtersKey = filtersStorageKey(tag, this.view);
       const dt = $(tableEl).DataTable({
         data: data.rows,
-        columns: data.columns.map((col) => ({ data: col, title: col })),
+        // `data` is a function (not the bare column name) because DataTables treats a string
+        // `data` as dot-notation path into the row object -- a column literally named "2.0"
+        // (numeric row/col keys from a pivoted table render this way) would otherwise be
+        // misread as nested property `row["2"]["0"]` instead of the flat key `row["2.0"]`.
+        columns: data.columns.map((col) => ({
+          data: (row: Record<string, unknown>) => row[col],
+          title: col,
+        })),
         autoWidth: false,
         pageLength: loadJSON<number>(PAGE_LENGTH_STORAGE_KEY) ?? DEFAULT_PAGE_LENGTH,
         initComplete: function () {

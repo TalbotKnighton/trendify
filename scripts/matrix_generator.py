@@ -71,8 +71,10 @@ def build_configuration_matrix(workdir: Path) -> RecordList:
 
     Args:
         workdir (Path): unused for data generation (this fixture doesn't read from disk);
-            only `workdir.name` is used, to label metadata the way a real `RecordGenerator`
-            would when distinguishing runs.
+            only `workdir.name` is used, to label metadata and to give every run's
+            `TableEntry` rows a distinct `row` key. Without that, every run emits the exact
+            same (row, col) pairs and `RecordStore.get_table_entries` collapses across runs
+            into one row/col-collision-riddled melted table that can never pivot.
 
     """
     records: RecordList = []
@@ -97,10 +99,10 @@ def build_configuration_matrix(workdir: Path) -> RecordList:
     _add_histogram_bins_combinations(records)
     _add_histogram_alpha_combinations(records)
     _add_histogram_style_edge_case_combinations(records)
-    _add_table_entry_value_type_combinations(records)
+    _add_table_entry_value_type_combinations(records, run_label)
     _add_tag_shape_combinations(records)
     _add_metadata_combinations(records, run_label)
-    _add_mixed_record_type_combinations(records)
+    _add_mixed_record_type_combinations(records, run_label)
 
     return records
 
@@ -507,35 +509,44 @@ def _add_histogram_style_edge_case_combinations(records: RecordList) -> None:
         ).append_to_list(records)
 
 
-def _add_table_entry_value_type_combinations(records: RecordList) -> None:
+def _add_table_entry_value_type_combinations(
+    records: RecordList, run_label: str
+) -> None:
+    """
+    Each `row` is keyed off `run_label` (rather than a fixed literal) so that across the many
+    runs this fixture is called for, every tag accumulates a genuine multi-row table instead
+    of every run overwriting the same (row, col) pair -- the latter makes
+    `RecordStore.get_table_entries`'s melted table un-pivotable (a repeated (row, col) key is
+    a pivot error, see `TableBuilder.pivot_table`).
+    """
     TableEntry(
         tags=[("table_value_type_combinations", "table_value_float")],
-        row="row_1",
+        row=run_label,
         col="col_1",
         value=3.14,
     ).append_to_list(records)
     TableEntry(
         tags=[("table_value_type_combinations", "table_value_string")],
-        row="row_1",
+        row=run_label,
         col="col_1",
         value="a_string_value",
     ).append_to_list(records)
     TableEntry(
         tags=[("table_value_type_combinations", "table_value_bool")],
-        row="row_1",
+        row=run_label,
         col="col_1",
         value=True,
     ).append_to_list(records)
     TableEntry(
         tags=[("table_value_type_combinations", "table_unit_set")],
-        row="row_1",
+        row=run_label,
         col="col_1",
         value=2.5,
         unit="meters",
     ).append_to_list(records)
     TableEntry(
         tags=[("table_value_type_combinations", "table_row_col_numeric")],
-        row=1.0,
+        row=float(run_label),
         col=2.0,
         value=9.9,
     ).append_to_list(records)
@@ -547,7 +558,7 @@ def _add_table_entry_value_type_combinations(records: RecordList) -> None:
     ]:
         TableEntry(
             tags=[("table_value_type_combinations", "table_pivotable_grid")],
-            row=row,
+            row=f"{row}_{run_label}",
             col=col,
             value=value,
         ).append_to_list(records)
@@ -592,7 +603,7 @@ def _add_metadata_combinations(records: RecordList, run_label: str) -> None:
     ).append_to_list(records)
 
 
-def _add_mixed_record_type_combinations(records: RecordList) -> None:
+def _add_mixed_record_type_combinations(records: RecordList, run_label: str) -> None:
     rng = np.random.default_rng(seed=5)
 
     trace_and_axline_tag = (
@@ -761,7 +772,7 @@ def _add_mixed_record_type_combinations(records: RecordList) -> None:
         "table_and_point_shared_tag",
     )
     TableEntry(
-        tags=[table_and_point_tag], row="row_1", col="col_1", value=1.0
+        tags=[table_and_point_tag], row=run_label, col="col_1", value=1.0
     ).append_to_list(records)
     Point2D(tags=[table_and_point_tag], x=1.0, y=1.0).append_to_list(records)
 
@@ -770,7 +781,7 @@ def _add_mixed_record_type_combinations(records: RecordList) -> None:
         "table_point_and_histogram_shared_tag",
     )
     TableEntry(
-        tags=[table_point_and_histogram_tag], row="row_1", col="col_1", value=1.0
+        tags=[table_point_and_histogram_tag], row=run_label, col="col_1", value=1.0
     ).append_to_list(records)
     Point2D(tags=[table_point_and_histogram_tag], x=1.0, y=1.0).append_to_list(records)
     for value in rng.normal(size=30):
@@ -783,7 +794,7 @@ def _add_mixed_record_type_combinations(records: RecordList) -> None:
         "table_point_scatter_trace_axline_and_histogram_shared_tag",
     )
     TableEntry(
-        tags=[every_record_type_tag], row="row_1", col="col_1", value=1.0
+        tags=[every_record_type_tag], row=run_label, col="col_1", value=1.0
     ).append_to_list(records)
     Point2D(
         tags=[every_record_type_tag],
@@ -816,7 +827,6 @@ def _add_mixed_record_type_combinations(records: RecordList) -> None:
 
 
 if __name__ == "__main__":
-    import cProfile
     import datetime
     import shutil
 
@@ -844,6 +854,8 @@ if __name__ == "__main__":
         matches = root.rglob(pattern) if "**" in pattern else root.glob(pattern)
 
         for path in matches:
+            if path.name.startswith("."):
+                continue
             dirs.append((path.parent if path.is_file() else path).resolve())
 
     for n_proc in n_proc_sweep.keys():
@@ -860,12 +872,12 @@ if __name__ == "__main__":
             )
 
         start = datetime.datetime.now()
-        # run()
-        with cProfile.Profile() as profiler:
-            assert n_proc == 1
-            run()
+        run()
+        # with cProfile.Profile() as profiler:
+        #     assert n_proc == 1
+        #     run()
+        # profiler.dump_stats("program.prof")
         stop = datetime.datetime.now()
-        profiler.dump_stats("program.prof")
         n_proc_sweep[n_proc] = datetime.datetime(1, 1, 1) + (stop - start)
 
     for n_proc, delta_time in n_proc_sweep.items():

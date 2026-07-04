@@ -6,6 +6,7 @@ import { startConnectionMonitor } from "./lib/connection";
 import { copyToClipboard } from "./lib/clipboard";
 import { tableView } from "./lib/table-view";
 import { sidebarNode } from "./lib/sidebar-node";
+import { sidebarFilter } from "./lib/sidebar-filter";
 import { loadSelectionFromUrl, saveSelectionToUrl } from "./lib/url-state";
 import type { Tag } from "./lib/api";
 
@@ -22,6 +23,7 @@ document.addEventListener("alpine:init", () => {
   Alpine.data("fullscreenToggle", fullscreenToggle);
   Alpine.data("tableView", tableView);
   Alpine.data("sidebarNode", sidebarNode);
+  Alpine.data("sidebarFilter", sidebarFilter);
   Alpine.data("appShell", () => ({
     sidebarOpen: true,
     selectedTag: null as Tag | null,
