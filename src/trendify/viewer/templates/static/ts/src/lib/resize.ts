@@ -35,6 +35,9 @@ export function horizontalResize({
         localStorage.setItem(storageKey, String(this.width));
         window.removeEventListener("mousemove", onMove);
         window.removeEventListener("mouseup", onUp);
+        // Content that reflows into the newly-sized main area (e.g. the plot viewer) only
+        // needs to resize once the drag settles, not on every intermediate mousemove.
+        window.dispatchEvent(new Event("trendify:layout-changed"));
       };
       window.addEventListener("mousemove", onMove);
       window.addEventListener("mouseup", onUp);

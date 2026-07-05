@@ -5,14 +5,22 @@ import { toastCenter } from "./lib/toast";
 import { startConnectionMonitor } from "./lib/connection";
 import { copyToClipboard } from "./lib/clipboard";
 import { tableView } from "./lib/table-view";
+import { plotView } from "./lib/plot-view";
+import { contentTabs } from "./lib/content-tabs";
 import { sidebarNode } from "./lib/sidebar-node";
 import { sidebarFilter } from "./lib/sidebar-filter";
 import { loadSelectionFromUrl, saveSelectionToUrl } from "./lib/url-state";
+import { installPlotlyToastBridge } from "./lib/plotly-toast-bridge";
+import type { ToastKind } from "./lib/toast";
 import type { Tag } from "./lib/api";
 
 function formatTag(tag: Tag): string {
   return Array.isArray(tag) ? tag.join(" / ") : String(tag);
 }
+
+// A body-level singleton (Plotly's own notifier container is one too), so it's installed once
+// at module load rather than per-component-mount like the Alpine data factories below.
+installPlotlyToastBridge();
 
 // Alpine is loaded as a vendored <script> tag (templates/static/vendored/alpine-*.min.js), not
 // bundled by esbuild -- `Alpine` here is the ambient global declared by @types/alpinejs
@@ -22,6 +30,8 @@ document.addEventListener("alpine:init", () => {
   Alpine.data("themeSelector", themeSelector);
   Alpine.data("fullscreenToggle", fullscreenToggle);
   Alpine.data("tableView", tableView);
+  Alpine.data("plotView", plotView);
+  Alpine.data("contentTabs", contentTabs);
   Alpine.data("sidebarNode", sidebarNode);
   Alpine.data("sidebarFilter", sidebarFilter);
   Alpine.data("appShell", () => ({
@@ -40,7 +50,11 @@ document.addEventListener("alpine:init", () => {
     }),
     ...toastCenter(),
     connected: true,
+    get tagPath(): string {
+      return this.selectedTag !== null ? formatTag(this.selectedTag) : "";
+    },
     init() {
+      this.startClock();
       const stored = loadSelectionFromUrl();
       if (stored) {
         this.selectedTag = stored.tag;
@@ -61,6 +75,10 @@ document.addEventListener("alpine:init", () => {
           this.push("Database updated with new data", "info");
           window.dispatchEvent(new CustomEvent("trendify:db-changed"));
         },
+      });
+      window.addEventListener("trendify:toast", (event) => {
+        const detail = (event as CustomEvent<{ message: string; kind?: ToastKind }>).detail;
+        this.push(detail.message, detail.kind ?? "info");
       });
     },
     onTagSelected(detail: { tag: Tag; recordKinds: string[] }) {

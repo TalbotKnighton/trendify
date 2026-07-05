@@ -67,3 +67,9 @@ table.dataTable {
 .dark .dt-column-filter {
     color: rgb(226 232 240); /* slate-200 */
 }
+
+/* Plotly's own on-page notifications (e.g. axis-drag warnings) are relayed through this app's
+   toast system instead (see lib/plotly-toast-bridge.ts) -- suppress Plotly's native ones. */
+.plotly-notifier {
+    display: none !important;
+}

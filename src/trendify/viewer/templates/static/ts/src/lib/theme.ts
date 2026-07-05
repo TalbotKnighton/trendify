@@ -20,6 +20,9 @@ export function getStoredTheme(): ThemeChoice {
 export function applyTheme(choice: ThemeChoice): void {
   const isDark = choice === "dark" || (choice === "system" && prefersDark());
   document.documentElement.classList.toggle("dark", isDark);
+  // Lets anything rendered outside Tailwind's `dark:` variants (e.g. a Plotly figure's colors,
+  // which Plotly.js paints itself rather than via CSS classes) react to a theme change too.
+  window.dispatchEvent(new Event("trendify:theme-changed"));
 }
 
 export function setTheme(choice: ThemeChoice): void {

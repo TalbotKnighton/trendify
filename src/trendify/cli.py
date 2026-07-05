@@ -397,10 +397,10 @@ def serve(
 
     console.print(
         Panel(
-            f"""[bold green]Trendify Viewer is Live![/bold green]\n\n{connection_info}\n\n[yellow]Press CTRL+C to stop[/yellow]""",
+            f"""\n{connection_info}\n\n[yellow]Press CTRL+C to stop[/yellow]""",
             border_style="indian_red1",
             expand=False,
-            title="Trendify Viewer",
+            title="Trendify Viewer is Live!",
         )
     )
 

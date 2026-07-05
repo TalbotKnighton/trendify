@@ -33,6 +33,12 @@
             defer></script>
     <script src="/static/vendored/dataTables.min.js"
             defer></script>
+    <!-- Must load before alpine: Alpine's CDN build self-starts synchronously the instant its
+         own deferred script executes (mounting components and running their `init()` hooks
+         immediately, without waiting for DOMContentLoaded) -- so anything an `init()` hook
+         needs as a global (Plotly) must finish executing first, i.e. appear earlier here. -->
+    <script src="/static/vendored/plotly-3.6.0.min.js"
+            defer></script>
     <script src="/static/vendored/alpine-3.15.12.min.js"
             defer></script>
 

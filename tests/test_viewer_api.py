@@ -24,6 +24,11 @@ def db_path(tmp_path: Path) -> Path:
                 Trace2D.from_xy(tags=[("group", "trace")], x=[0, 1], y=[0, 1]),
                 TableEntry(tags=["table"], row="r1", col="c1", value=1.0),
                 TableEntry(tags=["table"], row="r2", col="c1", value=2.0),
+                Trace2D.from_xy(
+                    tags=["long"],
+                    x=list(range(20)),
+                    y=[float(i) for i in range(20)],
+                ),
             ],
         )
     return path
@@ -132,6 +137,77 @@ class TestTableApi:
         assert response.json()["available"] is False
 
 
+class TestPlotApi:
+    def test_available_with_trace_and_point(self, client: TestClient):
+        response = client.get("/api/plot", params={"tag": json.dumps("scatter")})
+        assert response.status_code == 200
+        body = response.json()
+        assert body["available"] is True
+        assert len(body["data"]) == 1
+        assert body["data"][0]["type"] == "scatter"
+
+    def test_unavailable_for_table_only_tag(self, client: TestClient):
+        response = client.get("/api/plot", params={"tag": json.dumps("table")})
+        assert response.status_code == 200
+        body = response.json()
+        assert body["available"] is False
+        assert body["data"] == []
+
+    def test_hover_none_maps_to_false_not_string(self, client: TestClient):
+        response = client.get(
+            "/api/plot", params={"tag": json.dumps("scatter"), "hover": "none"}
+        )
+        body = response.json()
+        assert body["layout"]["hovermode"] is False
+
+    def test_hover_defaults_to_closest(self, client: TestClient):
+        response = client.get("/api/plot", params={"tag": json.dumps("scatter")})
+        assert response.json()["layout"]["hovermode"] == "closest"
+
+    def test_line_mode_and_interp_override_every_scatter_trace(
+        self, client: TestClient
+    ):
+        response = client.get(
+            "/api/plot",
+            params={
+                "tag": json.dumps("scatter"),
+                "line_mode": "markers",
+                "interp": "spline",
+            },
+        )
+        [trace] = response.json()["data"]
+        assert trace["mode"] == "markers"
+        assert trace["line"]["shape"] == "spline"
+
+    def test_show_spike_sets_axis_spikes(self, client: TestClient):
+        response = client.get(
+            "/api/plot", params={"tag": json.dumps("scatter"), "show_spike": True}
+        )
+        layout = response.json()["layout"]
+        assert layout["xaxis"]["showspikes"] is True
+        assert layout["yaxis"]["showspikes"] is True
+        # Plotly's default spike styling (heavy black/white line) is overridden to this app's
+        # rose-500 accent so it doesn't read as a harsh line against either theme.
+        assert layout["xaxis"]["spikecolor"] == "#f43f5e"
+        assert layout["yaxis"]["spikecolor"] == "#f43f5e"
+
+    def test_max_points_downsamples_trace(self, client: TestClient):
+        full = client.get("/api/plot", params={"tag": json.dumps("long")}).json()
+        assert len(full["data"][0]["x"]) == 20
+
+        downsampled = client.get(
+            "/api/plot", params={"tag": json.dumps("long"), "max_points": 5}
+        ).json()
+        [trace] = downsampled["data"]
+        assert 0 < len(trace["x"]) <= 5
+        assert len(trace["x"]) == len(trace["y"])
+
+    def test_unknown_tag_is_unavailable_not_500(self, client: TestClient):
+        response = client.get("/api/plot", params={"tag": json.dumps("nope")})
+        assert response.status_code == 200
+        assert response.json()["available"] is False
+
+
 class TestStaticAssets:
     def test_vendored_and_compiled_js_are_served(self, client: TestClient):
         assert client.get("/static/vendored/alpine-3.15.12.min.js").status_code == 200
@@ -140,5 +216,6 @@ class TestStaticAssets:
         )
         assert client.get("/static/vendored/jquery-3.7.1.min.js").status_code == 200
         assert client.get("/static/vendored/dataTables.min.js").status_code == 200
+        assert client.get("/static/vendored/plotly-3.6.0.min.js").status_code == 200
         assert client.get("/static/js/main.js").status_code == 200
         assert client.get("/static/css/app.css").status_code == 200

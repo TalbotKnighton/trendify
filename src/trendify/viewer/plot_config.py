@@ -1,7 +1,9 @@
 """
-Pydantic models for the Dojo trial-viewer PlotConfig.
+Pydantic models for the dashboard's plot viewer `PlotConfig`.
 
-These are the single source of truth for both server-side validation (profile save/load) and the generated TypeScript types in `lib/plot-config.generated.ts`.
+These are the single source of truth for both server-side validation (the `/api/plot` query
+params in `trendify.viewer.routes.api`) and the generated TypeScript types in
+`lib/plot-config.generated.ts`.
 
 To regenerate TypeScript types after changing this file:
 
@@ -80,21 +82,21 @@ class HoverMode(StrEnum):
 
 
 class PlotConfig(BaseModel):
-    """Complete serialisable state of a trial-viewer plot."""
+    """Complete serialisable state of a dashboard plot."""
 
     model_config = camel_case_dict
 
-    line_mode: LineMode
+    line_mode: LineMode = LineMode.LINES_AND_MARKERS
     """Whether traces render as lines, markers, or both."""
 
-    interp: InterpMode
+    interp: InterpMode = InterpMode.LINEAR
     """Interpolation method drawn between data points."""
 
-    hover: HoverMode
+    hover: HoverMode = HoverMode.CLOSEST
     """Tooltip behavior on hover."""
 
-    show_spike: bool
+    show_spike: bool = True
     """Whether to draw spike lines from the hovered point to each axis."""
 
     max_points: int | None = Field(default=None, gt=0)
-    """Maximum number of data points per trace returned by the server. When the raw data exceeds this limit the server downsamples using uniform time-domain buckets (equal coverage across the time range regardless of variable timestep). `None` disables downsampling and returns all points."""
+    """Maximum number of data points per trace returned by the server. When the raw data exceeds this limit the server downsamples using uniform x-domain buckets (equal coverage across the x range regardless of variable point spacing). `None` disables downsampling and returns all points."""

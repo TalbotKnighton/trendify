@@ -24,11 +24,53 @@
                     Select a tag from the sidebar to view its data.
                 </p>
             </template>
-            <template x-if="selectedTag && selectedRecordKinds.includes('table')">
-                {% include "partials/table_view.html" %}
-            </template>
-            <template x-if="selectedTag && !selectedRecordKinds.includes('table') && selectedRecordKinds.includes('plot')">
-                <p class="text-base text-slate-500 dark:text-slate-400">Plot viewer coming soon.</p>
+            <template x-if="selectedTag && (selectedRecordKinds.includes('plot') || selectedRecordKinds.includes('table'))">
+                <div x-data="contentTabs"
+                     class="flex h-full flex-col">
+                    <div class="mb-2 flex gap-1 border-b border-slate-400/30"
+                         x-show="selectedRecordKinds.includes('plot') && selectedRecordKinds.includes('table')">
+                        <button type="button"
+                                @click="contentTab = 'plot'"
+                                :class="contentTab === 'plot' ? 'border-b-2 border-rose-500 text-rose-500' : 'border-b-2 border-transparent text-slate-500 dark:text-slate-400'"
+                                class="flex items-center gap-1.5 px-3 py-2 text-base font-semibold transition-colors duration-150 hover:text-rose-500">
+                            <svg class="h-4 w-4 flex-shrink-0"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path d="M4 4v16h16v-2H6V4H4z"
+                                      fill="currentColor"></path>
+                                <path d="M8 13l3-3 4 4 4-4v5H8v-2z"
+                                      fill="currentColor"></path>
+                            </svg>
+                            Plot
+                        </button>
+                        <button type="button"
+                                @click="contentTab = 'table'"
+                                :class="contentTab === 'table' ? 'border-b-2 border-rose-500 text-rose-500' : 'border-b-2 border-transparent text-slate-500 dark:text-slate-400'"
+                                class="flex items-center gap-1.5 px-3 py-2 text-base font-semibold transition-colors duration-150 hover:text-rose-500">
+                            <svg class="h-4 w-4 flex-shrink-0"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <rect x="4"
+                                      y="4"
+                                      width="16"
+                                      height="16"
+                                      rx="1"
+                                      stroke-width="2"></rect>
+                                <path d="M4 10h16M12 4v16"
+                                      stroke-width="2"></path>
+                            </svg>
+                            Table
+                        </button>
+                    </div>
+                    <template x-if="contentTab === 'plot' && selectedRecordKinds.includes('plot')">
+                        {% include "partials/plot_view.html" %}
+                    </template>
+                    <template x-if="contentTab === 'table' && selectedRecordKinds.includes('table')">
+                        {% include "partials/table_view.html" %}
+                    </template>
+                </div>
             </template>
         </main>
     </div>
@@ -36,7 +78,7 @@
     {% include "partials/footer.html" %}
 
     <div x-cloak
-         class="pointer-events-none fixed right-4 top-16 z-50 flex w-80 flex-col">
+         class="pointer-events-none fixed left-1/2 top-16 z-50 flex w-80 -translate-x-1/2 flex-col">
         <template x-for="toast in toasts"
                   :key="toast.id">
             <div x-show="toast.visible"
@@ -50,13 +92,26 @@
                  :class="{
                      'border-l-emerald-500': toast.kind === 'success',
                      'border-l-rose-500': toast.kind === 'error',
+                     'border-l-amber-500': toast.kind === 'warning',
                      'border-l-slate-400': toast.kind === 'info',
                  }">
-                <div class="flex-1">
-                    <p class="text-base"
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 20 20"
+                     fill="currentColor"
+                     class="mt-0.5 h-5 w-5 flex-shrink-0"
+                     :class="{
+                         'text-emerald-500': toast.kind === 'success',
+                         'text-rose-500': toast.kind === 'error',
+                         'text-amber-500': toast.kind === 'warning',
+                         'text-slate-400': toast.kind === 'info',
+                     }">
+                    <path :d="iconPath(toast.kind)" />
+                </svg>
+                <div class="min-w-0 flex-1">
+                    <p class="break-words text-base"
                        x-text="toast.message"></p>
                     <p class="text-sm text-slate-500 dark:text-slate-400"
-                       x-text="timeAgo(toast.timestamp)"></p>
+                       x-text="timeAgo(toast.timestamp, now)"></p>
                 </div>
                 <button type="button"
                         @click="dismiss(toast.id)"

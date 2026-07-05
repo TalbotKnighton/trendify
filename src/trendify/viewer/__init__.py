@@ -1,8 +1,5 @@
-from trendify.viewer import app
-from trendify.viewer import plot_config
-from trendify.viewer import routes
-from trendify.viewer import tag_tree
-
+from trendify.viewer import app as viewer_app
+from trendify.viewer import plot_config, routes, tag_tree
 from trendify.viewer.app import (
     create_app,
     create_app_from_env,
@@ -31,7 +28,6 @@ __all__ = [
     "PlotConfig",
     "TagNode",
     "api",
-    "app",
     "build_tag_tree",
     "camel_case_dict",
     "create_app",
@@ -41,4 +37,5 @@ __all__ = [
     "router",
     "routes",
     "tag_tree",
+    "viewer_app",
 ]

@@ -1,8 +1,7 @@
 """
 JSON API for the dashboard frontend. Currently just the tag tree (the actual sidebar is
 server-rendered from the same data, see `routes.pages`; this endpoint exists for any future
-client-side refresh/polling use) and a liveness/db-change ping. Plot/table data endpoints land
-in later milestones.
+client-side refresh/polling use), a liveness/db-change ping, and the table/plot data endpoints.
 
 Every handler reads from the process-lifetime, read-only `RecordStore` on
 `request.app.state.store` and caches its response in `request.app.state.response_cache`. The
@@ -13,17 +12,27 @@ this is a cache invalidation concern rather than something that makes the cache 
 
 from __future__ import annotations
 
+import base64
 import logging
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Literal, cast
 
-from fastapi import APIRouter, Request
+import numpy as np
+from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel
 
+from trendify.formats.format2d import Format2D
 from trendify.generator.table_builder import TableBuilder
+from trendify.plotting.axline import AxLine
+from trendify.plotting.figure import PlotlyFigure
+from trendify.plotting.histogram import HistogramEntry
+from trendify.plotting.point import Point2D
+from trendify.plotting.scatter import Scatter2D
+from trendify.plotting.trace import Trace2D
 from trendify.store.record_store import RecordStore
 from trendify.store.tags import decode_tag
+from trendify.viewer.plot_config import HoverMode, InterpMode, LineMode
 from trendify.viewer.tag_tree import TagNode, build_tag_tree
 
 TableView = Literal["melted", "pivot", "stats"]
@@ -39,6 +48,12 @@ class TableResponse(BaseModel):
     available: bool
     columns: list[str]
     rows: list[dict[str, Any]]
+
+
+class PlotResponse(BaseModel):
+    available: bool
+    data: list[dict[str, Any]]
+    layout: dict[str, Any]
 
 
 def _get_store(request: Request) -> RecordStore:
@@ -131,3 +146,133 @@ async def get_table(tag: str, view: TableView, request: Request) -> TableRespons
         )
 
     return _cached(request, ("table", view, tag), build)
+
+
+def _plain_list(value: Any) -> list[Any]:
+    """
+    `Figure.to_plotly_json()` encodes large numeric arrays as a compact
+    `{"dtype": ..., "bdata": <base64>}` typed-array form (Plotly.js's own array spec) instead of
+    a plain JSON list, whenever a trace's `x`/`y` came from a numpy array (as `Trace2D`'s `VecN`
+    fields do). Downsampling needs a plain, indexable list, so this decodes that form back;
+    already-plain lists (small/non-numpy traces) pass through unchanged.
+    """
+    if isinstance(value, dict) and "bdata" in value and "dtype" in value:
+        raw_bytes = base64.b64decode(value["bdata"])
+        return np.frombuffer(raw_bytes, dtype=value["dtype"]).tolist()
+    return list(value) if value is not None else []
+
+
+def _downsample_xy(
+    x: list[float], y: list[float], max_points: int
+) -> tuple[list[float], list[float]]:
+    """
+    Downsamples one trace's `(x, y)` to at most `max_points` points, bucketing `x`'s range into
+    `max_points` uniform intervals and keeping the first point seen in each bucket -- gives equal
+    coverage across the x range regardless of variable point spacing, rather than just keeping
+    every Nth point (which would over-represent densely-sampled regions).
+    """
+    n = len(x)
+    if n <= max_points:
+        return x, y
+
+    x_min, x_max = x[0], x[-1]
+    if x_max == x_min:
+        stride = max(1, n // max_points)
+        indices = range(0, n, stride)
+        return [x[i] for i in indices], [y[i] for i in indices]
+
+    span = x_max - x_min
+    seen: set[int] = set()
+    indices = []
+    for i, xv in enumerate(x):
+        bucket = min(int((xv - x_min) / span * max_points), max_points - 1)
+        if bucket not in seen:
+            seen.add(bucket)
+            indices.append(i)
+    return [x[i] for i in indices], [y[i] for i in indices]
+
+
+@router.get("/plot", response_model=PlotResponse)
+async def get_plot(
+    tag: str,
+    request: Request,
+    line_mode: LineMode = LineMode.LINES_AND_MARKERS,
+    interp: InterpMode = InterpMode.LINEAR,
+    hover: HoverMode = HoverMode.CLOSEST,
+    show_spike: bool = False,
+    max_points: int | None = Query(None, gt=0),
+) -> PlotResponse:
+    """
+    Plotly figure JSON (`{available, data, layout}`) for the plot viewer, built the same way as
+    the static Plotly/matplotlib renderers (`generator.render._render_tag_assets`): every
+    `PlottableData2D` record sharing `tag` is added to one shared `PlotlyFigure`, then that
+    tag's `Format2D` (if any) is applied.
+
+    `line_mode`/`interp`/`hover`/`show_spike`/`max_points` are the dashboard's view-only
+    `PlotConfig` settings (`viewer.plot_config`), applied as a post-process pass over the
+    already-built figure JSON rather than baked into `PlotlyFigure`/the record classes
+    themselves -- they're display overrides the *viewer* controls, independent of whatever
+    style a record's own `Pen`/`Marker` authored. `AxLine` renders as layout shapes
+    (`add_hline`/`add_vline`), not `data` traces, so it's naturally unaffected by the
+    trace-level overrides below.
+    """
+    store = _get_store(request)
+    decoded_tag = decode_tag(tag)
+
+    def build() -> PlotResponse:
+        format2d_records = store.get_records_of_type(Format2D, tag=decoded_tag)
+        format2d = format2d_records[0] if format2d_records else None
+
+        points = store.get_records_of_type(Point2D, tag=decoded_tag)
+        traces = store.get_records_of_type(Trace2D, tag=decoded_tag)
+        scatters = store.get_records_of_type(Scatter2D, tag=decoded_tag)
+        axlines = store.get_records_of_type(AxLine, tag=decoded_tag)
+        histogram_entries = store.get_records_of_type(HistogramEntry, tag=decoded_tag)
+
+        figure = PlotlyFigure.new(decoded_tag)
+        for record in (*points, *traces, *scatters, *axlines, *histogram_entries):
+            figure.add_record(record)
+
+        if not figure.fig.data:
+            return PlotResponse(available=False, data=[], layout={})
+
+        if format2d is not None:
+            figure.apply_format(format2d)
+
+        raw = figure.fig.to_plotly_json()
+        traces_json = cast(list[dict[str, Any]], raw["data"])
+        layout_json = cast(dict[str, Any], raw["layout"])
+
+        for trace in traces_json:
+            if trace.get("type") != "scatter":
+                continue
+            trace["mode"] = line_mode.value
+            trace.setdefault("line", {})["shape"] = interp.value
+            trace["x"] = _plain_list(trace.get("x"))
+            trace["y"] = _plain_list(trace.get("y"))
+            if max_points is not None and len(trace["x"]) > max_points:
+                trace["x"], trace["y"] = _downsample_xy(
+                    trace["x"], trace["y"], max_points
+                )
+
+        layout_json["hovermode"] = False if hover == HoverMode.NONE else hover.value
+        if show_spike:
+            for axis_key in ("xaxis", "yaxis"):
+                axis = layout_json.setdefault(axis_key, {})
+                axis["showspikes"] = True
+                axis["spikemode"] = "across"
+                axis["spikedash"] = "dot"
+                # Plotly's spike default (a heavy black/white line) reads harshly against either
+                # theme -- rose-500 (this app's one accent color, see DASHBOARD.md's "Color
+                # Scheme") stays legible and consistent in both, and a thinner line is less
+                # visually loud than the default.
+                axis["spikecolor"] = "#f43f5e"
+                axis["spikethickness"] = 1
+
+        return PlotResponse(available=True, data=traces_json, layout=layout_json)
+
+    return _cached(
+        request,
+        ("plot", tag, line_mode, interp, hover, show_spike, max_points),
+        build,
+    )

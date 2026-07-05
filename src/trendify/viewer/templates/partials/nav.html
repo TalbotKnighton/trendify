@@ -30,6 +30,12 @@
         </div>
     </div>
 
+    <span x-show="selectedTag"
+          x-cloak
+          x-text="tagPath"
+          :title="tagPath"
+          class="min-w-0 flex-1 truncate px-2 text-center text-lg font-bold"></span>
+
     <div class="flex items-center gap-1"
          x-data="themeSelector">
         <div class="card flex h-9 items-center gap-0.5 rounded-lg p-1 shadow-sm">
@@ -91,9 +97,9 @@
                      class="h-4 w-4">
                     <path d="M10 2a6 6 0 0 0-6 6c0 3.09-1.176 4.256-1.596 4.66A1 1 0 0 0 3 14.5h14a1 1 0 0 0 .596-1.84C17.176 12.256 16 11.09 16 8a6 6 0 0 0-6-6ZM8.34 17a1.65 1.65 0 0 0 3.32 0H8.34Z" />
                 </svg>
-                <span x-show="unreadCount > 0"
+                <span x-show="unreadCount() > 0"
                       x-cloak
-                      x-text="unreadCount"
+                      x-text="unreadCount()"
                       class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-xs font-bold text-white"></span>
             </button>
             <div x-show="open"
@@ -113,17 +119,23 @@
                     <template x-for="toast in [...toasts].reverse()"
                               :key="toast.id">
                         <div class="flex items-start gap-2 rounded px-1 py-2 text-left">
-                            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full"
-                                  :class="{
-                                      'bg-emerald-500': toast.kind === 'success',
-                                      'bg-rose-500': toast.kind === 'error',
-                                      'bg-slate-400': toast.kind === 'info',
-                                  }"></span>
-                            <div class="flex-1">
-                                <p class="text-base"
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 class="mt-0.5 h-4 w-4 flex-shrink-0"
+                                 :class="{
+                                     'text-emerald-500': toast.kind === 'success',
+                                     'text-rose-500': toast.kind === 'error',
+                                     'text-amber-500': toast.kind === 'warning',
+                                     'text-slate-400': toast.kind === 'info',
+                                 }">
+                                <path :d="iconPath(toast.kind)" />
+                            </svg>
+                            <div class="min-w-0 flex-1">
+                                <p class="break-words text-base"
                                    x-text="toast.message"></p>
                                 <p class="text-sm text-slate-500 dark:text-slate-400"
-                                   x-text="timeAgo(toast.timestamp)"></p>
+                                   x-text="timeAgo(toast.timestamp, now)"></p>
                             </div>
                         </div>
                     </template>

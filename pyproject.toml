@@ -23,16 +23,32 @@ dependencies = [
     "uvicorn>=0.49.0",
 ]
 
-keywords = ["Data", "Products", "Process", "Post", "Database"]
+keywords = [
+    "Data",
+    "Products",
+    "Process",
+    "Post",
+    "Database",
+    "Visualization",
+    "Dashboard",
+    "Plotting",
+    "Trends",
+    "Matplotlib",
+    "Plotly",
+]
 
 classifiers = [
     "Development Status :: 3 - Alpha",
-    # "Intended Audience :: Science/Research",
-    # "Topic :: Scientific/Engineering :: Mathematics",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Environment :: Web Environment",
+    "Environment :: Console",
     "Typing :: Typed",
     "Operating System :: OS Independent",
     "Natural Language :: English",
     "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
@@ -53,6 +69,7 @@ fallback-version = "0.0.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/trendify"]
+exclude = ["src/trendify/viewer/templates/static/ts/**"]
 
 [tool.ruff]
 exclude = ["typings"]
@@ -106,12 +123,7 @@ ignore = ["typings"]
 exclude_also = ["if __name__ == .__main__.:", "@(abc\\.)?abstractmethod"]
 
 [dependency-groups]
-dev = [
-    "httpx2>=2.5.0",
-    "mkinit>=1.2.0",
-    "pytest>=9.1.1",
-    "snakeviz>=2.2.2",
-]
+dev = ["httpx2>=2.5.0", "mkinit>=1.2.0", "pytest>=9.1.1", "snakeviz>=2.2.2"]
 
 [project.urls]
 "Homepage" = "https://github.com/talbotknighton/trendify"
@@ -121,5 +133,4 @@ dev = [
 "PyPI" = "https://pypi.org/project/trendify/"
 
 [project.scripts]
-trendify_make_sample_data = "trendify.examples:make_sample_data"
 trendify = "trendify.cli:app"

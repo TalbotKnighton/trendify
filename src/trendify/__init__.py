@@ -32,7 +32,7 @@ from trendify.base import (
     record,
 )
 from trendify.cli import (
-    app,
+    app as cli_app,
 )
 from trendify.color import (
     Color,
@@ -125,7 +125,6 @@ from trendify.viewer import (
     PlotConfig,
     TagNode,
     api,
-    app,
     build_tag_tree,
     camel_case_dict,
     create_app,
@@ -135,6 +134,7 @@ from trendify.viewer import (
     router,
     routes,
     tag_tree,
+    viewer_app,
 )
 
 __all__ = [
@@ -184,12 +184,12 @@ __all__ = [
     "XYData",
     "XYDataPlotter",
     "api",
-    "app",
     "axline",
     "base",
     "build_tag_tree",
     "camel_case_dict",
     "cli",
+    "cli_app",
     "color",
     "connect",
     "create_app",
@@ -241,6 +241,7 @@ __all__ = [
     "trace",
     "typing",
     "viewer",
+    "viewer_app",
     "worker_init",
     "xy_data_plotter",
 ]
