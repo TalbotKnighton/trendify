@@ -61,7 +61,7 @@ export function getPlot(tag: Tag, config: PlotConfig): Promise<PlotResponse> {
   return cachedGet<PlotResponse>(`/api/plot?${params.toString()}`);
 }
 
-// The db is static for the life of a `serve` process except for exactly this case (someone
+// The db is static for the life of a `viewer` process except for exactly this case (someone
 // regenerates it while the server is still up); `connection.ts` detects that via `/api/ping`'s
 // mtime and dispatches this event, so this client-side cache doesn't keep serving stale data.
 window.addEventListener("trendify:db-changed", () => cache.clear());

@@ -1,7 +1,7 @@
 """
 `Trace2D`: an xy line built from flat `x`/`y` arrays, styled with a `Pen`, and optionally
 marked at intervals with a single shared `Marker` (mirroring matplotlib's native
-`markevery`). Use the `Trace2D.from_xy` constructor.
+`markevery`).
 """
 
 from __future__ import annotations
@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING
 import plotly.graph_objects as go
 from pydantic import ConfigDict
 
-from trendify.base.helpers import Tags
 from trendify.base.pen import Pen
 from trendify.formats.format2d import XYData
 from trendify.plotting.figure import PlotlyFigure
@@ -28,64 +27,27 @@ logger = logging.getLogger(__name__)
 
 
 class Trace2D(XYData):
-    """
-    An xy line, optionally marked at intervals.
-    Use the [Trace2D.from_xy][trendify.plotting.trace.Trace2D.from_xy] constructor.
-
-    Attributes:
-        x (VecN): x values
-        y (VecN): y values
-        pen (Pen): Style and label information for drawing to matplotlib axes.
-            Only the label information is used in Grafana.
-            Eventually style information will be used in grafana.
-        marker (Marker | None): Shared marker style drawn along the line (e.g. one marker
-            every `markevery` points). `None` draws a plain line with no markers.
-        markevery (int | None): Draw a marker every Nth point when `marker` is set (passed
-            straight through to matplotlib's `Axes.plot(markevery=...)`); `None` marks every
-            point.
-        tags (Tags): Tags to be used for sorting data.
-        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
-
-    """
+    """An xy line, optionally marked at intervals."""
 
     model_config = ConfigDict(extra="forbid")
 
     x: VecN
+    """x values"""
+
     y: VecN
+    """y values"""
+
     pen: Pen = Pen()
+    """Style and label information for drawing to matplotlib axes. Only the label information
+    is used in Grafana. Eventually style information will be used in Grafana."""
+
     marker: Marker | None = None
+    """Shared marker style drawn along the line (e.g. one marker every `markevery` points).
+    `None` draws a plain line with no markers."""
+
     markevery: int | None = None
-
-    @classmethod
-    def from_xy(
-        cls,
-        tags: Tags,
-        x: VecN,
-        y: VecN,
-        pen: Pen = Pen(),
-        marker: Marker | None = None,
-        markevery: int | None = None,
-    ):
-        """
-        Creates a new [Trace2D][trendify.plotting.trace.Trace2D] record from xy data.
-
-        Args:
-            tags (Tags): Tags used to sort records
-            x (VecN): x values
-            y (VecN): y values
-            pen (Pen): Style and label for trace
-            marker (Marker | None): Shared marker style drawn along the line
-            markevery (int | None): Draw a marker every Nth point when `marker` is set
-
-        """
-        return cls(
-            tags=tags,
-            x=x,
-            y=y,
-            pen=pen,
-            marker=marker,
-            markevery=markevery,
-        )
+    """Draw a marker every Nth point when `marker` is set (passed straight through to
+    matplotlib's `Axes.plot(markevery=...)`); `None` marks every point."""
 
     def plot_to_ax(self, ax: Axes):
         """
@@ -127,12 +89,18 @@ class Trace2D(XYData):
 
         # `markevery` (subsampling markers along the line) has no direct Plotly equivalent
         # for a single trace, so Plotly renders a marker at every point when `marker` is set.
+        mode_parts = []
+        if self.pen.linestyle is not None:
+            mode_parts.append("lines")
+        if self.marker is not None:
+            mode_parts.append("markers")
+
         plotly_figure.fig.add_trace(
             go.Scatter(
                 x=self.x,
                 y=self.y,
                 name=self.pen.label if self.pen else None,
-                mode="lines+markers" if self.marker is not None else "lines",
+                mode="+".join(mode_parts) if mode_parts else "lines",
                 line=dict(
                     color=self.pen.rgba if self.pen else None,
                     width=self.pen.size if self.pen else None,

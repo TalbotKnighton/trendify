@@ -8,7 +8,7 @@ set -e
 #     -o scripts/example_data/trendify \
 #     -n 4
 
-trendify serve \
+trendify viewer \
     scripts/example_data/trendify/trendify.db \
     --host 0.0.0.0 \
     --port 8084

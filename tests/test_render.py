@@ -3,7 +3,6 @@
 from pathlib import Path
 
 import pytest
-from trendify.store.record_store import RecordStore
 
 from trendify.base.pen import Pen
 from trendify.formats.format2d import Format2D
@@ -13,6 +12,7 @@ from trendify.generator.xy_data_plotter import XYDataPlotter
 from trendify.plotting.histogram import HistogramEntry
 from trendify.plotting.point import Point2D
 from trendify.plotting.trace import Trace2D
+from trendify.store.record_store import RecordStore
 
 
 @pytest.fixture
@@ -33,9 +33,7 @@ class TestRenderAssets:
         # A tag used for both XY and histogram records is treated like any other tag: one
         # shared figure, saved once.
         records = [
-            Trace2D.from_xy(
-                tags=["shared"], x=[0, 1, 2], y=[0, 1, 4], pen=Pen(label="trace")
-            ),
+            Trace2D(tags=["shared"], x=[0, 1, 2], y=[0, 1, 4], pen=Pen(label="trace")),
             HistogramEntry(tags=["shared"], value=1.0),
             HistogramEntry(tags=["shared"], value=2.0),
         ]
@@ -75,23 +73,6 @@ class TestRenderAssets:
         render_assets(db_path, out_dir)
 
         assert (out_dir / "group" / "scatter.jpg").exists()
-
-    def test_no_flags_suppress_corresponding_output(
-        self, store: RecordStore, db_path: Path, tmp_path: Path
-    ):
-        records = [
-            TableEntry(tags=["tag"], row="r1", col="c1", value=1.0),
-            Point2D(tags=["tag"], x=1.0, y=2.0),
-            HistogramEntry(tags=["tag"], value=1.0),
-        ]
-        store.write_run(tmp_path / "run1", records)
-
-        out_dir = tmp_path / "out"
-        render_assets(
-            db_path, out_dir, skip_tables=True, skip_xy_plots=True, skip_histograms=True
-        )
-
-        assert list(out_dir.glob("**/*")) == []
 
     def test_tag_with_no_format2d_at_all_still_renders(
         self, store: RecordStore, db_path: Path, tmp_path: Path

@@ -21,22 +21,21 @@ class TableEntry(Record):
     """
     Defines an entry to be collected into a table.
 
-    Collected table entries will be printed in three forms when possible: melted, pivot (when possible), and stats (on pivot columns, when possible).
-
-    Attributes:
-        tags (Tags): Tags used to sort records
-        row (float | str): Row Label
-        col (float | str): Column Label
-        value (float | str | bool): Value
-        unit (str | None): Units for value
-        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
-
+    Collected table entries will be printed in three forms when possible: melted, pivot (when
+    possible), and stats (on pivot columns, when possible).
     """
 
     row: float | str
+    """Row label"""
+
     col: float | str
+    """Column label"""
+
     value: float | str | bool
+    """Value"""
+
     unit: str | None = None
+    """Units for value"""
 
     model_config = ConfigDict(extra="forbid")
 

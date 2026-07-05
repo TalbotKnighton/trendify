@@ -24,14 +24,11 @@ class GridTheme(StrEnum):
 class GridAxis(HashableBase):
     """
     Controls styling and visibility for one type of grid (major or minor).
-
-    Attributes:
-        show (bool): Whether to display this grid axis.
-        pen (Pen): Style and label information for drawing to matplotlib axes.
-
     """
 
     show: bool = False
+    """Whether to display this grid axis."""
+
     pen: Pen = Pen(
         color="gray",
         alpha=1.0,
@@ -39,6 +36,7 @@ class GridAxis(HashableBase):
         linestyle="-",
         label=None,
     )
+    """Style and label information for drawing to matplotlib axes."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -46,18 +44,19 @@ class GridAxis(HashableBase):
 class Grid(HashableBase):
     """
     Container for major and minor grid line configuration.
-
-    Attributes:
-        major (GridAxis): Configuration for major grid lines.
-        minor (GridAxis): Configuration for minor grid lines.
-        enable_minor_ticks (bool): Whether to enable minor ticks on the axes.
-
     """
 
     major: GridAxis = GridAxis(show=False)
+    """Configuration for major grid lines."""
+
     minor: GridAxis = GridAxis(show=False)
+    """Configuration for minor grid lines."""
+
     enable_minor_ticks: bool = False
+    """Whether to enable minor ticks on the axes."""
+
     zorder: float = -1
+    """Prioritization of the grid lines relative to plotted data."""
 
     model_config = ConfigDict(extra="forbid")
 

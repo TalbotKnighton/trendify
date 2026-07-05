@@ -32,17 +32,13 @@ _record_subclass_registry: dict[str, type[Record]] = {}
 class Record(BaseModel):
     """
     Base class for records to be generated and handled.
-
-    Attributes:
-        record_type (str): Record type should be the same as the class name.
-            The record type is used to search for records from the store.
-        tags (Tags): Tags to be used for sorting data.
-        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
-
     """
 
     tags: Tags
+    """Tags to be used for sorting data."""
+
     metadata: dict[str, str] = {}
+    """A dictionary of metadata to be used as a tool tip for mouseover in Grafana."""
 
     @model_validator(mode="before")
     @classmethod

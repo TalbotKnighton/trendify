@@ -17,7 +17,6 @@ from typing import TYPE_CHECKING
 import plotly.graph_objects as go
 from pydantic import ConfigDict
 
-from trendify.base.helpers import Tags
 from trendify.formats.format2d import XYData
 from trendify.plotting.figure import PlotlyFigure
 from trendify.styling.marker import Marker
@@ -34,43 +33,18 @@ logger = logging.getLogger(__name__)
 class Scatter2D(XYData):
     """
     A collection of unconnected scattered points sharing one `Marker`.
-    Use the [Scatter2D.from_xy][trendify.plotting.scatter.Scatter2D.from_xy] constructor.
-
-    Attributes:
-        x (VecN): x values
-        y (VecN): y values
-        marker (Marker): Style and label information shared by every point in this scatter.
-        tags (Tags): Tags to be used for sorting data.
-        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
-
     """
 
     model_config = ConfigDict(extra="forbid")
 
     x: VecN
+    """x values"""
+
     y: VecN
+    """y values"""
+
     marker: Marker = Marker()
-
-    @classmethod
-    def from_xy(
-        cls,
-        tags: Tags,
-        x: VecN,
-        y: VecN,
-        marker: Marker = Marker(),
-    ):
-        """
-        Creates a new [Scatter2D][trendify.plotting.scatter.Scatter2D] record from xy data
-        sharing one marker style.
-
-        Args:
-            tags (Tags): Tags used to sort records
-            x (VecN): x values
-            y (VecN): y values
-            marker (Marker): Style and label shared by every point
-
-        """
-        return cls(tags=tags, x=x, y=y, marker=marker)
+    """Style and label information shared by every point in this scatter."""
 
     def plot_to_ax(self, ax: Axes):
         """

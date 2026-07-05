@@ -21,23 +21,25 @@ logger = logging.getLogger(__name__)
 class Marker(HashableBase):
     """
     Defines marker for scattering to matplotlib
-
-    Attributes:
-        color (tuple[float, float, float] | tuple[float, float, float, float] | str): Color of line
-        size (float): Line width
-        alpha (float): Opacity from 0 to 1 (inclusive)
-        zorder (float): Prioritization
-        label (Union[str, None]): Legend label
-        symbol (str): Matplotlib symbol string
-
     """
 
     color: tuple[float, float, float] | tuple[float, float, float, float] | str = "k"
+    """Color of line"""
+
     size: float = 5
+    """Line width"""
+
     alpha: float = 1
+    """Opacity from 0 to 1 (inclusive)"""
+
     zorder: float = 0
+    """Prioritization"""
+
     label: str | None = None
+    """Legend label"""
+
     symbol: str = "."
+    """Matplotlib symbol string"""
 
     @classmethod
     def from_pen(

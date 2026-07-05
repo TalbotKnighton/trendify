@@ -5,9 +5,8 @@
 
 from __future__ import annotations
 
-
-from pydantic import ConfigDict
 from matplotlib.colors import to_rgba
+from pydantic import ConfigDict
 
 from trendify.base.helpers import HashableBase
 
@@ -15,25 +14,26 @@ __all__ = ["Pen"]
 
 
 class Pen(HashableBase):
-    """
-    Defines the pen drawing to matplotlib.
-
-    Attributes:
-        color (str): Color of line
-        size (float): Line width
-        alpha (float): Opacity from 0 to 1 (inclusive)
-        linestyle (Union[str, Tuple[int, Tuple[int, ...]]]): Linestyle to plot. Supports `str` or `tuple` definition ([matplotlib documentation](https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html)).
-        zorder (float): Prioritization
-        label (Union[str, None]): Legend label
-
-    """
+    """Defines the pen drawing style."""
 
     color: tuple[float, float, float] | tuple[float, float, float, float] | str = "k"
+    """Color of line"""
+
     size: float = 1
+    """Line width"""
+
     alpha: float = 1
+    """Opacity from 0 to 1 (inclusive)"""
+
     zorder: float = 0
-    linestyle: str | tuple[int, tuple[int, ...]] = "-"
+    """Prioritization of trace line relative to other plotted data"""
+
+    linestyle: str | tuple[int, tuple[int, ...]] | None = "-"
+    """Linestyle to plot. Supports `str` or `tuple` definition ([matplotlib documentation](https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html)).
+    Use `None` to draw no line at all, for a markers-only trace."""
+
     label: str | None = None
+    """Legend label"""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -44,14 +44,32 @@ class Pen(HashableBase):
         return {
             "color": self.color,
             "linewidth": self.size,
-            "linestyle": self.linestyle,
+            # matplotlib's `Line2D` treats `linestyle=None` as "use the default style", not
+            # "no line" (only the string "none" means that), so `None` is translated here to
+            # keep `Pen.linestyle = None` meaning "no line" from `has_line`'s point of view.
+            "linestyle": self.linestyle if self.linestyle is not None else "none",
             "alpha": self.alpha,
             "zorder": self.zorder,
             "label": self.label,
         }
 
+    @property
+    def has_line(self) -> bool:
+        """
+        Whether this pen draws a visible line. `False` when `linestyle` is `None`, which
+        callers like `Trace2D.add_to_plotly` use to render markers only, with no connecting
+        line.
+        """
+        return self.linestyle is not None
+
     def _convert_linestyle_to_plotly(self) -> str:
         """Convert matplotlib linestyle to plotly dash style"""
+        # `None` means "no line" (see `has_line`); callers exclude "lines" from the Plotly
+        # trace's `mode` in that case, so this value is never actually rendered, but return
+        # something valid regardless.
+        if self.linestyle is None:
+            return "solid"
+
         # Handle string styles
         style_map = {
             "-": "solid",

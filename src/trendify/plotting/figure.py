@@ -46,18 +46,18 @@ matplotlib.use("Agg")
 class SingleAxisFigure:
     """
     Data class storing a matlab figure and axis.  The stored tag data in this class is so-far unused.
-
-    Attributes:
-        ax (Axes): Matplotlib axis to which data will be plotted
-        fig (Figure): Matplotlib figure.
-        tag (Tag): Figure tag.  Not yet used.
-
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
     tag: Tag
+    """Figure tag. Not yet used."""
+
     fig: Figure
+    """Matplotlib figure."""
+
     ax: Axes
+    """Matplotlib axis to which data will be plotted."""
 
     @classmethod
     def new(cls, tag: Tag):
@@ -194,10 +194,21 @@ class SingleAxisFigure:
 
 @dataclass
 class PlotlyFigure:
+    """
+    Data class storing a Plotly figure alongside the legend groups added to it so far.
+    """
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
     tag: Tag
+    """Figure tag. Not yet used."""
+
     fig: go.Figure
+    """Plotly figure."""
+
     legend_groups: set[str] = field(default_factory=set)
+    """Legend group keys already added to `fig`, used to avoid duplicate legend entries when
+    multiple records share a style."""
 
     @classmethod
     def new(cls, tag: Tag):

@@ -8,6 +8,7 @@ needs to pivot and compute statistics, not reparse or reshape raw records.
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 
 import polars as pl
@@ -19,6 +20,18 @@ from trendify.store.tags import tag_to_path_parts
 __all__ = ["TableBuilder"]
 
 logger = logging.getLogger(__name__)
+
+_DIGIT_RUN = re.compile(r"\d+")
+
+
+def _natural_sort_key(value: str) -> str:
+    """
+    Zero-pads every run of digits in `value` so a plain lexicographic sort orders numeric
+    substrings numerically (e.g. "row_2" before "row_10") instead of by leading digit
+    ("row_10" before "row_2"). Row labels that aren't numeric at all still compare as
+    ordinary strings.
+    """
+    return _DIGIT_RUN.sub(lambda m: m.group().zfill(20), value)
 
 
 class TableBuilder(BaseModel):
@@ -45,6 +58,14 @@ class TableBuilder(BaseModel):
         """
         if melted.height == 0:
             return
+
+        melted = (
+            melted.with_columns(
+                _sort_key=pl.Series([_natural_sort_key(r) for r in melted["row"]])
+            )
+            .sort("_sort_key")
+            .drop("_sort_key")
+        )
 
         *parents, stem = tag_to_path_parts(tag)
         save_dir = out_dir.joinpath(*parents)

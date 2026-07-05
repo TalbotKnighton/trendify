@@ -58,21 +58,19 @@ class HashableBase(BaseModel):
 
 
 class RecordType(StrEnum):
-    """
-    Defines all record types.  Used to type-cast URL info in server to validate.
-
-    Attributes:
-        Record (str): class name
-        XYData (str): class name
-        Trace2D (str): class name
-        Point2D (str): class name
-        TableEntry (str): class name
-        HistogramEntry (str): class name
-
-    """
+    """Defines all record types.  Used to type-cast URL info in server to validate."""
 
     XY_DATA = "xy_data"
+    """XY_DATA name"""
+
     TRACE_2D = "trace_2d"
+    """TRACE_2D name"""
+
     POINT_2D = "point_2d"
+    """POINT_2D name"""
+
     TABLE_ENTRY = "table_entry"
+    """TABLE_ENTRY name"""
+
     HISTOGRAM_ENTRY = "histogram_entry"
+    """HISTOGRAM_ENTRY name"""

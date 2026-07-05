@@ -2,11 +2,10 @@
 
 from pathlib import Path
 
-from trendify.store.record_store import RecordStore
-
 from trendify.base.record import Record
 from trendify.pipeline import TrendifyPipeline
 from trendify.plotting.point import Point2D
+from trendify.store.record_store import RecordStore
 
 
 def _generator(run_dir: Path) -> list[Record]:
@@ -52,15 +51,6 @@ class TestRender:
 
         assert (pipeline.assets_dir / "scatter.jpg").exists()
 
-    def test_no_flags_suppress_output(self, tmp_path: Path):
-        dirs = _make_run_dirs(tmp_path, 2)
-        pipeline = TrendifyPipeline(output_dir=tmp_path / "out")
-        pipeline.generate(_generator, dirs)
-
-        pipeline.render(skip_xy_plots=True)
-
-        assert not (pipeline.assets_dir / "scatter.jpg").exists()
-
 
 class TestRun:
     def test_generates_and_renders_end_to_end(self, tmp_path: Path):
@@ -71,13 +61,3 @@ class TestRun:
 
         assert total == 3
         assert (pipeline.assets_dir / "scatter.jpg").exists()
-
-    def test_all_assets_suppressed_skips_render_and_include(self, tmp_path: Path):
-        dirs = _make_run_dirs(tmp_path, 2)
-        pipeline = TrendifyPipeline(output_dir=tmp_path / "out")
-
-        pipeline.run(
-            _generator, dirs, skip_tables=True, skip_xy_plots=True, skip_histograms=True
-        )
-
-        assert not pipeline.assets_dir.exists()

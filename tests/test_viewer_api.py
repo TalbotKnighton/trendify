@@ -21,10 +21,10 @@ def db_path(tmp_path: Path) -> Path:
             tmp_path / "run1",
             [
                 Point2D(tags=["scatter"], x=1.0, y=2.0),
-                Trace2D.from_xy(tags=[("group", "trace")], x=[0, 1], y=[0, 1]),
+                Trace2D(tags=[("group", "trace")], x=[0, 1], y=[0, 1]),
                 TableEntry(tags=["table"], row="r1", col="c1", value=1.0),
                 TableEntry(tags=["table"], row="r2", col="c1", value=2.0),
-                Trace2D.from_xy(
+                Trace2D(
                     tags=["long"],
                     x=list(range(20)),
                     y=[float(i) for i in range(20)],

@@ -13,7 +13,7 @@ def _generator(run_dir: Path):
     n = int(run_dir.name)
     return [
         Point2D(tags=["points"], x=float(n), y=float(n) ** 2),
-        Trace2D.from_xy(
+        Trace2D(
             tags=[("traces", "run")],
             x=[0, 1, 2],
             y=[n, n, n],

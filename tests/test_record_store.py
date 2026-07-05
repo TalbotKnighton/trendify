@@ -26,9 +26,7 @@ def store(tmp_path: Path):
 def _sample_records():
     return [
         Point2D(tags=["a", ("a", "b")], x=1, y=2),
-        Trace2D.from_xy(
-            tags=[("a", "b")], x=[0, 1, 2], y=[0, 1, 4], pen=Pen(label="hi")
-        ),
+        Trace2D(tags=[("a", "b")], x=[0, 1, 2], y=[0, 1, 4], pen=Pen(label="hi")),
         AxLine(tags=["a"], value=0.5, orientation=LineOrientation.VERTICAL),
         TableEntry(tags=["tbl"], row="r1", col="c1", value=1.5, unit="m"),
         TableEntry(tags=["tbl"], row="r1", col="c2", value="hello"),

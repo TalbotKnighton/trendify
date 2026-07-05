@@ -272,20 +272,13 @@ def generate(
 def render(
     ctx: typer.Context,
     output_directory: Path = OutputDirectoryOption,
-    skip_tables: bool = SkipTablesOption,
-    skip_xy_plots: bool = SkipXyPlotsOption,
-    skip_histograms: bool = SkipHistogramsOption,
     verbose: int = VerboseOption,
     quiet: int = QuietOption,
 ) -> None:
     """Render CSV tables and matplotlib figures from already-generated records."""
     _configure_logging(verbose, quiet)
     pipeline = TrendifyPipeline(output_dir=output_directory)
-    pipeline.render(
-        skip_tables=skip_tables,
-        skip_xy_plots=skip_xy_plots,
-        skip_histograms=skip_histograms,
-    )
+    pipeline.render()
     typer.echo(f"Rendered assets to {pipeline.assets_dir}")
 
 
@@ -296,9 +289,6 @@ def run(
     record_generator: str = RecordGeneratorOption,
     output_directory: Path = OutputDirectoryOption,
     n_procs: int = NProcsOption,
-    skip_tables: bool = SkipTablesOption,
-    skip_xy_plots: bool = SkipXyPlotsOption,
-    skip_histograms: bool = SkipHistogramsOption,
     verbose: int = VerboseOption,
     quiet: int = QuietOption,
 ) -> None:
@@ -308,9 +298,6 @@ def run(
     total = pipeline.run(
         record_generator=_resolve_record_generator(record_generator),
         data_dirs=_resolve_input_directories(input_directories),
-        skip_tables=skip_tables,
-        skip_xy_plots=skip_xy_plots,
-        skip_histograms=skip_histograms,
     )
     logger.info(f"Wrote {total} records; assets under {pipeline.assets_dir}")
 
@@ -345,8 +332,8 @@ def get_local_ip():
     return ip
 
 
-@app.command(name="serve")
-def serve(
+@app.command(name="viewer")
+def viewer(
     ctx: typer.Context,
     db_path: Path = DbPathArgument,
     host: str = HostOption,

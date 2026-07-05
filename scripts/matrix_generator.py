@@ -64,6 +64,7 @@ def _positive_wave(amplitude: float = 1.0) -> np.ndarray:
     return amplitude * np.exp(_TIME)
 
 
+# --8<-- [start:build_configuration_matrix]
 def build_configuration_matrix(workdir: Path) -> RecordList:
     """
     Returns one comprehensive `RecordList` covering the styling/config matrix described in
@@ -107,6 +108,10 @@ def build_configuration_matrix(workdir: Path) -> RecordList:
     return records
 
 
+# --8<-- [end:build_configuration_matrix]
+
+
+# --8<-- [start:axis_scale_combinations]
 def _add_axis_scale_combinations(records: RecordList) -> None:
     for scale_x, scale_y in [
         (AxisScale.LINEAR, AxisScale.LINEAR),
@@ -119,12 +124,15 @@ def _add_axis_scale_combinations(records: RecordList) -> None:
         tag_name = f"scale_x_{scale_x.value}_scale_y_{scale_y.value}"
         tag = ("axis_scale_combinations", tag_name)
         Format2D(tags=[tag], scale_x=scale_x, scale_y=scale_y).append_to_list(records)
-        Trace2D.from_xy(
+        Trace2D(
             tags=[tag],
             x=x,
             y=y,
             pen=Pen(label=tag_name),
         ).append_to_list(records)
+
+
+# --8<-- [end:axis_scale_combinations]
 
 
 def _add_grid_theme_combinations(records: RecordList) -> None:
@@ -137,7 +145,7 @@ def _add_grid_theme_combinations(records: RecordList) -> None:
     for tag_name, grid in grid_variants.items():
         tag = ("grid_theme_combinations", tag_name)
         Format2D(tags=[tag], grid=grid).append_to_list(records)
-        Trace2D.from_xy(
+        Trace2D(
             tags=[tag],
             x=_TIME,
             y=_rising_wave(),
@@ -150,7 +158,7 @@ def _add_legend_location_combinations(records: RecordList) -> None:
         tag_name = f"legend_loc_{loc.name.lower()}"
         tag = ("legend_location_combinations", tag_name)
         Format2D(tags=[tag], legend=Legend(loc=loc)).append_to_list(records)
-        Trace2D.from_xy(
+        Trace2D(
             tags=[tag],
             x=_TIME,
             y=_rising_wave(),
@@ -171,7 +179,7 @@ def _add_legend_option_combinations(records: RecordList) -> None:
     for tag_name, legend in legend_variants.items():
         tag = ("legend_option_combinations", tag_name)
         Format2D(tags=[tag], legend=legend).append_to_list(records)
-        Trace2D.from_xy(
+        Trace2D(
             tags=[tag],
             x=_TIME,
             y=_rising_wave(),
@@ -190,7 +198,7 @@ def _add_format2d_limit_combinations(records: RecordList) -> None:
     for tag_name, limit_kwargs in limit_variants.items():
         tag = ("axis_limit_combinations", tag_name)
         Format2D(tags=[tag], **limit_kwargs).append_to_list(records)
-        Trace2D.from_xy(
+        Trace2D(
             tags=[tag],
             x=_TIME,
             y=_rising_wave(),
@@ -210,7 +218,7 @@ def _add_format2d_size_and_label_combinations(records: RecordList) -> None:
     for tag_name, format2d_kwargs in field_variants.items():
         tag = ("format2d_field_combinations", tag_name)
         Format2D(tags=[tag], **format2d_kwargs).append_to_list(records)
-        Trace2D.from_xy(
+        Trace2D(
             tags=[tag],
             x=_TIME,
             y=_rising_wave(),
@@ -226,7 +234,7 @@ def _add_pen_color_combinations(records: RecordList) -> None:
         "pen_color_rgba_tuple": (0.8, 0.2, 0.4, 0.5),
     }
     for tag_name, color in color_variants.items():
-        Trace2D.from_xy(
+        Trace2D(
             tags=[("pen_color_combinations", tag_name)],
             x=_TIME,
             y=_rising_wave(),
@@ -243,7 +251,7 @@ def _add_pen_linestyle_combinations(records: RecordList) -> None:
         "pen_linestyle_custom_dash_pattern": (0, (3, 1, 1, 1)),
     }
     for tag_name, linestyle in linestyle_variants.items():
-        Trace2D.from_xy(
+        Trace2D(
             tags=[("pen_linestyle_combinations", tag_name)],
             x=_TIME,
             y=_rising_wave(),
@@ -252,37 +260,37 @@ def _add_pen_linestyle_combinations(records: RecordList) -> None:
 
 
 def _add_pen_field_combinations(records: RecordList) -> None:
-    Trace2D.from_xy(
+    Trace2D(
         tags=[("pen_field_combinations", "pen_alpha_partial")],
         x=_TIME,
         y=_rising_wave(),
         pen=Pen(label="pen_alpha_partial", alpha=0.4),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[("pen_field_combinations", "pen_alpha_zero")],
         x=_TIME,
         y=_rising_wave(),
         pen=Pen(label="pen_alpha_zero", alpha=0.0),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[("pen_field_combinations", "pen_size_thick")],
         x=_TIME,
         y=_rising_wave(),
         pen=Pen(label="pen_size_thick", size=6.0),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[("pen_field_combinations", "pen_label_omitted")],
         x=_TIME,
         y=_rising_wave(),
         pen=Pen(label=None),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[("pen_field_combinations", "pen_zorder_layering")],
         x=_TIME,
         y=_rising_wave(1.0),
         pen=Pen(label="pen_zorder_layering_back", zorder=1),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[("pen_field_combinations", "pen_zorder_layering")],
         x=_TIME,
         y=_rising_wave(1.2),
@@ -291,26 +299,33 @@ def _add_pen_field_combinations(records: RecordList) -> None:
 
 
 def _add_trace_marker_combinations(records: RecordList) -> None:
-    Trace2D.from_xy(
+    Trace2D(
         tags=[("trace_marker_combinations", "trace_marker_omitted")],
         x=_TIME,
         y=_rising_wave(),
         pen=Pen(label="trace_marker_omitted"),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[("trace_marker_combinations", "trace_marker_every_point")],
         x=_TIME,
         y=_rising_wave(),
         pen=Pen(label="trace_marker_every_point"),
         marker=Marker(symbol="o", color="tab:blue"),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[("trace_marker_combinations", "trace_markevery_5")],
         x=_TIME,
         y=_rising_wave(),
         pen=Pen(label="trace_markevery_5"),
         marker=Marker(symbol="^", color="tab:red", size=8.0),
         markevery=5,
+    ).append_to_list(records)
+    Trace2D(
+        tags=[("trace_marker_combinations", "trace_markers_only_no_line")],
+        x=_TIME,
+        y=_rising_wave(),
+        pen=Pen(label="trace_markers_only_no_line", linestyle=None),
+        marker=Marker(symbol="D", color="tab:green"),
     ).append_to_list(records)
 
 
@@ -364,7 +379,7 @@ def _add_scatter_configuration_combinations(records: RecordList) -> None:
     x = rng.uniform(size=60)
     y = rng.uniform(size=60)
 
-    Scatter2D.from_xy(
+    Scatter2D(
         tags=[("scatter_configuration_combinations", "scatter_default_marker")],
         x=x,
         y=y,
@@ -377,20 +392,20 @@ def _add_scatter_configuration_combinations(records: RecordList) -> None:
         "scatter_marker_color_rgba_tuple": (0.3, 0.3, 0.9, 0.5),
     }
     for tag_name, color in color_variants.items():
-        Scatter2D.from_xy(
+        Scatter2D(
             tags=[("scatter_configuration_combinations", tag_name)],
             x=x,
             y=y,
             marker=Marker(label=tag_name, color=color),
         ).append_to_list(records)
 
-    Scatter2D.from_xy(
+    Scatter2D(
         tags=[("scatter_configuration_combinations", "scatter_marker_symbol_star")],
         x=x,
         y=y,
         marker=Marker(symbol="*", label="scatter_marker_symbol_star", size=15.0),
     ).append_to_list(records)
-    Scatter2D.from_xy(
+    Scatter2D(
         tags=[("scatter_configuration_combinations", "scatter_marker_alpha_partial")],
         x=x,
         y=y,
@@ -610,7 +625,7 @@ def _add_mixed_record_type_combinations(records: RecordList, run_label: str) -> 
         "mixed_record_type_combinations",
         "trace_and_axline_same_plot",
     )
-    Trace2D.from_xy(
+    Trace2D(
         tags=[trace_and_axline_tag],
         x=_TIME,
         y=_rising_wave(),
@@ -633,7 +648,7 @@ def _add_mixed_record_type_combinations(records: RecordList, run_label: str) -> 
         y=0.5,
         marker=Marker(label="marked_sample_point", color="tab:purple"),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[point_trace_axline_tag],
         x=_TIME,
         y=_rising_wave(0.8),
@@ -650,7 +665,7 @@ def _add_mixed_record_type_combinations(records: RecordList, run_label: str) -> 
         "mixed_record_type_combinations",
         "trace_and_histogram_shared_tag",
     )
-    Trace2D.from_xy(
+    Trace2D(
         tags=[trace_and_histogram_tag],
         x=_TIME,
         y=_rising_wave(),
@@ -675,13 +690,13 @@ def _add_mixed_record_type_combinations(records: RecordList, run_label: str) -> 
         "mixed_record_type_combinations",
         "scatter_and_trace_same_plot",
     )
-    Scatter2D.from_xy(
+    Scatter2D(
         tags=[scatter_and_trace_tag],
         x=rng.uniform(size=30),
         y=rng.uniform(size=30),
         marker=Marker(label="scattered_samples", color="tab:purple"),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[scatter_and_trace_tag],
         x=_TIME,
         y=_rising_wave(),
@@ -692,7 +707,7 @@ def _add_mixed_record_type_combinations(records: RecordList, run_label: str) -> 
         "mixed_record_type_combinations",
         "scatter_and_histogram_shared_tag",
     )
-    Scatter2D.from_xy(
+    Scatter2D(
         tags=[scatter_and_histogram_tag],
         x=rng.uniform(size=30),
         y=rng.uniform(size=30),
@@ -730,7 +745,7 @@ def _add_mixed_record_type_combinations(records: RecordList, run_label: str) -> 
         y=0.2,
         marker=Marker(label="sample_point"),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[all_xy_types_and_histogram_tag],
         x=_TIME,
         y=_rising_wave(0.6),
@@ -760,7 +775,7 @@ def _add_mixed_record_type_combinations(records: RecordList, run_label: str) -> 
     Format2D(
         tags=[format2d_written_twice_tag], grid=Grid.from_theme(GridTheme.MATLAB)
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[format2d_written_twice_tag],
         x=_TIME,
         y=_rising_wave(),
@@ -802,13 +817,13 @@ def _add_mixed_record_type_combinations(records: RecordList, run_label: str) -> 
         y=0.2,
         marker=Marker(label="sample_point"),
     ).append_to_list(records)
-    Scatter2D.from_xy(
+    Scatter2D(
         tags=[every_record_type_tag],
         x=rng.uniform(size=30),
         y=rng.uniform(size=30),
         marker=Marker(label="scattered_samples", color="tab:cyan"),
     ).append_to_list(records)
-    Trace2D.from_xy(
+    Trace2D(
         tags=[every_record_type_tag],
         x=_TIME,
         y=_rising_wave(0.6),

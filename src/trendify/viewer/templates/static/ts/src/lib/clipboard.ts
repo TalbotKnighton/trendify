@@ -2,7 +2,7 @@
  * Copies `text` to the clipboard, falling back to the legacy `execCommand` approach when the
  * async Clipboard API is unavailable -- `navigator.clipboard` only exists in secure contexts
  * (HTTPS or localhost), so it's missing entirely when the dashboard is reached over plain HTTP
- * on a LAN address (e.g. the "Mobile" URL `trendify serve --host 0.0.0.0` prints).
+ * on a LAN address (e.g. the "Mobile" URL `trendify viewer --host 0.0.0.0` prints).
  */
 export async function copyToClipboard(text: string): Promise<boolean> {
   if (navigator.clipboard?.writeText) {

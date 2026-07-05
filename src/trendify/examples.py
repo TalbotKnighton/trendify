@@ -16,7 +16,7 @@ import trendify
 __all__ = ["example_record_generator", "make_example_data"]
 
 
-class Channels(StrEnum):
+class ColumnName(StrEnum):
     TIME = "time"
     WAVE_1 = "wave_1"
     WAVE_2 = "wave_2"
@@ -25,7 +25,7 @@ class Channels(StrEnum):
 
 def make_example_data(workdir: Path, n_folders: int = 10):
     """
-    Makes some sample data from which to generate records
+    Makes a highly diverse, varied sample dataset featuring distinct waveform signatures.
 
     Args:
         workdir (Path): Directory in which the sample data is to be generated
@@ -44,24 +44,50 @@ def make_example_data(workdir: Path, n_folders: int = 10):
 
         rng = np.random.default_rng(seed=n)
 
-        n_samples = rng.integers(low=40, high=50)
+        n_samples = rng.integers(
+            low=60, high=80
+        )  # Bumped slightly to resolve sharp shapes beautifully
         t = np.linspace(0, 1, n_samples)
-        periods = [1, 2, 3]
-        amplitudes = rng.uniform(low=0.5, high=1.5, size=3)
+        amplitudes = rng.uniform(low=0.8, high=1.5, size=3)
+        noise_level = 0.03
 
-        inputs: dict[str, int | float] = {"n_samples": int(n_samples)}
-        inputs.update({f"p{i}": p for i, p in enumerate(periods)})
-        inputs.update({f"a{i}": float(a) for i, a in enumerate(amplitudes)})
+        # --- 1. WAVE_1: Damped Harmonic Oscillation ---
+        decay_rate = rng.uniform(1.5, 3.5)
+        freq = rng.uniform(3.0, 5.0)
+        wave_1 = amplitudes[0] * np.sin(2 * np.pi * freq * t) * np.exp(
+            -decay_rate * t
+        ) + noise_level * rng.normal(size=len(t))
+
+        # --- 2. WAVE_2: Sharp Step / Discontinuity ---
+        step_time = rng.uniform(0.3, 0.6)
+        base_level = rng.uniform(-0.2, 0.2)
+        wave_2 = np.where(
+            t < step_time, base_level, base_level + amplitudes[1]
+        ) + noise_level * rng.normal(size=len(t))
+
+        # --- 3. WAVE_3: Logistic Saturation (S-Curve) ---
+        midpoint = rng.uniform(0.4, 0.6)
+        steepness = rng.uniform(10.0, 16.0)
+        wave_3 = amplitudes[2] / (
+            1.0 + np.exp(-steepness * (t - midpoint))
+        ) + noise_level * rng.normal(size=len(t))
+
+        # Collect metadata parameters uniquely for this run to write to stdin.csv
+        inputs: dict[str, int | float] = {
+            "n_samples": int(n_samples),
+            "w1_decay": float(decay_rate),
+            "w1_freq": float(freq),
+            "w2_step_time": float(step_time),
+            "w3_midpoint": float(midpoint),
+        }
+
         pl.DataFrame(
             {"key": list(inputs.keys()), "value": [str(v) for v in inputs.values()]}
         ).write_csv(subdir.joinpath("stdin.csv"), include_header=False)
 
-        noise_level = 0.05
-        waves = [
-            a * np.sin(t * (2 * np.pi / p)) + noise_level * rng.normal(size=len(t))
-            for p, a in zip(periods, amplitudes)
-        ]
-        pl.DataFrame(dict(zip([e.name for e in Channels], [t, *waves]))).write_csv(
+        # Package channels cleanly matching your original structure
+        data_channels = [t, wave_1, wave_2, wave_3]
+        pl.DataFrame(dict(zip([str(e) for e in ColumnName], data_channels))).write_csv(
             subdir.joinpath("results.csv")
         )
 
@@ -86,8 +112,8 @@ def example_record_generator(workdir: Path) -> trendify.RecordList:
     records = []
 
     df = pl.read_csv(workdir.joinpath("results.csv"))
-    time = df[Channels.TIME.name].to_numpy()
-    value_columns = [c for c in df.columns if c != Channels.TIME.name]
+    time = df[ColumnName.TIME].to_numpy()
+    value_columns = [c for c in df.columns if c != ColumnName.TIME]
 
     colors = ["#FF0000", "#000B81", "#FFAA00"]
     alphas = [1.0, 0.3, 1.0]
@@ -102,7 +128,7 @@ def example_record_generator(workdir: Path) -> trendify.RecordList:
         scale_y=trendify.AxisScale.LINEAR,
     ).append_to_list(records)
     traces = [
-        trendify.Trace2D.from_xy(
+        trendify.Trace2D(
             x=time,
             y=df[col].to_numpy(),
             tags=[("an_xy_plot", "trace_plot")],
@@ -125,7 +151,7 @@ def example_record_generator(workdir: Path) -> trendify.RecordList:
         scale_y=trendify.AxisScale.LINEAR,
     ).append_to_list(records)
     traces = [
-        trendify.Trace2D.from_xy(
+        trendify.Trace2D(
             x=time,
             y=df[col].to_numpy(),
             tags=[("an_xy_plot", "another_trace_plot")],
@@ -151,7 +177,7 @@ def example_record_generator(workdir: Path) -> trendify.RecordList:
         figure_height=4,
     ).append_to_list(records)
     traces = [
-        trendify.Trace2D.from_xy(
+        trendify.Trace2D(
             x=time,
             y=df[col].to_numpy(),
             tags=[("another_xy_plot", "trace_plot")],
@@ -191,7 +217,7 @@ def example_record_generator(workdir: Path) -> trendify.RecordList:
         scale_y=trendify.AxisScale.LOG,
     ).append_to_list(records)
     traces = [
-        trendify.Trace2D.from_xy(
+        trendify.Trace2D(
             x=time,
             y=transform(df[col].to_numpy(), trendify.AxisScale.LOG),
             tags=["trace_plot_log_y"],
@@ -221,7 +247,7 @@ def example_record_generator(workdir: Path) -> trendify.RecordList:
         scale_y=trendify.AxisScale.LOG,
     ).append_to_list(records)
     traces = [
-        trendify.Trace2D.from_xy(
+        trendify.Trace2D(
             x=transform(time, trendify.AxisScale.LOG),
             y=transform(df[col].to_numpy(), trendify.AxisScale.LOG),
             tags=["trace_plot_log_xy"],
@@ -255,7 +281,7 @@ def example_record_generator(workdir: Path) -> trendify.RecordList:
         scale_y=trendify.AxisScale.LINEAR,
     ).append_to_list(records)
     traces = [
-        trendify.Trace2D.from_xy(
+        trendify.Trace2D(
             x=transform(time, trendify.AxisScale.LOG),
             y=df[col].to_numpy(),
             tags=["trace_plot_log_x"],
@@ -291,7 +317,7 @@ def example_record_generator(workdir: Path) -> trendify.RecordList:
         tags=[("nested_plots", "group_a", "deep_trace")],
         grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
     ).append_to_list(records)
-    trendify.Trace2D.from_xy(
+    trendify.Trace2D(
         x=time,
         y=df[value_columns[0]].to_numpy(),
         tags=[("nested_plots", "group_a", "deep_trace")],
@@ -301,7 +327,7 @@ def example_record_generator(workdir: Path) -> trendify.RecordList:
         tags=[("nested_plots", "group_b", "deep_trace")],
         grid=trendify.Grid.from_theme(trendify.GridTheme.MATLAB),
     ).append_to_list(records)
-    trendify.Trace2D.from_xy(
+    trendify.Trace2D(
         x=time,
         y=df[value_columns[-1]].to_numpy(),
         tags=[("nested_plots", "group_b", "deep_trace")],

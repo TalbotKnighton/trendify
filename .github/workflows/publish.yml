@@ -34,6 +34,21 @@ jobs:
       - name: Run unit tests
         run: uv run --python ${{ matrix.python-version }} --group dev pytest
 
+      - name: Generate coverage report
+        if: matrix.python-version == '3.14' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: uv run --python ${{ matrix.python-version }} --group dev pytest --cov=stochas --cov-report=xml
+
+      - name: Generate coverage badge
+        if: matrix.python-version == '3.14' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: uv run --python ${{ matrix.python-version }} --group dev genbadge coverage -i coverage.xml -o docs/assets/coverage-badge.svg
+
+      - name: Commit coverage badge
+        if: matrix.python-version == '3.14' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update coverage badge"
+          file_pattern: docs/assets/coverage-badge.svg
+
   publish:
     name: "Build and Publish"
     needs: [test]

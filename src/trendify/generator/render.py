@@ -62,18 +62,12 @@ def _init_worker_with_logging(
 def _render_tag(
     tag: Tag,
     output_dir: str,
-    skip_tables: bool,
-    skip_xy_plots: bool,
-    skip_histograms: bool,
 ) -> None:
     assert _worker_store is not None
     _render_tag_assets(
         _worker_store,
         tag,
         Path(output_dir),
-        skip_tables,
-        skip_xy_plots,
-        skip_histograms,
     )
 
 
@@ -81,32 +75,21 @@ def _render_tag_assets(
     store: RecordStore,
     tag: Tag,
     output_dir: Path,
-    skip_tables: bool,
-    skip_xy_plots: bool,
-    skip_histograms: bool,
 ) -> None:
-    if not skip_tables:
-        melted = store.get_table_entries(tag)
-        if melted.height > 0:
-            logger.info(f"Making tables for {tag = }")
-            TableBuilder.process_table_entries(
-                tag=tag, melted=melted, out_dir=output_dir
-            )
-            logger.info(f"Finished tables for {tag = }")
-
-    if skip_xy_plots and skip_histograms:
-        return
+    melted = store.get_table_entries(tag)
+    if melted.height > 0:
+        logger.info(f"Making tables for {tag = }")
+        TableBuilder.process_table_entries(tag=tag, melted=melted, out_dir=output_dir)
+        logger.info(f"Finished tables for {tag = }")
 
     format2d_records = store.get_records_of_type(Format2D, tag=tag)
     format2d = format2d_records[0] if format2d_records else None
 
-    points = [] if skip_xy_plots else store.get_records_of_type(Point2D, tag=tag)
-    traces = [] if skip_xy_plots else store.get_records_of_type(Trace2D, tag=tag)
-    scatters = [] if skip_xy_plots else store.get_records_of_type(Scatter2D, tag=tag)
+    points = store.get_records_of_type(Point2D, tag=tag)
+    traces = store.get_records_of_type(Trace2D, tag=tag)
+    scatters = store.get_records_of_type(Scatter2D, tag=tag)
     axlines = store.get_records_of_type(AxLine, tag=tag)
-    histogram_entries = (
-        [] if skip_histograms else store.get_records_of_type(HistogramEntry, tag=tag)
-    )
+    histogram_entries = store.get_records_of_type(HistogramEntry, tag=tag)
 
     if not (points or traces or scatters or axlines or histogram_entries):
         return
@@ -143,9 +126,6 @@ def _render_tag_assets(
 def render_assets(
     db_path: Path,
     output_dir: Path,
-    skip_tables: bool = False,
-    skip_xy_plots: bool = False,
-    skip_histograms: bool = False,
     n_procs: int = 1,
 ) -> None:
     """
@@ -155,15 +135,7 @@ def render_assets(
     Args:
         db_path (Path): path to the trendify output directory's `.db` file
         output_dir (Path): directory tables/figures are written under
-        skip_tables (bool): suppress `TableEntry` -> CSV output
-        skip_xy_plots (bool): suppress `Point2D`/`Scatter2D`/`Trace2D`/`AxLine` -> matplotlib
-            XY plot output
-        skip_histograms (bool): suppress `HistogramEntry` -> matplotlib histogram output
-        n_procs (int): number of worker processes rendering tags in parallel. `n_procs == 1`
-            runs sequentially in this process (easier to debug with full tracebacks).
-            `n_procs > 1` uses a `ProcessPoolExecutor`, with one read-only `RecordStore`
-            connection opened per worker, which is safe and contention-free since rendering
-            never writes.
+        n_procs (int): number of worker processes rendering tags in parallel. `n_procs == 1` runs sequentially in this process (easier to debug with full tracebacks). `n_procs > 1` uses a `ProcessPoolExecutor`, with one read-only `RecordStore` connection opened per worker, which is safe and contention-free since rendering never writes.
 
     """
     db_path = Path(db_path)
@@ -186,9 +158,6 @@ def render_assets(
                     _render_tag,
                     tag,
                     str(output_dir),
-                    skip_tables,
-                    skip_xy_plots,
-                    skip_histograms,
                 )
                 for tag in tags
             ]
@@ -197,6 +166,4 @@ def render_assets(
     else:
         with RecordStore.open(db_path, readonly=True) as store:
             for tag in tags:
-                _render_tag_assets(
-                    store, tag, output_dir, skip_tables, skip_xy_plots, skip_histograms
-                )
+                _render_tag_assets(store, tag, output_dir)

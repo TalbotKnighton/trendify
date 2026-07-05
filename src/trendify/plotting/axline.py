@@ -21,34 +21,29 @@ logger = logging.getLogger(__name__)
 
 class LineOrientation(StrEnum):
     """
-    Defines orientation for axis lines
-
-    Attributes:
-        HORIZONTAL (LineOrientation): Horizontal line
-        VERTICAL (LineOrientation): Vertical line
-
+    Defines orientation for axis lines.
     """
 
     HORIZONTAL = "horizontal"
+    """Horizontal line"""
+
     VERTICAL = "vertical"
+    """Vertical line"""
 
 
 class AxLine(PlottableData2D):
     """
     Defines a horizontal or vertical line to be drawn on a plot.
-
-    Attributes:
-        value (float): Value at which to draw the line (x-value for vertical, y-value for horizontal)
-        orientation (LineOrientation): Whether line should be horizontal or vertical
-        pen (Pen): Style and label information for drawing to matplotlib axes
-        tags (Tags): Tags to be used for sorting data
-        metadata (dict[str, str]): A dictionary of metadata
-
     """
 
     value: float
+    """Value at which to draw the line (x-value for vertical, y-value for horizontal)."""
+
     orientation: LineOrientation
+    """Whether line should be horizontal or vertical."""
+
     pen: Pen = Pen()
+    """Style and label information for drawing to matplotlib axes."""
 
     model_config = ConfigDict(extra="forbid")
 

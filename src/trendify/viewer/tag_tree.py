@@ -21,11 +21,23 @@ logger = logging.getLogger(__name__)
 
 
 class TagNode(BaseModel):
+    """One node of the sidebar's nested tag hierarchy."""
+
     key: Tag
+    """The tag (or tag-path segment) this node represents."""
+
     label: str
+    """Display label shown in the sidebar."""
+
     children: list[TagNode]
+    """Nested tag nodes one level below this one."""
+
     has_records: bool
+    """Whether records are tagged with this exact node's `key`, as opposed to only a
+    descendant's."""
+
     record_kinds: list[Literal["plot", "table"]]
+    """Kinds of records tagged with this exact node's `key`."""
 
     def search_blob(self) -> str:
         """

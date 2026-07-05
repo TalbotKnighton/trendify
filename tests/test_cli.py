@@ -3,11 +3,11 @@
 import textwrap
 from pathlib import Path
 
-from trendify.store.record_store import RecordStore
 from typer.testing import CliRunner
 
 from trendify.cli import app
 from trendify.plotting.point import Point2D
+from trendify.store.record_store import RecordStore
 
 runner = CliRunner()
 
@@ -94,7 +94,7 @@ class TestRenderCommand:
                 str(out_dir),
             ],
         )
-        result = runner.invoke(app, ["render", "-o", str(out_dir), "--skip-tables"])
+        result = runner.invoke(app, ["render", "-o", str(out_dir)])
 
         assert result.exit_code == 0, result.output
         assert (out_dir / "assets" / "scatter.jpg").exists()

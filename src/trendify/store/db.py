@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS table_entries (
     unit TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_table_entries_tag ON table_entries(tag_key);
+CREATE INDEX IF NOT EXISTS idx_table_entries_record ON table_entries(record_id);
 """
 
 

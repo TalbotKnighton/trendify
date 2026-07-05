@@ -5,7 +5,7 @@ client-side refresh/polling use), a liveness/db-change ping, and the table/plot 
 
 Every handler reads from the process-lifetime, read-only `RecordStore` on
 `request.app.state.store` and caches its response in `request.app.state.response_cache`. The
-`.db` file can be regenerated out from under a running `serve` process (e.g. someone re-runs
+`.db` file can be regenerated out from under a running `viewer` process (e.g. someone re-runs
 `trendify generate`/`run`); `/ping` detects that via the file's mtime and clears the cache, so
 this is a cache invalidation concern rather than something that makes the cache unsafe to use.
 """
@@ -45,15 +45,29 @@ router = APIRouter()
 
 
 class TableResponse(BaseModel):
+    """Response body for the `/table` endpoint."""
+
     available: bool
+    """Whether any `TableEntry` records exist for the requested tag/view."""
+
     columns: list[str]
+    """Column names for the returned rows, in display order."""
+
     rows: list[dict[str, Any]]
+    """Table rows, each a mapping from column name to cell value."""
 
 
 class PlotResponse(BaseModel):
+    """Response body for the `/plot` endpoint."""
+
     available: bool
+    """Whether any plottable records exist for the requested tag."""
+
     data: list[dict[str, Any]]
+    """Plotly trace definitions, one per series."""
+
     layout: dict[str, Any]
+    """Plotly figure layout (axes, legend, grid) built from the tag's `Format2D`."""
 
 
 def _get_store(request: Request) -> RecordStore:
@@ -62,7 +76,7 @@ def _get_store(request: Request) -> RecordStore:
 
 def _cached[T](request: Request, cache_key: tuple, build: Callable[[], T]) -> T:
     """
-    Process-lifetime response cache: `.db` files are static for the life of a `serve` process
+    Process-lifetime response cache: `.db` files are static for the life of a `viewer` process
     (no write path exists in this feature), so a handler's expensive work only ever needs to
     run once per distinct cache key.
     """

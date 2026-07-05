@@ -38,55 +38,70 @@ class Rastered(BaseModel):
     """Renders to a raster image format (matplotlib's `dpi` setting applies)."""
 
     type: Literal["rastered"] = "rastered"
+    """Discriminator identifying this renderer variant."""
+
     filetype: str = ".jpg"
+    """File extension used when saving the rendered image."""
+
     dpi: int = 500
+    """Resolution (dots per inch) used when saving the rendered image."""
 
 
 class Vector(BaseModel):
     """Renders to a vector image format (matplotlib's `dpi` setting doesn't apply)."""
 
     type: Literal["vector"] = "vector"
+    """Discriminator identifying this renderer variant."""
+
     filetype: str = ".svg"
+    """File extension used when saving the rendered image."""
 
 
 class Format2D(Record):
     """
     Formatting data for matplotlib figure and axes. Written once per tag.
-
-    Attributes:
-        title_fig (Optional[str], optional): Sets [figure title][matplotlib.figure.Figure.suptitle]. Defaults to None.
-        legend (Optional[Legend], optional): Sets [legend style][trendify.styling.legend.Legend]. Defaults to Legend().
-        title_ax (Optional[str], optional): Sets [axis title][matplotlib.axes.Axes.set_title]. Defaults to None.
-        label_x (Optional[str], optional): Sets [x-axis label][matplotlib.axes.Axes.set_xlabel]. Defaults to None.
-        label_y (Optional[str], optional): Sets [y-axis label][matplotlib.axes.Axes.set_ylabel]. Defaults to None.
-        lim_x (tuple[float | None, float | None]): x-axis (lower, upper) bound. Either side
-            `None` means autofit that side to whatever's plotted. Defaults to `(None, None)`.
-        lim_y (tuple[float | None, float | None]): y-axis (lower, upper) bound, same semantics
-            as `lim_x`. Defaults to `(None, None)`.
-        grid (Grid | None,optional): Sets the [grid][matplotlib.pyplot.grid]. Defaults to None.
-        scale_x (AxisScale, optional): Sets the x axis scale to an option from [AxisScale][trendify.formats.format2d.AxisScale]. Defaults to AxisScale.LINEAR
-        scale_y (AxisScale, optional): Sets the y axis scale to an option from [AxisScale][trendify.formats.format2d.AxisScale]. Defaults to AxisScale.LINEAR
-        figure_width (float, optional): Sets the of the width of rendered figure in inches. Defaults to 6.4.
-        figure_height (float, optional): Sets the of the height of rendered figure in inches. Defaults to 4.8.
-        renderer (Rastered | Vector, optional): Chooses the saved file format: `Rastered`
-            (default) for a raster image (`.jpg` by default, at a configurable `dpi`), or
-            `Vector` for a vector image (`.svg` by default). Defaults to `Rastered()`.
-
     """
 
     title_fig: str | None = None
+    """Sets the [figure title][matplotlib.figure.Figure.suptitle]."""
+
     legend: Legend | None = Legend()
+    """Sets the [legend style][trendify.styling.legend.Legend]."""
+
     title_ax: str | None = None
+    """Sets the [axis title][matplotlib.axes.Axes.set_title]."""
+
     label_x: str | None = None
+    """Sets the [x-axis label][matplotlib.axes.Axes.set_xlabel]."""
+
     label_y: str | None = None
+    """Sets the [y-axis label][matplotlib.axes.Axes.set_ylabel]."""
+
     lim_x: tuple[float | None, float | None] = (None, None)
+    """x-axis (lower, upper) bound. Either side `None` means autofit that side to whatever's
+    plotted."""
+
     lim_y: tuple[float | None, float | None] = (None, None)
+    """y-axis (lower, upper) bound, same semantics as `lim_x`."""
+
     grid: Grid | None = None
+    """Sets the [grid][matplotlib.pyplot.grid]."""
+
     scale_x: AxisScale = AxisScale.LINEAR
+    """Sets the x axis scale to an option from [AxisScale][trendify.formats.format2d.AxisScale]."""
+
     scale_y: AxisScale = AxisScale.LINEAR
+    """Sets the y axis scale to an option from [AxisScale][trendify.formats.format2d.AxisScale]."""
+
     figure_width: float = 6.4
+    """Sets the width of the rendered figure in inches."""
+
     figure_height: float = 4.8
+    """Sets the height of the rendered figure in inches."""
+
     renderer: Rastered | Vector = Field(default_factory=Rastered, discriminator="type")
+    """Chooses the saved file format: `Rastered` for a raster image at a configurable `dpi`,
+    or `Vector` for a vector image."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -94,11 +109,6 @@ class Format2D(Record):
 class PlottableData2D(Record, ABC):
     """
     Base class for children of Record to be plotted ax xy data on a 2D plot
-
-    Attributes:
-        tags (Tags): Tags to be used for sorting data.
-        metadata (dict[str, str]): A dictionary of metadata to be used as a tool tip for mousover in grafana
-
     """
 
     @abstractmethod

@@ -13,48 +13,80 @@ __all__ = ["Legend", "LegendLocation"]
 
 
 class LegendLocation(StrEnum):
+    """
+    Matplotlib-recognized legend anchor locations.
+    """
+
     BEST = "best"
+    """Matplotlib chooses the location that overlaps plotted data the least."""
+
     UPPER_RIGHT = "upper right"
+    """Upper right corner of the axes."""
+
     UPPER_LEFT = "upper left"
+    """Upper left corner of the axes."""
+
     LOWER_LEFT = "lower left"
+    """Lower left corner of the axes."""
+
     LOWER_RIGHT = "lower right"
+    """Lower right corner of the axes."""
+
     RIGHT = "right"
+    """Right edge of the axes, vertically centered."""
+
     CENTER_LEFT = "center left"
+    """Left edge of the axes, vertically centered."""
+
     CENTER_RIGHT = "center right"
+    """Right edge of the axes, vertically centered."""
+
     LOWER_CENTER = "lower center"
+    """Bottom edge of the axes, horizontally centered."""
+
     UPPER_CENTER = "upper center"
+    """Top edge of the axes, horizontally centered."""
+
     CENTER = "center"
+    """Center of the axes."""
 
 
 class Legend(HashableBase):
     """
     Configuration container for Matplotlib legend styling and placement.
 
-    The `Legend` class controls the appearance and position of the plot legend.
     Placement is governed by a combination of the `loc` and `bbox_to_anchor`
     parameters, mirroring Matplotlib's `Axes.legend()`.
-
-    Attributes:
-        visible (bool): Whether the legend should be displayed. Defaults to True.
-        title (str | None): Title displayed above the legend entries.
-        framealpha (float): Opacity of the legend background. 1 = fully opaque, 0 = fully transparent.
-        loc (LegendLocation): Anchor point for the legend (e.g., upper right, lower left). See `LegendLocation` enum for options.
-        ncol (int): Number of columns to arrange legend entries into.
-        fancybox (bool): Whether to draw a rounded (True) or square (False) legend frame.
-        edgecolor (str): Color of the legend frame border. Default is "black".
-        bbox_to_anchor (tuple[float, float] | None): Offset position of the legend in figure or axes coordinates. If None, the legend is placed inside the axes using `loc`.
-
     """
 
     visible: bool = True
+    """Whether the legend should be displayed."""
+
     title: str | None = None
+    """Title displayed above the legend entries."""
+
     framealpha: float = 1
+    """Opacity of the legend background. 1 is fully opaque, 0 is fully transparent."""
+
     loc: LegendLocation = LegendLocation.BEST
+    """Anchor point for the legend (e.g., upper right, lower left). See `LegendLocation`
+    enum for options."""
+
     ncol: int = 1
+    """Number of columns to arrange legend entries into."""
+
     fancybox: bool = True
+    """Whether to draw a rounded (True) or square (False) legend frame."""
+
     edgecolor: str = "black"
-    zorder: int = 10
+    """Color of the legend frame border."""
+
+    zorder: int = 1000
+    """Prioritization of the legend relative to plotted data."""
+
     bbox_to_anchor: tuple[float, float] | None = None
+    """Offset position of the legend in figure or axes coordinates. If `None`, the legend
+    is placed inside the axes using `loc`."""
 
     def to_kwargs(self):
         return {

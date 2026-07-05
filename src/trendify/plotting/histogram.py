@@ -27,26 +27,31 @@ logger = logging.getLogger(__name__)
 class HistogramStyle(HashableBase):
     """
     Label and style data for generating histogram bars
-
-    Attributes:
-        color (str): Color of bars
-        label (str|None): Legend entry
-        histtype (str): Histogram type corresponding to matplotlib argument of same name
-        alpha_edge (float): Opacity of bar edge
-        alpha_face (float): Opacity of bar face
-        linewidth (float): Line width of bar outline
-        bins (int | list[int] | Tuple[int] | None): Number of bins (see [matplotlib docs][matplotlib.pyplot.hist])
-
     """
 
     color: str = "k"
+    """Color of bars"""
+
     label: str | None = None
+    """Legend entry"""
+
     histtype: Literal["bar", "step", "stepfilled"] = "stepfilled"
+    """Histogram type corresponding to matplotlib argument of same name"""
+
     alpha_edge: float = 0
+    """Opacity of bar edge"""
+
     alpha_face: float = 0.3
+    """Opacity of bar face"""
+
     linewidth: float = 2
+    """Line width of bar outline"""
+
     zorder: int = 1
+    """Prioritization"""
+
     bins: int | tuple[int, ...] | None = None
+    """Number of bins (see [matplotlib docs][matplotlib.pyplot.hist])"""
 
     @field_validator("bins", mode="before")
     @classmethod
@@ -200,17 +205,16 @@ class HistogramStyle(HashableBase):
 class HistogramEntry(PlottableData2D):
     """
     Use this class to specify a value to be collected into a matplotlib histogram.
-
-    Attributes:
-        tags (Tags): Tags used to sort records
-        value (float | str): Value to be binned
-        style (HistogramStyle): Style of histogram display
-
     """
 
     value: float | str
+    """Value to be binned"""
+
     tags: Tags
+    """Tags used to sort records"""
+
     style: HistogramStyle | None = Field(default_factory=HistogramStyle)
+    """Style of histogram display"""
 
     model_config = ConfigDict(extra="forbid")
 
