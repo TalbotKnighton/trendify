@@ -1,7 +1,7 @@
 :root {
-  /* --md-text-font:
+  --md-text-font:
     "Franklin Gothic", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 300; */
+  font-weight: 300;
 
   /* Primary Color: Rose 500 */
   --md-primary-fg-color: #f43f5e;
@@ -18,8 +18,8 @@
 .md-typeset h3,
 .md-typeset h4,
 .md-header__topic {
-  /* font-family: "Franklin Gothic Heavy", "Franklin Gothic", sans-serif;
-  font-weight: 700; */
+  font-family: "Franklin Gothic Heavy", "Franklin Gothic", sans-serif;
+  font-weight: 700;
   /* Ensure the browser picks the heaviest variant */
   text-transform: uppercase;
   /* Optional: gives it that industrial/engineering look */

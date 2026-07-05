@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="Trendify" src="assets/logo_pink.svg" style="width: 100%">
+    <img alt="Trendify" src="assets/read-me-banner.png" style="width: 100%">
 </p>
 
 # trendify: Efficient Plotting and Table Building
@@ -14,7 +14,10 @@
   <a href="https://github.com/talbotknighton/trendify/actions/workflows/publish.yml" class="badge-link">
     <img src="https://github.com/talbotknighton/trendify/actions/workflows/publish.yml/badge.svg?branch=main" alt="Tests & Release Status">
   </a>
-  <a href="https://github.com/astral-sh/ruff" class="badge-link" style="text-decoration:none;">
+  <a href="https://github.com/talbotknighton/trendify/actions/workflows/workflow.yml" class="badge-link">
+    <img src="https://raw.githubusercontent.com/talbotknighton/trendify/refs/heads/main/docs/assets/coverage-badge.svg" alt="Coverage">
+  </a>
+  <a href="https://github.com/astral-sh/ruff" class="badge-link">
     <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff">
   </a>
   <a href="https://docs.pydantic.dev/latest/" class="badge-link">

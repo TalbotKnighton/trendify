@@ -8,7 +8,7 @@
     <title>{% block title %}trendify{% endblock %}</title>
     <link rel="icon"
           type="image/svg+xml"
-          href="/static/assets/logo.svg">
+          href="/static/assets/main-logo-white-bg.svg">
 
     <!-- Blocking, synchronous: applies the stored theme before first paint to avoid a flash of
          the wrong theme. Deliberately not a .ts module -- must run before anything else. -->
@@ -23,6 +23,12 @@
     <script src="/static/vendored/tailwind-4.3.2.global.js"></script>
     <style type="text/tailwindcss">
         @custom-variant dark (&:where(.dark, .dark *));
+
+        /* Matches --md-text-font in docs/css/extra.css, so the dashboard and docs site
+           read as one product instead of two different fonts. */
+        @theme {
+            --font-sans: "Franklin Gothic", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
     </style>
     <link rel="stylesheet"
           href="/static/css/app.css">

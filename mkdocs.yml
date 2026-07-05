@@ -72,8 +72,8 @@ nav:
 
 theme:
   name: material
-  logo: assets/logo_pink.svg
-  favicon: assets/logo_pink_white_bg.svg
+  logo: assets/main-logo.svg
+  favicon: assets/main-logo-white-bg.svg
   font: false
 
   palette:

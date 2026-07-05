@@ -40,6 +40,9 @@ document.addEventListener("alpine:init", () => {
     selectedRecordKinds: [] as string[],
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
+      // Wait for Alpine to actually apply the `x-show` DOM change before measuring: the
+      // plot container's width isn't updated yet on this same synchronous tick.
+      Alpine.nextTick(() => window.dispatchEvent(new Event("trendify:layout-changed")));
     },
     ...horizontalResize({
       storageKey: "trendify:sidebar-width",
