@@ -9,18 +9,16 @@ description = "Tools for generating data products, storing, and interacting with
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.139.0",
-    "jinja2>=3.1.6",
+    "fastapi>=0.134.0",
     "matplotlib>=3.11.0",
-    "numpy>=2.4.6",
-    "numpydantic>=1.10.0",
+    "numpy>=2.4.1",
+    "numpydantic>=1.7.0",
     "plotly>=6.8.0",
-    "polars>=1.42.1",
-    "pydantic>=2.13.4",
-    "rich>=15.0.0",
-    "sse-starlette>=3.4.5",
-    "typer>=0.26.8",
-    "uvicorn>=0.49.0",
+    "polars>=1.39.0",
+    "pydantic>=2.12.5",
+    "rich>=14.3.3",
+    "typer>=0.24.1",
+    "uvicorn>=0.41.0",
 ]
 
 keywords = [
