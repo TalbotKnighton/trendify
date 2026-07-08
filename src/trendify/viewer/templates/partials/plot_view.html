@@ -1,0 +1,221 @@
+<div class="flex h-full flex-col"
+     x-data="plotView">
+    <div class="card mb-2 flex flex-wrap items-center gap-4 rounded border border-slate-400/40 p-2 text-sm">
+        <div class="flex gap-1">
+            <button type="button"
+                    @click="undo()"
+                    :disabled="historyIndex <= 0"
+                    title="Undo (Ctrl+Z)"
+                    aria-label="Undo"
+                    class="flex h-8 w-8 items-center justify-center rounded border border-slate-400/40 text-slate-500 transition-colors duration-150 hover:bg-rose-500 hover:text-white disabled:pointer-events-none disabled:opacity-30 dark:text-slate-400">
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     class="h-4 w-4">
+                    <polyline points="9 14 4 9 9 4"></polyline>
+                    <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
+                </svg>
+            </button>
+            <button type="button"
+                    @click="redo()"
+                    :disabled="historyIndex >= historyStack.length - 1"
+                    title="Redo (Ctrl+Y)"
+                    aria-label="Redo"
+                    class="flex h-8 w-8 items-center justify-center rounded border border-slate-400/40 text-slate-500 transition-colors duration-150 hover:bg-rose-500 hover:text-white disabled:pointer-events-none disabled:opacity-30 dark:text-slate-400">
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     class="h-4 w-4">
+                    <polyline points="15 14 20 9 15 4"></polyline>
+                    <path d="M4 20v-7a4 4 0 0 1 4-4h12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="h-6 w-px bg-slate-400/30"></div>
+
+        <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 class="h-4 w-4 flex-shrink-0">
+                <line x1="4"
+                      y1="21"
+                      x2="4"
+                      y2="14"></line>
+                <line x1="4"
+                      y1="10"
+                      x2="4"
+                      y2="3"></line>
+                <line x1="12"
+                      y1="21"
+                      x2="12"
+                      y2="12"></line>
+                <line x1="12"
+                      y1="8"
+                      x2="12"
+                      y2="3"></line>
+                <line x1="20"
+                      y1="21"
+                      x2="20"
+                      y2="16"></line>
+                <line x1="20"
+                      y1="12"
+                      x2="20"
+                      y2="3"></line>
+                <line x1="1"
+                      y1="14"
+                      x2="7"
+                      y2="14"></line>
+                <line x1="9"
+                      y1="8"
+                      x2="15"
+                      y2="8"></line>
+                <line x1="17"
+                      y1="16"
+                      x2="23"
+                      y2="16"></line>
+            </svg>
+            <span class="font-semibold">Settings</span>
+        </div>
+
+        <div class="flex items-center gap-1">
+            <button type="button"
+                    @click="config.lineMode = 'lines'"
+                    :class="config.lineMode === 'lines' ? 'bg-rose-500 text-white' : 'text-slate-500 dark:text-slate-400'"
+                    class="rounded border border-slate-400/40 px-2 py-1">Lines</button>
+            <button type="button"
+                    @click="config.lineMode = 'markers'"
+                    :class="config.lineMode === 'markers' ? 'bg-rose-500 text-white' : 'text-slate-500 dark:text-slate-400'"
+                    class="rounded border border-slate-400/40 px-2 py-1">Markers</button>
+            <button type="button"
+                    @click="config.lineMode = 'lines+markers'"
+                    :class="config.lineMode === 'lines+markers' ? 'bg-rose-500 text-white' : 'text-slate-500 dark:text-slate-400'"
+                    class="rounded border border-slate-400/40 px-2 py-1">Both</button>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+            <label class="text-slate-500 dark:text-slate-400">Interp</label>
+            <select x-model="config.interp"
+                    class="rounded border border-slate-400/40 bg-slate-100 px-2 py-1 dark:bg-slate-800">
+                <option value="linear">Linear</option>
+                <option value="spline">Spline</option>
+                <option value="hv">Step (h→v)</option>
+                <option value="vh">Step (v→h)</option>
+                <option value="hvh">Step (h→v→h)</option>
+                <option value="vhv">Step (v→h→v)</option>
+            </select>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+            <label class="text-slate-500 dark:text-slate-400">Hover</label>
+            <select x-model="config.hover"
+                    class="rounded border border-slate-400/40 bg-slate-100 px-2 py-1 dark:bg-slate-800">
+                <option value="closest">Closest point</option>
+                <option value="x unified">Unified (x)</option>
+                <option value="y unified">Unified (y)</option>
+                <option value="x">By x</option>
+                <option value="y">By y</option>
+                <option value="none">Off</option>
+            </select>
+        </div>
+
+        <label class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+            <input type="checkbox"
+                   x-model="config.showSpike">
+            <span>Show spikes</span>
+        </label>
+
+        <div class="flex items-center gap-1.5">
+            <label class="text-slate-500 dark:text-slate-400">Max points</label>
+            <input type="text"
+                   inputmode="numeric"
+                   placeholder="No limit"
+                   :value="config.maxPoints ?? ''"
+                   @change="
+                       const v = parseInt($event.target.value, 10);
+                       config.maxPoints = isNaN(v) || v <= 0 ? null : v;
+                   "
+                   class="w-24 rounded border border-slate-400/40 bg-slate-100 px-2 py-1 dark:bg-slate-800">
+            <button type="button"
+                    x-show="config.maxPoints !== null"
+                    x-cloak
+                    @click="config.maxPoints = null"
+                    aria-label="Clear max points"
+                    class="flex h-6 w-6 items-center justify-center rounded border border-slate-400/40 text-slate-500 hover:text-rose-500 dark:text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 20 20"
+                     fill="currentColor"
+                     class="h-3.5 w-3.5">
+                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="h-6 w-px bg-slate-400/30"></div>
+
+        <div class="flex items-center gap-1.5">
+            <label class="text-slate-500 dark:text-slate-400"
+                   for="metadata-filter-input">Metadata filter</label>
+            <input type="text"
+                   id="metadata-filter-input"
+                   x-model="metadataFilter"
+                   placeholder="e.g. run=5, quality!=bad"
+                   title="Comma-separated conditions, ANDed together: key=value, key!=value, key~contains, key>value, key<value, key>=value, key<=value."
+                   class="w-56 rounded border border-slate-400/40 bg-slate-100 px-2 py-1 dark:bg-slate-800">
+            <button type="button"
+                    x-show="metadataFilter"
+                    x-cloak
+                    @click="metadataFilter = ''"
+                    aria-label="Clear metadata filter"
+                    class="flex h-6 w-6 items-center justify-center rounded border border-slate-400/40 text-slate-500 hover:text-rose-500 dark:text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 20 20"
+                     fill="currentColor"
+                     class="h-3.5 w-3.5">
+                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div class="relative flex-1">
+        <p x-show="unavailable"
+           x-cloak
+           class="p-2 text-base text-slate-500 dark:text-slate-400">No data available for this view.</p>
+        <p x-show="!unavailable && filteredOut"
+           x-cloak
+           class="p-2 text-base text-slate-500 dark:text-slate-400">No lines match the current metadata filter.</p>
+        <div x-show="!unavailable && !filteredOut"
+             class="h-full w-full overflow-auto">
+            <div x-ref="plot"
+                 class="h-full w-full"></div>
+        </div>
+        <div x-show="loading"
+             x-cloak
+             class="absolute inset-0 flex items-center justify-center bg-slate-200/60 dark:bg-slate-900/60">
+            <svg class="h-8 w-8 animate-spin text-rose-500"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 aria-label="Loading">
+                <circle class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"></circle>
+                <path class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+        </div>
+    </div>
+</div>

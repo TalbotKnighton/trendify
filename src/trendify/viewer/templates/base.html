@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <title>{% block title %}trendify{% endblock %}</title>
+    <link rel="icon"
+          type="image/svg+xml"
+          href="/static/assets/main-logo-white-bg.svg">
+
+    <!-- Blocking, synchronous: applies the stored theme before first paint to avoid a flash of
+         the wrong theme. Deliberately not a .ts module -- must run before anything else. -->
+    <script>
+        (function () {
+            var stored = localStorage.getItem("trendify:theme");
+            var isDark = stored === "dark" || (stored !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+            document.documentElement.classList.toggle("dark", isDark);
+        })();
+    </script>
+
+    <script src="/static/vendored/tailwind-4.3.2.global.js"></script>
+    <style type="text/tailwindcss">
+        @custom-variant dark (&:where(.dark, .dark *));
+
+        /* Matches --md-text-font in docs/css/extra.css, so the dashboard and docs site
+           read as one product instead of two different fonts. */
+        @theme {
+            --font-sans: "Franklin Gothic", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+    </style>
+    <link rel="stylesheet"
+          href="/static/css/app.css">
+    <link rel="stylesheet"
+          href="/static/vendored/dataTables.dataTables.min.css">
+
+    <script src="/static/vendored/jquery-3.7.1.min.js"
+            defer></script>
+    <script src="/static/vendored/dataTables.min.js"
+            defer></script>
+    <!-- Must load before alpine: Alpine's CDN build self-starts synchronously the instant its
+         own deferred script executes (mounting components and running their `init()` hooks
+         immediately, without waiting for DOMContentLoaded) -- so anything an `init()` hook
+         needs as a global (Plotly) must finish executing first, i.e. appear earlier here. -->
+    <script src="/static/vendored/plotly-3.6.0.min.js"
+            defer></script>
+    <script src="/static/vendored/alpine-3.15.12.min.js"
+            defer></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="min-h-screen bg-slate-100 text-base text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+    {% block content %}{% endblock %}
+
+    <script src="/static/js/main.js"></script>
+</body>
+
+</html>

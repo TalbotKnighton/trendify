@@ -1,0 +1,122 @@
+:root {
+  --md-text-font:
+    "Franklin Gothic", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 300;
+
+  /* Primary Color: Rose 500 */
+  --md-primary-fg-color: #f43f5e;
+  --md-primary-fg-color--light: #fb7185;
+  --md-primary-fg-color--dark: #e11d48;
+
+  /* Accent Color: Sky 500 */
+  --md-accent-fg-color: #0ea5e9;
+  --md-accent-fg-color--transparent: rgba(14, 165, 233, 0.1);
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-header__topic {
+  font-family: "Franklin Gothic Heavy", "Franklin Gothic", sans-serif;
+  font-weight: 700;
+  /* Ensure the browser picks the heaviest variant */
+  text-transform: uppercase;
+  /* Optional: gives it that industrial/engineering look */
+  /* letter-spacing: -0.02em; */
+  /* Optional: tightens up the 'Heavy' look */
+}
+
+/* Light Mode Sync */
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: #e2e8f0;
+  /* Slate-200 */
+  --md-default-fg-color: #1e293b;
+  /* Slate-800 */
+  --md-footer-bg-color: #cbd5e1;
+  /* Slate-300 (Nav Bar) */
+  --md-footer-bg-color--dark: #e2e8f0;
+  /* Slate-200 (Meta Bar) */
+}
+
+/* Dark Mode Sync */
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #0f172a;
+  /* Slate-900 */
+  --md-default-fg-color: #f1f5f9;
+  /* Slate-100 */
+  --md-card-bg-color: #1e293b;
+  /* Slate-800 */
+  --md-header-bg-color: #0f172a;
+  /* Slate-900 */
+  --md-footer-bg-color: #020617;
+  /* Slate-950 (Nav Bar) */
+  --md-footer-bg-color--dark: #0f172a;
+  /* Slate-900 (Meta Bar) */
+}
+
+.md-header__button.md-logo img {
+  height: 2rem;
+  width: auto;
+  border-radius: 4px;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.3s ease-in-out;
+}
+
+.md-header__button.md-logo:hover img {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px #0ea5e9) drop-shadow(0 0 12px #0ea5e9);
+}
+
+/* Ensure the figure doesn't collapse or overlap */
+.splash,
+.fade-in {
+  display: block;
+  width: 100%;
+  margin: 2rem 0;
+  text-align: center;
+  overflow: visible;
+}
+
+/* 2. Target the IMAGE for animation, transition, and height */
+.splash img,
+.fade-in img {
+  height: 10em;
+  width: auto;
+  display: block;
+  margin: 0 auto;
+
+  /* Animation */
+  opacity: 0;
+  animation-name: fadeIn;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+
+  /* Transition - MUST be on the img for the scale to work */
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.splash img:hover,
+.fade-in img:hover {
+  transform: scale(1.05);
+}
+
+/* Optional: Add a fade-in animation for that "Splash" feel */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  width: 50%;
+  height: auto;
+}

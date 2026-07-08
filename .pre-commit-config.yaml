@@ -1,0 +1,39 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.17
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.11.21
+    hooks:
+      - id: uv-lock
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.11.21
+    hooks:
+      - id: uv-export
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.411
+    hooks:
+      - id: pyright
+      - id: pyright
+        name: Pyright (docs examples)
+        args: [docs]
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+  - repo: local
+    hooks:
+      - id: act-test
+        name: Run GitHub Actions locally (act)
+        entry: act -j test
+        language: system
+        stages: [pre-push]
+        pass_filenames: false
+        files: ^(src/|tests/|pyproject\.toml|uv\.lock)

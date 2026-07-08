@@ -1,198 +1,220 @@
-site_name: Trendify
+site_name: trendify
 site_url: https://talbotknighton.github.io/trendify/
-repo_url: https://github.com/TalbotKnighton/trendify
-repo_name: TalbotKnighton/trendify
-site_description: Data visualization for batch processes via data models.
-site_author: Talbot Knighton
+site_author: Talbot Knighton and David Gable
+copyright: Copyright &copy; 2026 Talbot Knighton and David Gable
+repo_url: https://github.com/talbotknighton/trendify
+repo_name: trendify
+remote_branch: gh-pages
+remote_name: origin
 
-# edit_uri: blob/master/docs/
+hooks:
+  - docs/hooks.py
+
+watch:
+  - docs
+  - src
+  - scripts
+
+nav:
+  - Home: index.md
+  - User Guide: user-guide.md
+  - Code Reference:
+      - reference/trendify/index.md
+      - reference/trendify/cli.md
+      - reference/trendify/color.md
+      - reference/trendify/examples.md
+      - reference/trendify/log.md
+      - reference/trendify/pipeline.md
+      - reference/trendify/typing.md
+      - Base:
+          - reference/trendify/base/index.md
+          - reference/trendify/base/helpers.md
+          - reference/trendify/base/pen.md
+          - reference/trendify/base/record.md
+      - Formats:
+          - reference/trendify/formats/index.md
+          - reference/trendify/formats/format2d.md
+          - reference/trendify/formats/table.md
+      - Generator:
+          - reference/trendify/generator/index.md
+          - reference/trendify/generator/generate.md
+          - reference/trendify/generator/histogrammer.md
+          - reference/trendify/generator/render.md
+          - reference/trendify/generator/table_builder.md
+          - reference/trendify/generator/xy_data_plotter.md
+      - Plotting:
+          - reference/trendify/plotting/index.md
+          - reference/trendify/plotting/axline.md
+          - reference/trendify/plotting/figure.md
+          - reference/trendify/plotting/histogram.md
+          - reference/trendify/plotting/point.md
+          - reference/trendify/plotting/scatter.md
+          - reference/trendify/plotting/trace.md
+      - Store:
+          - reference/trendify/store/index.md
+          - reference/trendify/store/db.md
+          - reference/trendify/store/record_store.md
+          - reference/trendify/store/tags.md
+      - Styling:
+          - reference/trendify/styling/index.md
+          - reference/trendify/styling/grid.md
+          - reference/trendify/styling/legend.md
+          - reference/trendify/styling/marker.md
+      - Viewer:
+          - reference/trendify/viewer/index.md
+          - reference/trendify/viewer/app.md
+          - reference/trendify/viewer/plot_config.md
+          - reference/trendify/viewer/tag_tree.md
+          - Routes:
+              - reference/trendify/viewer/routes/index.md
+              - reference/trendify/viewer/routes/api.md
+              - reference/trendify/viewer/routes/pages.md
 
 theme:
   name: material
-  logo: assets/logo_pink_white_bg.svg
-  favicon: assets/logo_pink_white_bg.svg
-  features:
-    # - header.autohide
-    - search.suggest
-    - search.highlight
-    - navigation.tabs
-    - navigation.top
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.sections
-    - navigation.tracking
-    # - navigation.indexes
-    - content.tabs
-    - content.tabs.link
-    - content.code.annotation
-    - content.code.copy
-    - content.tooltips
-    # - toc.integrate
-  color_mode: auto
-  user_color_mode_toggle: true
-  language: en
+  logo: assets/main-logo.svg
+  favicon: assets/main-logo-white-bg.svg
+  font: false
+
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
       toggle:
-        icon: material/toggle-switch-off-outline
+        icon: material/lightbulb-on
         name: Switch to dark mode
-      primary: pink
-      accent: blue
-    - scheme: slate
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
       toggle:
-        icon: material/toggle-switch
+        icon: material/lightbulb-outline
         name: Switch to light mode
-      primary: pink
-      accent: blue
-  highlightjs: true
-  hljs_languages:
-    - yaml
-    - django
 
-nav:
-  - Welcome: index.md
-  - Motivation: motivation.md
-  - Examples:
-      - Basic: example.md
-      - More: more_examples.md
-  - Recipe: recipe.md
-  - API and CLI: api_and_cli.md
-  - Code Reference: reference/
-  - Planned Features: planned_features.md
+  features:
+    - navigation.tabs
+    - navigation.instant
+    # - navigation.instant.preview
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.top
+    - navigation.path
+    - navigation.sections
+    - navigation.tabs.sticky
+    - navigation.footer
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tooltips
+    - search.highlight
+    - search.suggest
+    - search.share
+    - content.tabs.link
+    - content.footnote.tooltips
 
-# Add the extra section here
-extra:
-  # Add your custom configurations or variables
-  disable_ssl_certificate_validation: true
-
-extra_css:
-  - css/code_select.css
-  - css/mkdocstrings.css
-  - css/logo.css
-
-# exclude_docs: |
-#   *.py
+plugins:
+  - search
+  - open-in-new-tab:
+      add_icon: true
+  # gen-files and literate-nav are MkDocs-only plugins; zensical ignores them.
+  # Reference pages are pre-generated by scripts/gen_ref_pages.py instead.
+  # - gen-files:
+  #     scripts:
+  #       - scripts/gen_ref_pages.py
+  # - literate-nav:
+  #     nav_file: SUMMARY.md
+  # - section-index
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            modernize_annotations: true
+            backlinks: tree
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_source: true
+            show_bases: true
+            members_order: source
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            show_signature_annotations: true
+            separate_signature: true
+            summary: false # set to true to get summary tables
+            inherited_members: true
+            # inheritance_diagram_direction: TD
+            # show_inheritance_diagram: true
+            show_attribute_values: true
+            signature_crossrefs: true
+            extensions:
+              - pydantic: { schema: true }
+          inventories:
+            - https://docs.python.org/3/objects.inv
+            - https://mkdocstrings.github.io/griffe/objects.inv
+            - https://docs.pydantic.dev/latest/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
 
 markdown_extensions:
-  - toc:
-      permalink: true
+  - abbr
   - admonition
-  - codehilite
+  - attr_list
+  - md_in_html
+  - def_list
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - toc:
       permalink: true
-      title: On this page
-  - attr_list
-  - def_list
-  - tables
   - pymdownx.highlight:
-      use_pygments: false
+      anchor_linenums: true
+      line_spans: __span
       pygments_lang_class: true
+      auto_title: true
+      linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.details
   - pymdownx.snippets
-  - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
-  - callouts
-  - mdx_gh_links:
-      user: mkdocs
-      repo: mkdocs
-  - mkdocs-click
-  #
-  - pymdownx.snippets:
-      base_path: "docs/"
-      auto_append:
-        - includes/abbreviations.md
+  - pymdownx.blocks.caption
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - abbr
-  - attr_list
-  - md_in_html
-  - def_list
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.tasklist:
-      custom_checkbox: true
-      clickable_checkbox: false
-  - admonition
-  - pymdownx.arithmatex:
-      generic: true
-  - footnotes
-  - pymdownx.details
-  - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - footnotes
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
   - pymdownx.mark
-  - markdown_include.include:
-      base_path: docs
+  - pymdownx.tilde
+  - zensical.extensions.glightbox:
+      auto_themed: true
+  - zensical.extensions.macros
 
-copyright: Copyright &copy; 2024 <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>, Maintained by the <a href="https://github.com/TalbotKnighton">Talbot Knighton</a>.
+extra:
+  generator: false
 
-hooks:
-  - docs/hooks.py
+extra_javascript:
+  - javascripts/katex.js
+  - https://unpkg.com/katex@0/dist/katex.min.js
+  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+  - https://unpkg.com/mermaid@10.9.0/dist/mermaid.min.js
+  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+  - javascripts/tablesort.js
 
-plugins:
-  # - git-revision-date-localized:
-  #     enable_creation_date: true
-  - search
-  - glightbox
-  - gen-files:
-      scripts:
-        - scripts/gen_ref_pages.py
-  - section-index
-  - autorefs
-  - literate-nav:
-      nav_file: SUMMARY.md
-      implicit_index: true
-  - mkdocstrings:
-      handlers:
-        python:
-          import:
-            # https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
-            - https://docs.python.org/3/objects.inv
-            - https://matplotlib.org/objects.inv
-            - https://numpy.org/doc/stable/objects.inv
-            - https://pandas.pydata.org/docs/objects.inv
-            - https://docs.scipy.org/doc/scipy/objects.inv
-            - https://numpydantic.readthedocs.io/en/latest/objects.inv
-            - https://docs.pydantic.dev/latest/objects.inv
-          options:
-            extensions:
-              - griffe_pydantic:
-                  schema: true
-            docstring_style: google
-            docstring_section_style: table
-            members_order: alphabetical
-            show_root_heading: true
-            show_source: true
-            separate_signature: true
-            show_signature: true
-            show_signature_annotations: true
-            signature_crossrefs: true
-            #
-            merge_init_into_class: true
-            show_if_no_docstring: false
-            # annotations_path: full
-            show_docstring_functions: true
-            heading_level: 2
-            line_length: 100
-            show_root_toc_entry: false
-            show_root_full_path: false
-            inherited_members: false
-            show_submodules: false
-            show_docstring_classes: true
-            docstring_options:
-              ignore_init_summary: false
-          paths: [src]
-  #
-  - exclude:
-      glob:
-        - snippets/*
-  - snippets
-
-watch:
-  - src/
-  - scripts/
-  - docs/
+extra_css:
+  - css/extra.css
+  - https://unpkg.com/katex@0/dist/katex.min.css

@@ -1,19 +1,38 @@
-**/workdir/
-**/__pycache__/**/*
-**/*.egg*/
-**/*.egg-info/**
-**/*.pyc
-**/*.pyo
-**/*.pyd
-**/*.pyz
-**/*.code-workspace
-dist/
+# Python-generated files
+__pycache__/
+*.py[oc]
 build/
-trendify.log
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+mojo.log
+mojo.log.*
+
+site
+docs/reference/
+mojo-models
+textures
+
+typings
+
+# TypeScript build artifacts (node_modules is dev-only; compiled .js files ARE committed)
+node_modules/
+*.js.map
+
+.coverage
+
+**/*.code-workspace
+
+trendify.log*
+
 # Test output files
 discriminator_tests.json
 discriminator_tests.log
-.coverage
-coverage.xml
-# MkDocs build directory
-site/
+
+/**/.DS_Store
+
+*.prof

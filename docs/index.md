@@ -1,94 +1,82 @@
 ---
 hide:
   - navigation
+#   - toc
+---
+<style>
+  .md-typeset h1,
+  .md-content__button {
+    display: none;
+  }
+  a.badge-link::after {
+    content: none !important;
+  }
+</style>
+
+<p align="center" class="splash">
+    <img alt="Trendify" src="assets/read-me-banner.svg" style="width: 100%">
+</p>
+
+# trendify: Efficient Plotting and Table Building
+
+<p align="center">
+  <a href="https://pypi.org/project/trendify/" class="badge-link" style="text-decoration:none;">
+    <img src="https://img.shields.io/pypi/v/trendify.svg?cacheSeconds=300" alt="PyPI version">
+  </a>
+  <a href="https://pypi.org/project/trendify/" class="badge-link">
+    <img src="https://img.shields.io/pypi/pyversions/trendify.svg?cacheSeconds=86400" alt="Python versions" style="text-decoration:none;">
+  </a>
+  <a href="https://github.com/talbotknighton/trendify/actions/workflows/publish.yml" class="badge-link" style="text-decoration:none;">
+    <img src="https://github.com/talbotknighton/trendify/actions/workflows/publish.yml/badge.svg?branch=main" alt="Tests & Release Status">
+  </a>
+  <a href="https://github.com/talbotknighton/trendify/actions/workflows/workflow.yml" class="badge-link" style="text-decoration:none;">
+    <img src="https://raw.githubusercontent.com/talbotknighton/trendify/refs/heads/main/docs/assets/coverage-badge.svg" alt="Coverage">
+  </a>
+  <a href="https://github.com/astral-sh/ruff" class="badge-link" style="text-decoration:none;">
+    <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff">
+  </a>
+  <a href="https://docs.pydantic.dev/latest/" class="badge-link" style="text-decoration:none;">
+    <img src="https://img.shields.io/badge/Pydantic-v2-FF43A1?logo=pydantic&logoColor=white" alt="Pydantic v2">
+  </a>
+  <a href="https://opensource.org/licenses/MIT" class="badge-link" style="text-decoration:none;">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
+  </a>
+  <a href="https://talbotknighton.github.io/trendify/" class="badge-link" style="text-decoration:none;">
+    <img src="https://img.shields.io/badge/docs-GitHub_Pages-blue.svg" alt="Documentation">
+  </a>
+</p>
+
 ---
 
-<figure markdown="1">
-![logo](assets/logo_pink.svg){ width="200" }
-</figure>
+## Installation
 
-# Welcome to Trendify
+Install the package via your preferred manager:
 
+=== "`uv`"
 
-[![PyPI Version](https://img.shields.io/pypi/v/trendify.svg)](https://pypi.org/project/trendify/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/trendify.svg)](https://pypi.org/project/trendify/)
-[![License](https://img.shields.io/github/license/TalbotKnighton/trendify.svg)](https://github.com/TalbotKnighton/trendify/blob/main/LICENSE)
-[![GitHub](https://img.shields.io/github/stars/TalbotKnighton/trendify?style=social)](https://github.com/TalbotKnighton/trendify)
+    ```bash linenums="0"
+    uv add trendify
+    ```
 
+=== "`pip`"
 
-### Description
+    ```bash linenums="0"
+    pip install trendify
+    ```
 
-The `trendify` package makes it easy to compare data from multiple runs of a batch process.  The core functionality is to generate CSV tables and JPEG images by mapping a user-provided processing function over a user-provided set of input data directories.  Parallelization and data serialization are used to speed up processing time and maintain low memory requirements.  `trendify` is run via a terminal [command line interface (CLI)][cli] one-liner method or via a Python application programming interface (API).
+---
 
-See the [Flow Chart][flow-chart] and [Vocabulary][vocabulary] sections below for a visual diagram of the program flow and vocabulary reference.
+## Core Features
 
-The [Motivation][motivation] section discusses the problem this package solves and why it is useful.
+- **Built to scale**: process thousands of runs without holding every run's data in memory at once. Throughput stays flat whether you have dozens of runs or tens of thousands.
+- **Typed records, no migrations**: points, traces, tables, and histograms are validated [Pydantic](https://docs.pydantic.dev/latest/) models. Add your own record types anytime without writing a schema migration.
+- **Parallelizable**: `trendify generate` can fan your processing function out across multiple CPU cores with `--n-procs`, with multiprocessing-safe logging that funnels every worker's output through a single queue.
+- **Static assets or a live dashboard**: render tagged data straight to Matplotlib images and CSV tables with `trendify render`, or launch an interactive FastAPI dashboard with `trendify viewer` to browse tags, tables, and interactive plots in the browser.
 
-The [Recipe][recipe] section provides a template for users to follow.
+---
 
-The [Example][example] section provides a minimum working example.
+## Why use `trendify`?
 
-Available python methods and command line syntax are described in the [API and CLI][api-and-cli] section.
-
-Planned future work and features are shown in the [Planned Features][planned-features] section.
-
-### Installation
-
-Install from PyPI
-
-```bash
-pip install trendify
-```
-
-### Links
-
-[View on PyPI](https://pypi.org/project/trendify/)
-
-[View source code](https://github.com/TalbotKnighton/trendify?tab=readme-ov-file)
-
-### Flow Chart
-
-The following flow chart shows how `trendify` generates assets from user inputs.
-
-``` mermaid
-graph TD
-  subgraph "User Inputs"  
-   A[(Input Directories)]@{ shape: lin-cyl };
-   AA[Product Generator];
-   AAA[Output Directory];
-   AAAA[Number of Processes]
-  end
-  A --> B[CLI or Script]@{ shape: diamond};
-  AA --> B;
-  AAA --> B;
-  AAAA --> B;
-  B --> |Map generator over raw data dirs| CCC[(Tagged Data Products)]@{shape: lin-cyl};
-  CCC --> |Sort and process products| CC[(Assets)]@{shape: lin-cyl};
-  CC -.-> H[Interactive Displays];
-  H -.-> |Grafana API| I[Grafana Dashboard];
-  H -.-> K[Etc.];
-  CC -.-> D[Static Assets];
-  D -.-> |Pandas| E[CSV];
-  D -.-> |Matplotlib| F[JPG];
-  D -.-> G[Etc.];
-```
-
-### Vocabulary
-
-The following is a table of important trendify objects / vocabulary sorted alphabetically:
-
-| Term | Meaning |
-| ---- | ------- |
-| API | Application programming interface: Definition of valid objects for processing within `trendify` framework |
-| Asset | An asset to be used in a report (such as static CSV or JPG files) or interacted with (such as a Grafana dashboard) |
-| CLI | Command line interface: `trendify` script installed with package used to run the framework |
-| [DataProduct][trendify.api.base.data_product.DataProduct] | Base class for [tagged][trendify.api.base.helpers.Tag] products to be sorted and displayed in static or interactive assets.|
-| [DataProductGenerator][trendify.api.generator.data_product_generator.DataProductGenerator] | A [Callable][typing.Callable] to be mapped over raw data directories.  Given the [Path][pathlib.Path] to a working directory, the method returns a [ProductList][trendify.api.base.data_product.ProductList] (i.e. a list of instances of [DataProduct][trendify.api.base.data_product.DataProduct] instances): [`Trace2D`][trendify.api.plotting.trace.Trace2D], [`Point2D`][trendify.api.plotting.point.Point2D], [`TableEntry`][trendify.api.formats.table.TableEntry], [`HistogramEntry`][trendify.api.plotting.histogram.HistogramEntry], etc. |
-| [HistogramEntry][trendify.api.plotting.histogram.HistogramEntry] | Tagged, labeled data point to be counted and histogrammed |
-| [Point2D][trendify.api.plotting.point.Point2D] | Tagged, labeled [XYData][trendify.api.formats.format2d.XYData] defining a point to be scattered on xy graph |
-| [Product List][trendify.api.base.data_product.ProductList] | List of [DataProduct][trendify.api.formats.table.TableEntry] instances |
-| Raw Data | Data from some batch process or individual runs (with results from each run stored in separate subdirectories) |
-| [TableEntry][trendify.api.formats.table.TableEntry] | Tagged data point to be collected into a table, pivoted, and statistically analyzed |
-| [Tag][trendify.api.base.helpers.Tag] | Hashable tag used for sorting and collection of [DataProduct][trendify.api.base.data_product.DataProduct] instances |
-| [Trace2D][trendify.api.plotting.trace.Trace2D] | Tagged, labeled [XYData][trendify.api.formats.format2d.XYData] defining a line to be plotted on xy graph |
-| [XYData][trendify.api.formats.format2d.XYData] | Base class for products to be plotted on an xy graph |
+- **Scalable.** Throughput stays flat whether you're processing dozens of runs or tens of thousands.
+- **Memory efficient.** Each run is processed once and cached on disk, nothing needs to stay open or held in memory for the whole sweep. This is critical for processing large amounts of data with less memory than is available when batch processing.
+- **Flexible output.** Render static Matplotlib images and CSV tables for a report, or browse the same data interactively in a live dashboard.
