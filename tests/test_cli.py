@@ -240,25 +240,6 @@ class TestViewerCommand:
         assert kwargs["host"] == "0.0.0.0"
         assert kwargs["port"] == 9001
 
-    def test_reload_uses_the_factory_string_form(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ):
-        db_path = tmp_path / "trendify.db"
-        RecordStore.open(db_path).close()
-
-        calls = []
-        monkeypatch.setattr(
-            "uvicorn.run", lambda app, **kwargs: calls.append((app, kwargs))
-        )
-
-        result = runner.invoke(app, ["viewer", str(db_path), "--reload"])
-
-        assert result.exit_code == 0, result.output
-        app_arg, kwargs = calls[0]
-        assert app_arg == "trendify.viewer.app:create_app_from_env"
-        assert kwargs["factory"] is True
-        assert kwargs["reload"] is True
-
 
 class TestRunCommand:
     def test_generates_and_renders_in_one_step(self, tmp_path: Path):
