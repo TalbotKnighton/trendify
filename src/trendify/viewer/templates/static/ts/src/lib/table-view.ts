@@ -9,6 +9,7 @@ import { loadJSON, saveJSON } from "./local-storage";
 interface TableViewContext {
   view: TableViewKind;
   unavailable: boolean;
+  loading: boolean;
   requestId: number;
   currentAbortController: AbortController | null;
   selectedTag: Tag | null;
@@ -41,11 +42,29 @@ export function resolveTableView(tag: Tag): TableViewKind {
   return loadJSON<TableViewKind>(viewStorageKey(tag)) ?? "stats";
 }
 
-/** Adds a small draggable handle to the right edge of every header cell for manual column resize. */
-function attachColumnResizeHandles(tableEl: HTMLTableElement): void {
-  const headerCells =
-    tableEl.querySelectorAll<HTMLTableCellElement>("thead th");
-  headerCells.forEach((th) => {
+/**
+ * Adds a small draggable handle to the right edge of every header cell for manual column resize.
+ * Locates cells via the DataTables API (`column.header()`), not a raw `querySelectorAll` on the
+ * table element: with `scrollX` enabled, DataTables physically moves the real `<thead>` out of
+ * the data table and into a separate cloned header table for the scrolling header row, so the
+ * cells actually visible to the user no longer live inside the table element at all.
+ *
+ * Dragging updates every `<colgroup><col>` at this column's index, not just the header cell:
+ * with `scrollX` on, each of the real (data) table and the cloned scrolling header table has
+ * its own separate colgroup, and `table-layout: fixed` in each one is governed by *its own*
+ * `<col>` width, not by an individual cell's inline style. Updating only one (or only the cell)
+ * leaves the two tables disagreeing about the column's width until the next redraw happens to
+ * resync them (`_fnScrollDraw` re-clones the real table's colgroup into the header's on every
+ * draw) -- updating both directly, live, avoids depending on that timing at all.
+ */
+function attachColumnResizeHandles(this: Api<any>): void {
+  const dt = this;
+  const realTable = this.table().node() as HTMLTableElement;
+  this.columns().every(function () {
+    const th = this.header() as HTMLTableCellElement;
+    const colIndex = this.index();
+    const headerTable = th.closest("table");
+    const colgroupTables = new Set([realTable, headerTable]);
     th.style.position = "relative";
     const handle = document.createElement("span");
     handle.className = "dt-col-resize-handle";
@@ -61,10 +80,44 @@ function attachColumnResizeHandles(tableEl: HTMLTableElement): void {
           startWidth + (moveEvent.clientX - startX),
         );
         th.style.width = `${next}px`;
+        for (const table of colgroupTables) {
+          const colEl = table?.querySelectorAll("colgroup col")[
+            colIndex
+          ] as HTMLTableColElement | undefined;
+          if (colEl) {
+            colEl.style.width = `${next}px`;
+            colEl.style.minWidth = `${next}px`;
+          }
+        }
       };
       const onUp = () => {
         window.removeEventListener("mousemove", onMove);
         window.removeEventListener("mouseup", onUp);
+        // Beyond the two colgroups updated live above, `scrollX` also tracks an *explicit*
+        // pixel width on the scroll-head wrapper divs (`_fnScrollDraw`'s `outerWidth`,
+        // recomputed from the real table's total column width) to keep the header's own box
+        // sized correctly -- that value is cached from the last real DataTables draw and
+        // doesn't know about manual resizes happening outside its API. `draw(false)` re-runs
+        // `_fnScrollDraw` (registered as a draw callback) to resync it against the widths we
+        // just set, without `false` triggering a content-based `autoWidth` recalculation that
+        // would undo the manual resize. Only on drag end, not every `mousemove`, since a full
+        // draw is too expensive to do continuously.
+        dt.draw(false);
+        // The browser fires a `click` immediately after this mouseup, and since dragging
+        // moves the mouse away from `handle` before release, that click's target is the
+        // header cell (or an ancestor) -- not `handle` -- so a listener on `handle` itself
+        // can never catch it. DataTables binds sort-on-click as a delegated listener up on
+        // the header (`_fnBindAction`), so left alone this click still bubbles up to it and
+        // toggles sort. Capturing and swallowing exactly one click at the document level,
+        // registered right as the drag ends, catches it regardless of where it lands.
+        document.addEventListener(
+          "click",
+          (event) => {
+            event.stopPropagation();
+            event.preventDefault();
+          },
+          { capture: true, once: true },
+        );
       };
       window.addEventListener("mousemove", onMove);
       window.addEventListener("mouseup", onUp);
@@ -130,6 +183,7 @@ export function tableView() {
   return {
     view: "stats" as TableViewKind,
     unavailable: false,
+    loading: false,
     requestId: 0,
     currentAbortController: null as AbortController | null,
     setView(this: TableViewContext, view: TableViewKind) {
@@ -161,28 +215,42 @@ export function tableView() {
       this.currentAbortController?.abort();
       const controller = new AbortController();
       this.currentAbortController = controller;
+      this.loading = true;
 
       let data;
       try {
         data = await getTable(tag, this.view, { signal: controller.signal, priority: "high" });
       } catch (err) {
         // Expected whenever a newer render() aborts this one above -- the newer request
-        // already owns `unavailable`, so there's nothing to do here.
+        // already owns `unavailable`/`loading`, so there's nothing to do here.
         if (isAbortError(err)) return;
         throw err;
+      } finally {
+        // A stale in-flight request finishing after a newer one started must not clear the
+        // spinner out from under the request that's still actually loading, same as plot-view.ts.
+        if (requestId === this.requestId) this.loading = false;
       }
       if (requestId !== this.requestId) return;
 
-      const tableEl = this.$refs.table as HTMLTableElement;
-      // Checking the DOM directly (rather than trusting a component-local variable) is the
-      // DataTables-recommended way to know whether a table needs destroying first: this
-      // element is reused across tag/tab switches, and a stale local reference here previously
-      // caused DataTables to silently keep serving the *first* table it was ever given instead
-      // of picking up new columns/data on later Pivot/Statistics switches.
-      if ($.fn.DataTable.isDataTable(tableEl)) {
-        $(tableEl).DataTable().destroy();
-        tableEl.innerHTML = "";
+      const container = this.$refs.tableContainer;
+      const existingTable = container.querySelector("table");
+      if (existingTable && $.fn.DataTable.isDataTable(existingTable)) {
+        $(existingTable).DataTable().destroy();
       }
+      // Rebuild the `<table>` element from scratch on every render rather than clearing and
+      // reusing the same node: with `scrollX` enabled, DataTables physically moves the real
+      // `<thead>` into a separately cloned header table for the scrolling header row, and
+      // relying on `.destroy()` to precisely unwind that wrapper before reinitializing the same
+      // node proved unreliable in practice (stale `.dt-container` wrappers piled up on every tab
+      // switch instead of being replaced -- confirmed by counting them in the DOM). Discarding
+      // the whole subtree and starting from a bare table sidesteps that entirely; `.destroy()`
+      // above still runs first so DataTables deregisters/cleans up the old instance's internal
+      // state rather than leaking it.
+      container.innerHTML = "";
+      const tableEl = document.createElement("table");
+      tableEl.className = "display w-full";
+      tableEl.style.width = "100%";
+      container.appendChild(tableEl);
 
       this.unavailable = !data.available;
       if (!data.available) return;
@@ -198,11 +266,18 @@ export function tableView() {
           data: (row: Record<string, unknown>) => row[col],
           title: col,
         })),
-        autoWidth: false,
+        // `autoWidth` must stay enabled (the default) for `scrollX` to work: DataTables' own
+        // column-width measurement (which lets the table grow wider than its container so
+        // there's something to scroll) is gated entirely behind `autoWidth`, per
+        // `_fnCalculateColumnWidths` bailing out immediately when it's off. This function only
+        // runs at init, on a scrollbar-visibility change, or on window resize -- never on a
+        // plain pagination/sort/filter redraw -- so it doesn't fight the manual column-resize
+        // handles below; `table-layout: fixed` (app.css) is what protects those across redraws.
+        scrollX: true,
         pageLength: loadJSON<number>(PAGE_LENGTH_STORAGE_KEY) ?? DEFAULT_PAGE_LENGTH,
         initComplete: function () {
           attachColumnFilters.call(this.api(), filtersKey);
-          attachColumnResizeHandles(tableEl);
+          attachColumnResizeHandles.call(this.api());
         },
       });
       dt.on("length", (_event: unknown, _settings: unknown, len: number) => {

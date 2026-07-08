@@ -1,6 +1,7 @@
-import { getPlot, isAbortError, type Tag } from "./api";
+import { getPlot, isAbortError, type PlotResponse, type Tag } from "./api";
 import type { PlotConfig } from "./plot-config.generated";
 import { loadJSON, saveJSON } from "./local-storage";
+import { matchesMetadataFilter, parseMetadataFilter } from "./metadata-filter";
 import type { Data, Layout, PlotlyHTMLElement } from "plotly.js";
 
 // Alpine injects `$watch`/`$refs`/`$nextTick` at runtime and merges the ancestor `appShell`
@@ -15,6 +16,9 @@ interface ZoomRange {
 interface PlotViewContext {
   config: PlotConfig;
   unavailable: boolean;
+  filteredOut: boolean;
+  metadataFilter: string;
+  lastResponse: PlotResponse | null;
   loading: boolean;
   requestId: number;
   currentAbortController: AbortController | null;
@@ -27,6 +31,7 @@ interface PlotViewContext {
   $refs: Record<string, HTMLElement>;
   $nextTick(callback: () => void): void;
   render(): Promise<void>;
+  applyMetadataFilter(): void;
   undo(): void;
   redo(): void;
 }
@@ -61,6 +66,11 @@ function zoomStorageKey(tag: Tag): string {
 function loadZoomForTag(tag: Tag | null): ZoomRange | null {
   return tag !== null ? loadJSON<ZoomRange>(zoomStorageKey(tag)) : null;
 }
+
+// Deliberately *not* per-tag (unlike configStorageKey/zoomStorageKey above): a metadata filter
+// is something a user sets up once and expects to keep seeing applied while browsing between
+// tags, not a per-plot setting that resets on every tag switch.
+const METADATA_FILTER_STORAGE_KEY = "trendify:metadata-filter";
 
 // Plotly paints its own colors rather than picking them up from Tailwind's `dark:` CSS
 // variants, so theme changes are applied via `Plotly.relayout` with this app's existing
@@ -119,6 +129,9 @@ export function plotView() {
   return {
     config: { ...DEFAULT_CONFIG } as PlotConfig,
     unavailable: false,
+    filteredOut: false,
+    metadataFilter: "",
+    lastResponse: null as PlotResponse | null,
     loading: false,
     requestId: 0,
     currentAbortController: null as AbortController | null,
@@ -132,6 +145,7 @@ export function plotView() {
     init(this: PlotViewContext & { _teardown: (() => void) | null }) {
       this.config = loadConfigForTag(this.selectedTag);
       this.zoomRange = loadZoomForTag(this.selectedTag);
+      this.metadataFilter = loadJSON<string>(METADATA_FILTER_STORAGE_KEY) ?? "";
       this.historyStack = [JSON.stringify(this.config)];
       this.historyIndex = 0;
 
@@ -141,6 +155,11 @@ export function plotView() {
         this.historyIndex = 0;
         this.config = nextConfig;
         this.zoomRange = loadZoomForTag(this.selectedTag);
+      });
+
+      this.$watch("metadataFilter", () => {
+        saveJSON(METADATA_FILTER_STORAGE_KEY, this.metadataFilter);
+        this.applyMetadataFilter();
       });
 
       this.$watch("config", () => {
@@ -212,7 +231,7 @@ export function plotView() {
       this._teardown?.();
     },
 
-    async render(this: PlotViewContext & { _zoomListenerAttached: boolean }) {
+    async render(this: PlotViewContext) {
       const tag = this.selectedTag;
       if (tag === null) return;
 
@@ -233,51 +252,14 @@ export function plotView() {
         });
         if (requestId !== this.requestId) return;
 
+        this.lastResponse = response;
         this.unavailable = !response.available;
-        const el = this.$refs.plot;
         if (!response.available) {
-          Plotly.purge(el);
+          this.filteredOut = false;
+          Plotly.purge(this.$refs.plot);
           return;
         }
-
-        // Every re-render replaces the server's fresh (autoranged) layout wholesale, so a
-        // previously-captured zoom/pan has to be re-applied on top of it each time -- otherwise
-        // changing a setting (or switching tags) would silently reset the user's zoom.
-        const layout = response.layout as Partial<Layout>;
-        if (this.zoomRange?.xaxis) {
-          layout.xaxis = { ...layout.xaxis, autorange: false, range: this.zoomRange.xaxis };
-        }
-        if (this.zoomRange?.yaxis) {
-          layout.yaxis = { ...layout.yaxis, autorange: false, range: this.zoomRange.yaxis };
-        }
-
-        Plotly.react(el, response.data as Data[], layout, {
-          responsive: true,
-          displaylogo: false,
-        });
-        Plotly.relayout(el, currentThemeLayout());
-
-        if (!this._zoomListenerAttached) {
-          this._zoomListenerAttached = true;
-          (el as unknown as PlotlyHTMLElement).on("plotly_relayout", (eventData) => {
-            const raw = eventData as unknown as Record<string, unknown>;
-            if (raw["xaxis.autorange"] || raw["yaxis.autorange"]) {
-              this.zoomRange = null;
-            } else {
-              const next: ZoomRange = { ...this.zoomRange };
-              const x0 = raw["xaxis.range[0]"];
-              const x1 = raw["xaxis.range[1]"];
-              const y0 = raw["yaxis.range[0]"];
-              const y1 = raw["yaxis.range[1]"];
-              if (typeof x0 === "number" && typeof x1 === "number") next.xaxis = [x0, x1];
-              if (typeof y0 === "number" && typeof y1 === "number") next.yaxis = [y0, y1];
-              this.zoomRange = next;
-            }
-            if (this.selectedTag !== null) {
-              saveJSON(zoomStorageKey(this.selectedTag), this.zoomRange);
-            }
-          });
-        }
+        this.applyMetadataFilter();
       } catch (err) {
         // Expected whenever a newer render() aborts this one via currentAbortController above --
         // the newer request already owns `loading`/`unavailable`, so there's nothing to do here.
@@ -286,6 +268,82 @@ export function plotView() {
         // A stale in-flight request finishing after a newer one started must not clear the
         // spinner out from under the request that's still actually loading.
         if (requestId === this.requestId) this.loading = false;
+      }
+    },
+
+    /**
+     * Re-draws the currently-fetched response (`lastResponse`), applying `metadataFilter`
+     * without a re-fetch: metadata is already sitting in each trace's `meta` field (see
+     * `figure.py`'s `PlotlyFigure.add_record`), so a filter change is purely a presentation
+     * concern. Called after every successful `render()`, and again whenever `metadataFilter`
+     * itself changes.
+     */
+    applyMetadataFilter(this: PlotViewContext & { _zoomListenerAttached: boolean }) {
+      const response = this.lastResponse;
+      if (response === null || !response.available) return;
+
+      const conditions = parseMetadataFilter(this.metadataFilter);
+      const allTraces = response.data as Record<string, unknown>[];
+      // Shallow-copied, not the cached response's own trace objects: showlegend gets rewritten
+      // below based on *this* filter pass, and mutating the shared getPlot() cache in place
+      // would leak one pass's bookkeeping into the next (e.g. after the filter is cleared).
+      const survivors = allTraces
+        .filter((trace) => matchesMetadataFilter(trace.meta, conditions))
+        .map((trace) => ({ ...trace }));
+      this.filteredOut = survivors.length === 0 && allTraces.length > 0;
+
+      // The server pre-computes showlegend so exactly one trace per legendgroup shows a
+      // legend entry; if filtering happens to remove that specific trace, re-derive it over
+      // the survivors so a legend entry doesn't silently vanish while its groupmates are
+      // still drawn.
+      const seenGroups = new Set<unknown>();
+      for (const trace of survivors) {
+        const group = trace.legendgroup;
+        if (group !== undefined && group !== null) {
+          trace.showlegend = !seenGroups.has(group);
+          seenGroups.add(group);
+        }
+      }
+
+      const el = this.$refs.plot;
+      // Copied for the same reason as the traces above (zoomRange gets baked in below).
+      const layout: Partial<Layout> = { ...(response.layout as Partial<Layout>) };
+      // Every re-render replaces the server's fresh (autoranged) layout wholesale, so a
+      // previously-captured zoom/pan has to be re-applied on top of it each time -- otherwise
+      // changing a setting (or switching tags) would silently reset the user's zoom.
+      if (this.zoomRange?.xaxis) {
+        layout.xaxis = { ...layout.xaxis, autorange: false, range: this.zoomRange.xaxis };
+      }
+      if (this.zoomRange?.yaxis) {
+        layout.yaxis = { ...layout.yaxis, autorange: false, range: this.zoomRange.yaxis };
+      }
+
+      Plotly.react(el, survivors as Data[], layout, {
+        responsive: true,
+        displaylogo: false,
+      });
+      Plotly.relayout(el, currentThemeLayout());
+
+      if (!this._zoomListenerAttached) {
+        this._zoomListenerAttached = true;
+        (el as unknown as PlotlyHTMLElement).on("plotly_relayout", (eventData) => {
+          const raw = eventData as unknown as Record<string, unknown>;
+          if (raw["xaxis.autorange"] || raw["yaxis.autorange"]) {
+            this.zoomRange = null;
+          } else {
+            const next: ZoomRange = { ...this.zoomRange };
+            const x0 = raw["xaxis.range[0]"];
+            const x1 = raw["xaxis.range[1]"];
+            const y0 = raw["yaxis.range[0]"];
+            const y1 = raw["yaxis.range[1]"];
+            if (typeof x0 === "number" && typeof x1 === "number") next.xaxis = [x0, x1];
+            if (typeof y0 === "number" && typeof y1 === "number") next.yaxis = [y0, y1];
+            this.zoomRange = next;
+          }
+          if (this.selectedTag !== null) {
+            saveJSON(zoomStorageKey(this.selectedTag), this.zoomRange);
+          }
+        });
       }
     },
 

@@ -352,11 +352,6 @@ def viewer(
     db_path: Path = DbPathArgument,
     host: str = HostOption,
     port: int = PortOption,
-    reload: bool = typer.Option(
-        False,
-        "--reload",
-        help="Auto-restart the server when trendify's Python source changes (development only).",
-    ),
     verbose: int = VerboseOption,
     quiet: int = QuietOption,
 ) -> None:

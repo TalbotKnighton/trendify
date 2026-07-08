@@ -21,7 +21,7 @@ def db_path(tmp_path: Path) -> Path:
         store.write_run(
             tmp_path / "run1",
             [
-                Point2D(tags=["scatter"], x=1.0, y=2.0),
+                Point2D(tags=["scatter"], x=1.0, y=2.0, metadata={"run": "1"}),
                 Trace2D(tags=[("group", "trace")], x=[0, 1], y=[0, 1]),
                 TableEntry(tags=["table"], row="r1", col="c1", value=1.0),
                 TableEntry(tags=["table"], row="r2", col="c1", value=2.0),
@@ -156,6 +156,13 @@ class TestPlotApi:
         assert len(body["data"]) == 1
         assert body["data"][0]["type"] == "scatter"
 
+    def test_record_metadata_is_exposed_as_trace_meta(self, client: TestClient):
+        # The dashboard's metadata filter (metadata-filter.ts) reads this straight off each
+        # trace, with no separate endpoint or schema change.
+        response = client.get("/api/plot", params={"tag": json.dumps("scatter")})
+        [trace] = response.json()["data"]
+        assert trace["meta"] == {"run": "1"}
+
     def test_unavailable_for_table_only_tag(self, client: TestClient):
         response = client.get("/api/plot", params={"tag": json.dumps("table")})
         assert response.status_code == 200
@@ -219,21 +226,36 @@ class TestPlotApi:
 
 
 class TestHydrationLogging:
-    def test_logs_when_hydrate_header_present(
+    def test_tags_hydration_logs_at_info(
         self, client: TestClient, caplog: pytest.LogCaptureFixture
     ):
         with caplog.at_level(logging.INFO, logger="trendify.viewer.routes.api"):
+            client.get("/api/tags", headers={"X-Trendify-Hydrate": "1"})
+        assert any("Hydrating" in r.message for r in caplog.records)
+
+    def test_plot_and_table_hydration_log_at_debug(
+        self, client: TestClient, caplog: pytest.LogCaptureFixture
+    ):
+        # /api/plot's and /api/table's hydration logs are deliberately debug-level (not info):
+        # they fire far more often than /api/tags's, once per tag the background walker visits.
+        with caplog.at_level(logging.DEBUG, logger="trendify.viewer.routes.api"):
             client.get(
                 "/api/plot",
                 params={"tag": json.dumps("scatter")},
                 headers={"X-Trendify-Hydrate": "1"},
             )
-        assert any("Hydrating tag" in r.message for r in caplog.records)
+            client.get(
+                "/api/table",
+                params={"tag": json.dumps("table"), "view": "stats"},
+                headers={"X-Trendify-Hydrate": "1"},
+            )
+        messages = [r.message for r in caplog.records]
+        assert sum("Hydrating tag" in m for m in messages) == 2
 
     def test_no_log_without_header(
         self, client: TestClient, caplog: pytest.LogCaptureFixture
     ):
-        with caplog.at_level(logging.INFO, logger="trendify.viewer.routes.api"):
+        with caplog.at_level(logging.DEBUG, logger="trendify.viewer.routes.api"):
             client.get("/api/plot", params={"tag": json.dumps("scatter")})
         assert not any("Hydrating tag" in r.message for r in caplog.records)
 

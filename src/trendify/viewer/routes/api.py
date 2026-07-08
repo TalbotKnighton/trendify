@@ -112,7 +112,7 @@ async def get_tags(request: Request) -> list[TagNode]:
     # thread, matching the RecordStore connection's thread affinity.
     is_hydration = _is_hydration_request(request)
     if is_hydration:
-        logger.info("Hydrating tag tree in the background")
+        logger.debug("Hydrating tag tree in the background")
 
     def build(store: RecordStore) -> list[TagNode]:
         return build_tag_tree(store)
@@ -166,7 +166,7 @@ async def get_table(tag: str, view: TableView, request: Request) -> TableRespons
     decoded_tag = decode_tag(tag)
     is_hydration = _is_hydration_request(request)
     if is_hydration:
-        logger.info(
+        logger.debug(
             f"Hydrating tag {decoded_tag!r} in the background (table, view={view})"
         )
 

@@ -362,7 +362,12 @@ class PlotlyFigure:
 
     def add_record(self, record: PlottableData2D) -> PlotlyFigure:
         """
-        Add a record to the figure
+        Add a record to the figure. Every trace `record.add_to_plotly` adds (there's always at
+        most one -- `AxLine` adds none, since it renders as a layout shape instead) gets
+        `record.metadata` attached as its Plotly `meta` attribute: not rendered by Plotly
+        itself, but present verbatim in `to_plotly_json()`'s output, which is how the viewer's
+        `/api/plot` response lets the dashboard filter traces by metadata client-side without
+        a separate endpoint or a schema change (see `viewer/templates/.../metadata-filter.ts`).
 
         Args:
             record (PlottableData2D): Record to add to figure
@@ -371,4 +376,14 @@ class PlotlyFigure:
             Self: Returns self for method chaining
 
         """
-        return record.add_to_plotly(self)
+        # `fig.data`'s dynamically-generated attributes defeat pyright's static analysis here
+        # the same way `fig.layout`'s do in test_figure.py's `_layout` helper -- `Any` is a
+        # deliberate, narrow escape hatch at this one boundary, not a blanket opt-out. Read
+        # fresh (not cached across `add_to_plotly`): `fig.data` is an immutable tuple, so
+        # `add_trace` rebinds it to a new, longer one rather than mutating in place.
+        n_before = len(cast(Any, self.fig.data))
+        record.add_to_plotly(self)
+        if record.metadata:
+            for trace in cast(Any, self.fig.data)[n_before:]:
+                trace.meta = record.metadata
+        return self

@@ -101,6 +101,7 @@ def build_configuration_matrix(workdir: Path) -> RecordList:
     _add_histogram_alpha_combinations(records)
     _add_histogram_style_edge_case_combinations(records)
     _add_table_entry_value_type_combinations(records, run_label)
+    _add_table_many_columns_combination(records, run_label)
     _add_tag_shape_combinations(records)
     _add_metadata_combinations(records, run_label)
     _add_mixed_record_type_combinations(records, run_label)
@@ -570,6 +571,21 @@ def _add_table_entry_value_type_combinations(
             row=f"{row}_{run_label}",
             col=col,
             value=value,
+        ).append_to_list(records)
+
+
+def _add_table_many_columns_combination(records: RecordList, run_label: str) -> None:
+    """
+    One `TableEntry` tag with 40 columns, to exercise the table viewer with a table too wide
+    to fit on screen (horizontal scrolling, column resize handles against a real overflow
+    case) rather than only ever seeing tables that comfortably fit.
+    """
+    for col in range(40):
+        TableEntry(
+            tags=[("table_value_type_combinations", "table_many_columns")],
+            row=run_label,
+            col=f"metric_{col:02d}",
+            value=float(run_label) * 100 + col,
         ).append_to_list(records)
 
 

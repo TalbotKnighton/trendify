@@ -191,3 +191,23 @@ class TestPlotlyFigureAddRecord:
         # `Any` via `_layout` isn't the right tool here (this is `.data`, not `.layout`), so
         # just widen the assertion target directly for the same underlying pyright reason.
         assert len(cast(Any, pf.fig.data)) == 1
+
+    def test_record_metadata_is_attached_to_its_trace(self):
+        pf = PlotlyFigure.new(tag="t")
+        trace = Trace2D(
+            tags=["t"],
+            x=[0, 1],
+            y=[1, 2],
+            pen=Pen(label="x"),
+            metadata={"run": "5", "quality": "good"},
+        )
+        pf.add_record(trace)
+        [added] = cast(Any, pf.fig.data)
+        assert added.meta == {"run": "5", "quality": "good"}
+
+    def test_no_metadata_leaves_meta_unset(self):
+        pf = PlotlyFigure.new(tag="t")
+        trace = Trace2D(tags=["t"], x=[0, 1], y=[1, 2], pen=Pen(label="x"))
+        pf.add_record(trace)
+        [added] = cast(Any, pf.fig.data)
+        assert added.meta is None
