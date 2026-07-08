@@ -5,6 +5,7 @@ from pathlib import Path
 from trendify.base.record import Record
 from trendify.pipeline import TrendifyPipeline
 from trendify.plotting.point import Point2D
+from trendify.progress import ProgressEvent
 from trendify.store.record_store import RecordStore
 
 
@@ -61,3 +62,16 @@ class TestRun:
 
         assert total == 3
         assert (pipeline.assets_dir / "scatter.jpg").exists()
+
+    def test_on_progress_covers_both_stages(self, tmp_path: Path):
+        dirs = _make_run_dirs(tmp_path, 2)
+        pipeline = TrendifyPipeline(output_dir=tmp_path / "out")
+        events: list[ProgressEvent] = []
+
+        pipeline.run(_generator, dirs, on_progress=events.append)
+
+        stages = [e.stage for e in events]
+        # generate's 2 run-dir events, then render's 1 tag ("scatter") event -- a single
+        # handler passed to run() sees both stages, distinguished by ProgressEvent.stage.
+        assert stages == ["generate", "generate", "render"]
+        assert events[-1].detail == "scatter"

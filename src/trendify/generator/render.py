@@ -34,6 +34,7 @@ from trendify.plotting.histogram import HistogramEntry
 from trendify.plotting.point import Point2D
 from trendify.plotting.scatter import Scatter2D
 from trendify.plotting.trace import Trace2D
+from trendify.progress import ProgressCallback, ProgressEvent
 from trendify.store.record_store import RecordStore
 from trendify.store.tags import tag_to_path_parts
 
@@ -62,13 +63,17 @@ def _init_worker_with_logging(
 def _render_tag(
     tag: Tag,
     output_dir: str,
-) -> None:
+) -> Tag:
+    # Returns `tag` (not just None) so the parent process's as_completed loop knows which tag
+    # a given future was for, to report progress -- `future.result()` is the only thing that
+    # survives the process boundary back to the parent.
     assert _worker_store is not None
     _render_tag_assets(
         _worker_store,
         tag,
         Path(output_dir),
     )
+    return tag
 
 
 def _render_tag_assets(
@@ -127,6 +132,7 @@ def render_assets(
     db_path: Path,
     output_dir: Path,
     n_procs: int = 1,
+    on_progress: ProgressCallback | None = None,
 ) -> None:
     """
     Renders CSV tables and matplotlib figures for every tag in the `RecordStore` at
@@ -136,6 +142,9 @@ def render_assets(
         db_path (Path): path to the trendify output directory's `.db` file
         output_dir (Path): directory tables/figures are written under
         n_procs (int): number of worker processes rendering tags in parallel. `n_procs == 1` runs sequentially in this process (easier to debug with full tracebacks). `n_procs > 1` uses a `ProcessPoolExecutor`, with one read-only `RecordStore` connection opened per worker, which is safe and contention-free since rendering never writes.
+        on_progress (ProgressCallback | None): called once per tag finished, always from this
+            process -- never a worker, so it never needs to be picklable. Left to raise: a
+            failing callback aborts rendering rather than being silently swallowed.
 
     """
     db_path = Path(db_path)
@@ -143,27 +152,44 @@ def render_assets(
 
     with RecordStore.open(db_path, readonly=True) as store:
         tags = store.tag_tree()
+    total_tags = len(tags)
+
+    def _report(tag: Tag, completed: int) -> None:
+        if on_progress is not None:
+            on_progress(
+                ProgressEvent(
+                    stage="render",
+                    completed=completed,
+                    total=total_tags,
+                    detail=str(tag),
+                )
+            )
 
     if n_procs > 1:
         root_logger = logging.getLogger()
         log_queue, listener = create_queue_listener(*root_logger.handlers)
         listener.start()
-        with ProcessPoolExecutor(
-            max_workers=n_procs,
-            initializer=_init_worker_with_logging,
-            initargs=(str(db_path), log_queue, root_logger.level),
-        ) as executor:
-            futures = [
-                executor.submit(
-                    _render_tag,
-                    tag,
-                    str(output_dir),
-                )
-                for tag in tags
-            ]
-            for future in as_completed(futures):
-                future.result()
+        try:
+            with ProcessPoolExecutor(
+                max_workers=n_procs,
+                initializer=_init_worker_with_logging,
+                initargs=(str(db_path), log_queue, root_logger.level),
+            ) as executor:
+                futures = [
+                    executor.submit(
+                        _render_tag,
+                        tag,
+                        str(output_dir),
+                    )
+                    for tag in tags
+                ]
+                for completed, future in enumerate(as_completed(futures), start=1):
+                    finished_tag = future.result()
+                    _report(finished_tag, completed)
+        finally:
+            listener.stop()
     else:
         with RecordStore.open(db_path, readonly=True) as store:
-            for tag in tags:
+            for completed, tag in enumerate(tags, start=1):
                 _render_tag_assets(store, tag, output_dir)
+                _report(tag, completed)

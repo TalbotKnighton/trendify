@@ -376,11 +376,6 @@ def viewer(
 
     from trendify.viewer.app import create_app
 
-    if reload:
-        connection_info_suffix = "\n\n[yellow]--reload is on: editing trendify's Python source will restart the server.[/yellow]"
-    else:
-        connection_info_suffix = ""
-
     password = None  # not supported yet
     if password:
         connection_info = "[yellow]Auth enabled. Use [u]any[/u] username and your provided password.[/yellow]\n\n"
@@ -394,7 +389,6 @@ def viewer(
         connection_info += f"\nMobile: [bold indian_red1 u]http://{get_local_ip()}:{port}[/bold indian_red1 u]"
     else:
         connection_info += "\n\n[dim]Tip: To view on other devices (and to make pages shareable), run with[/dim] [yellow]--host 0.0.0.0[/yellow]"
-    connection_info += connection_info_suffix
 
     console.print(
         Panel(
@@ -405,23 +399,7 @@ def viewer(
         )
     )
 
-    if reload:
-        # uvicorn's reload mode re-imports the app in a fresh subprocess on every source change,
-        # so it needs an importable factory string rather than the live `create_app(db_path)`
-        # instance, so the db_path is handed across that boundary via an env var instead
-        # (`create_app_from_env` reads it back on the reloaded side).
-        os.environ["TRENDIFY_DB_PATH"] = str(db_path)
-        uvicorn.run(
-            "trendify.viewer.app:create_app_from_env",
-            factory=True,
-            host=host,
-            port=port,
-            reload=True,
-            reload_dirs=[str(Path(__file__).parent)],
-            log_level="critical",
-        )
-    else:
-        uvicorn.run(create_app(db_path), host=host, port=port, log_level="critical")
+    uvicorn.run(create_app(db_path), host=host, port=port, log_level="critical")
 
 
 if __name__ == "__main__":

@@ -273,7 +273,7 @@ async def get_plot(
     decoded_tag = decode_tag(tag)
     is_hydration = _is_hydration_request(request)
     if is_hydration:
-        logger.info(f"Hydrating tag {decoded_tag!r} in the background (plot)")
+        logger.debug(f"Hydrating tag {decoded_tag!r} in the background (plot)")
 
     def build(store: RecordStore) -> PlotResponse:
         format2d_records = store.get_records_of_type(Format2D, tag=decoded_tag)

@@ -25,6 +25,7 @@ from typing import Any
 from trendify.base.record import RecordGenerator, RecordList
 from trendify.log import create_queue_listener
 from trendify.log import worker_init as _init_worker_logging
+from trendify.progress import ProgressCallback, ProgressEvent
 from trendify.store.record_store import RecordStore
 
 __all__ = ["generate_records", "get_sorted_dirs"]
@@ -83,6 +84,7 @@ def generate_records(
     data_dirs: list[Path],
     db_path: Path,
     n_procs: int = 1,
+    on_progress: ProgressCallback | None = None,
 ) -> int:
     """
     Maps `record_generator` over `data_dirs`, writing each directory's records to the
@@ -102,6 +104,10 @@ def generate_records(
             tracebacks). `n_procs > 1` uses a `ProcessPoolExecutor` for computing records
             only; writing always happens through the single connection this function opens,
             regardless of `n_procs`, since SQLite only ever allows one writer at a time.
+        on_progress (ProgressCallback | None): called once per run directory finished
+            (after its records are written), always from this process -- never a worker, so
+            it never needs to be picklable. Left to raise: a failing callback aborts
+            generation rather than being silently swallowed.
 
     Returns:
         (int): total number of records written across all directories.
@@ -109,8 +115,20 @@ def generate_records(
     """
     sorted_dirs = get_sorted_dirs(data_dirs)
     db_path = Path(db_path)
+    total_dirs = len(sorted_dirs)
 
-    logger.info(f"Generating and writing Records for {len(sorted_dirs)} run(s)...")
+    def _report(run_dir: Path, completed: int) -> None:
+        if on_progress is not None:
+            on_progress(
+                ProgressEvent(
+                    stage="generate",
+                    completed=completed,
+                    total=total_dirs,
+                    detail=str(run_dir),
+                )
+            )
+
+    logger.info(f"Generating and writing Records for {total_dirs} run(s)...")
     total = 0
     with RecordStore.open(db_path) as store:
         if n_procs > 1:
@@ -126,23 +144,24 @@ def generate_records(
                     futures = [
                         executor.submit(_compute, run_dir) for run_dir in sorted_dirs
                     ]
-                    for future in as_completed(futures):
+                    for completed, future in enumerate(as_completed(futures), start=1):
                         run_dir, records = future.result()
                         total += store.write_run(run_dir, records)
                         logger.info(f"Wrote records for run_dir = '{run_dir}'")
+                        _report(run_dir, completed)
             finally:
                 # Blocks until every already-queued log record has been dispatched, so worker
                 # log output isn't lost or interleaved with what follows.
                 listener.stop()
         else:
             _init_worker(record_generator)
-            for run_dir in sorted_dirs:
+            for completed, run_dir in enumerate(sorted_dirs, start=1):
                 _, records = _compute(run_dir)
                 total += store.write_run(run_dir, records)
                 logger.info(f"Wrote records for run_dir = '{run_dir}'")
+                _report(run_dir, completed)
 
     logger.info(
-        f"Finished generating Records: {total} records written across "
-        f"{len(sorted_dirs)} run(s)"
+        f"Finished generating Records: {total} records written across {total_dirs} run(s)"
     )
     return total

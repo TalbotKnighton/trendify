@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 from trendify.base.record import RecordGenerator
 from trendify.generator.generate import generate_records
 from trendify.generator.render import render_assets
+from trendify.progress import ProgressCallback
 
 __all__ = ["TrendifyPipeline"]
 
@@ -46,10 +47,17 @@ class TrendifyPipeline(BaseModel):
         self,
         record_generator: RecordGenerator,
         data_dirs: list[Path],
+        on_progress: ProgressCallback | None = None,
     ) -> int:
         """
         Maps `record_generator` over `data_dirs`, writing records directly to this
         pipeline's `RecordStore`. See `trendify.generator.generate.generate_records`.
+
+        Args:
+            record_generator (RecordGenerator): callable mapped over `data_dirs`.
+            data_dirs (list[Path]): directories to map `record_generator` over.
+            on_progress (ProgressCallback | None): called once per directory finished, e.g.
+                to report status from a containerized deployment back to an end user.
 
         Returns:
             (int): total number of records written
@@ -64,14 +72,19 @@ class TrendifyPipeline(BaseModel):
             data_dirs=data_dirs,
             db_path=self.db_path,
             n_procs=self.n_procs,
+            on_progress=on_progress,
         )
         logger.info(f"Generated {total} record(s)")
         return total
 
-    def render(self) -> None:
+    def render(self, on_progress: ProgressCallback | None = None) -> None:
         """
         Renders CSV tables and matplotlib figures for every tag into `self.assets_dir`. See
         `trendify.generator.render.render_assets`.
+
+        Args:
+            on_progress (ProgressCallback | None): called once per tag finished, e.g. to
+                report status from a containerized deployment back to an end user.
 
         """
         logger.info(
@@ -82,6 +95,7 @@ class TrendifyPipeline(BaseModel):
             self.db_path,
             self.assets_dir,
             n_procs=self.n_procs,
+            on_progress=on_progress,
         )
         logger.info(f"Finished rendering assets into '{self.assets_dir}'")
 
@@ -89,10 +103,18 @@ class TrendifyPipeline(BaseModel):
         self,
         record_generator: RecordGenerator,
         data_dirs: list[Path],
+        on_progress: ProgressCallback | None = None,
     ) -> int:
         """
         Runs the full pipeline: generate, then render (unless all three asset kinds are
         suppressed).
+
+        Args:
+            record_generator (RecordGenerator): callable mapped over `data_dirs`.
+            data_dirs (list[Path]): directories to map `record_generator` over.
+            on_progress (ProgressCallback | None): called once per unit of work finished in
+                *both* stages -- `ProgressEvent.stage` distinguishes "generate" from "render"
+                for a single handler covering the whole run.
 
         Returns:
             (int): total number of records written by `generate`
@@ -102,9 +124,13 @@ class TrendifyPipeline(BaseModel):
             f"Running full pipeline (generate -> render) for '{self.output_dir}'"
         )
 
-        total = self.generate(record_generator=record_generator, data_dirs=data_dirs)
+        total = self.generate(
+            record_generator=record_generator,
+            data_dirs=data_dirs,
+            on_progress=on_progress,
+        )
 
-        self.render()
+        self.render(on_progress=on_progress)
 
         logger.info(f"Finished full pipeline for '{self.output_dir}'")
         return total

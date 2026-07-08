@@ -12,6 +12,7 @@ from trendify.generator.xy_data_plotter import XYDataPlotter
 from trendify.plotting.histogram import HistogramEntry
 from trendify.plotting.point import Point2D
 from trendify.plotting.trace import Trace2D
+from trendify.progress import ProgressEvent
 from trendify.store.record_store import RecordStore
 
 
@@ -86,6 +87,58 @@ class TestRenderAssets:
         out_dir = tmp_path / "out"
         render_assets(db_path, out_dir)
         assert (out_dir / "tag.jpg").exists()
+
+
+class TestOnProgress:
+    def test_sequential_reports_one_event_per_tag(
+        self, store: RecordStore, db_path: Path, tmp_path: Path
+    ):
+        store.write_run(
+            tmp_path / "run1",
+            [
+                Point2D(tags=["a"], x=1.0, y=2.0),
+                Point2D(tags=["b"], x=1.0, y=2.0),
+            ],
+        )
+        events: list[ProgressEvent] = []
+
+        render_assets(db_path, tmp_path / "out", n_procs=1, on_progress=events.append)
+
+        assert [e.stage for e in events] == ["render", "render"]
+        assert [e.completed for e in events] == [1, 2]
+        assert [e.total for e in events] == [2, 2]
+        assert {e.detail for e in events} == {"a", "b"}
+
+    def test_parallel_reports_one_event_per_tag(
+        self, store: RecordStore, db_path: Path, tmp_path: Path
+    ):
+        store.write_run(
+            tmp_path / "run1",
+            [
+                Point2D(tags=["a"], x=1.0, y=2.0),
+                Point2D(tags=["b"], x=1.0, y=2.0),
+                Point2D(tags=["c"], x=1.0, y=2.0),
+            ],
+        )
+        events: list[ProgressEvent] = []
+
+        render_assets(db_path, tmp_path / "out", n_procs=2, on_progress=events.append)
+
+        assert len(events) == 3
+        assert {e.detail for e in events} == {"a", "b", "c"}
+        assert [e.completed for e in events] == [1, 2, 3]
+        assert all(e.total == 3 for e in events)
+
+    def test_callback_error_propagates(
+        self, store: RecordStore, db_path: Path, tmp_path: Path
+    ):
+        store.write_run(tmp_path / "run1", [Point2D(tags=["a"], x=1.0, y=2.0)])
+
+        def _boom(event: ProgressEvent) -> None:
+            raise RuntimeError("callback failed")
+
+        with pytest.raises(RuntimeError, match="callback failed"):
+            render_assets(db_path, tmp_path / "out", n_procs=1, on_progress=_boom)
 
 
 class TestFormat2DResolution:
