@@ -70,7 +70,7 @@ class TableBuilder(BaseModel):
         *parents, stem = tag_to_path_parts(tag)
         save_dir = out_dir.joinpath(*parents)
         save_dir.mkdir(parents=True, exist_ok=True)
-        logger.info(f"Saving tables for {tag = } to {save_dir}/{stem}_*.csv")
+        logger.info(f"Saving tables for {tag = } to '{save_dir}/{stem}_*.csv'")
 
         _write_csv(melted, save_dir / f"{stem}_melted.csv")
 

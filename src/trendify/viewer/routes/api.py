@@ -8,13 +8,19 @@ Every handler reads from the process-lifetime, read-only `RecordStore` on
 `.db` file can be regenerated out from under a running `viewer` process (e.g. someone re-runs
 `trendify generate`/`run`); `/ping` detects that via the file's mtime and clears the cache, so
 this is a cache invalidation concern rather than something that makes the cache unsafe to use.
+
+`/table` and `/plot` requests tagged `X-Trendify-Hydrate` (the frontend's background-prefetch
+scheduler, not a real click -- see `_is_hydration_request`) instead run against
+`request.app.state.hydration_runner`'s own dedicated thread/connection, so a slow prefetch can
+never block a real click on this app's single-threaded event loop (see `viewer.app.create_app`'s
+docstring and `viewer.hydration.HydrationRunner`).
 """
 
 from __future__ import annotations
 
 import base64
 import logging
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -74,15 +80,29 @@ def _get_store(request: Request) -> RecordStore:
     return request.app.state.store
 
 
-def _cached[T](request: Request, cache_key: tuple, build: Callable[[], T]) -> T:
+def _is_hydration_request(request: Request) -> bool:
+    """
+    `X-Trendify-Hydrate` is set only by the frontend's background-prefetch scheduler
+    (`prefetch.ts`), never by a real user click. Hydration-tagged requests are routed to
+    `app.state.hydration_runner`'s dedicated worker thread/connection instead of the main one
+    (see `HydrationRunner`'s docstring for why), so a slow background request can never block a
+    real click on this app's single-threaded event loop.
+    """
+    return bool(request.headers.get("x-trendify-hydrate"))
+
+
+async def _cached[T](
+    request: Request, cache_key: tuple, build: Callable[[], Awaitable[T]]
+) -> T:
     """
     Process-lifetime response cache: `.db` files are static for the life of a `viewer` process
     (no write path exists in this feature), so a handler's expensive work only ever needs to
-    run once per distinct cache key.
+    run once per distinct cache key -- whichever request (hydration or a real click) happens to
+    compute it first, the other reuses the result.
     """
     cache: dict[tuple, object] = request.app.state.response_cache
     if cache_key not in cache:
-        cache[cache_key] = build()
+        cache[cache_key] = await build()
     return cast(T, cache[cache_key])
 
 
@@ -90,8 +110,19 @@ def _cached[T](request: Request, cache_key: tuple, build: Callable[[], T]) -> T:
 async def get_tags(request: Request) -> list[TagNode]:
     # async def, not def: see routes.pages.index's comment, this keeps it on the event loop's
     # thread, matching the RecordStore connection's thread affinity.
-    store = _get_store(request)
-    return _cached(request, ("tags",), lambda: build_tag_tree(store))
+    is_hydration = _is_hydration_request(request)
+    if is_hydration:
+        logger.info("Hydrating tag tree in the background")
+
+    def build(store: RecordStore) -> list[TagNode]:
+        return build_tag_tree(store)
+
+    async def resolve() -> list[TagNode]:
+        if is_hydration:
+            return await request.app.state.hydration_runner.run(build)
+        return build(_get_store(request))
+
+    return await _cached(request, ("tags",), resolve)
 
 
 @router.get("/ping")
@@ -132,10 +163,14 @@ async def get_table(tag: str, view: TableView, request: Request) -> TableRespons
     fails (a repeated `(row, col)` pair) or there are no numeric pivoted columns: both are
     normal, expected shapes for some tags' data, not error conditions.
     """
-    store = _get_store(request)
     decoded_tag = decode_tag(tag)
+    is_hydration = _is_hydration_request(request)
+    if is_hydration:
+        logger.info(
+            f"Hydrating tag {decoded_tag!r} in the background (table, view={view})"
+        )
 
-    def build() -> TableResponse:
+    def build(store: RecordStore) -> TableResponse:
         melted = store.get_table_entries(decoded_tag)
         if view == "melted":
             return TableResponse(
@@ -159,7 +194,12 @@ async def get_table(tag: str, view: TableView, request: Request) -> TableRespons
             available=True, columns=stats.columns, rows=stats.to_dicts()
         )
 
-    return _cached(request, ("table", view, tag), build)
+    async def resolve() -> TableResponse:
+        if is_hydration:
+            return await request.app.state.hydration_runner.run(build)
+        return build(_get_store(request))
+
+    return await _cached(request, ("table", view, tag), resolve)
 
 
 def _plain_list(value: Any) -> list[Any]:
@@ -230,10 +270,12 @@ async def get_plot(
     (`add_hline`/`add_vline`), not `data` traces, so it's naturally unaffected by the
     trace-level overrides below.
     """
-    store = _get_store(request)
     decoded_tag = decode_tag(tag)
+    is_hydration = _is_hydration_request(request)
+    if is_hydration:
+        logger.info(f"Hydrating tag {decoded_tag!r} in the background (plot)")
 
-    def build() -> PlotResponse:
+    def build(store: RecordStore) -> PlotResponse:
         format2d_records = store.get_records_of_type(Format2D, tag=decoded_tag)
         format2d = format2d_records[0] if format2d_records else None
 
@@ -285,8 +327,13 @@ async def get_plot(
 
         return PlotResponse(available=True, data=traces_json, layout=layout_json)
 
-    return _cached(
+    async def resolve() -> PlotResponse:
+        if is_hydration:
+            return await request.app.state.hydration_runner.run(build)
+        return build(_get_store(request))
+
+    return await _cached(
         request,
         ("plot", tag, line_mode, interp, hover, show_spike, max_points),
-        build,
+        resolve,
     )

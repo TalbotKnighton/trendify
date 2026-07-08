@@ -127,13 +127,3 @@ class TestHistogramEntryAddToPlotly:
         ).add_to_plotly(pf)
 
         assert len(_traces(pf)) == 2
-
-    def test_missing_style_logs_and_returns_the_figure_unchanged(self, caplog):
-        pf = PlotlyFigure.new(tag="t")
-        entry = HistogramEntry(tags=["t"], value=1.0, style=None)
-
-        result = entry.add_to_plotly(pf)
-
-        assert result is pf
-        assert len(_traces(pf)) == 0
-        assert "style is not defined" in caplog.text

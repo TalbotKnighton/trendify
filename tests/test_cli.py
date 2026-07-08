@@ -79,6 +79,36 @@ class TestGenerateCommand:
         with RecordStore.open(out_dir / "trendify.db", readonly=True) as store:
             assert len(store.get_records_of_type(Point2D)) == 3
 
+    def test_accepts_shell_pre_expanded_glob_as_bare_trailing_paths(
+        self, tmp_path: Path
+    ):
+        # Regression test: Git Bash/MSYS2 glob-expands wildcard arguments to native
+        # (non-MSYS) executables at process-spawn time, even when quoted in bash, turning
+        # an unquoted-looking `-i "data/*"` into `-i data/0 data/1 data/2`. Only the first
+        # value binds to `-i`, so the rest must still be picked up rather than rejected as
+        # unexpected extra arguments.
+        _make_run_dirs(tmp_path, 3)
+        run_dirs = sorted((tmp_path / "raw").iterdir())
+        gen_module = _write_generator_module(tmp_path / "gen.py")
+        out_dir = tmp_path / "out"
+
+        result = runner.invoke(
+            app,
+            [
+                "generate",
+                "-i",
+                *(str(d) for d in run_dirs),
+                "-g",
+                f"{gen_module}:generate",
+                "-o",
+                str(out_dir),
+            ],
+        )
+
+        assert result.exit_code == 0, result.output
+        with RecordStore.open(out_dir / "trendify.db", readonly=True) as store:
+            assert len(store.get_records_of_type(Point2D)) == 3
+
     def test_bad_record_generator_spec_errors(self, tmp_path: Path):
         glob_pattern = _make_run_dirs(tmp_path, 1)
         out_dir = tmp_path / "out"

@@ -39,6 +39,11 @@ class TagNode(BaseModel):
     record_kinds: list[Literal["plot", "table"]]
     """Kinds of records tagged with this exact node's `key`."""
 
+    size_bytes: int
+    """Total payload bytes of records tagged with this exact node's `key` (0 for a node with
+    no records of its own). Used by the viewer's background hydration to pick the largest
+    sibling tag at whatever level the user is currently browsing."""
+
     def search_blob(self) -> str:
         """
         Lowercase text of this node's label and every descendant's label, for substring
@@ -80,9 +85,9 @@ class _TrieNode:
 
 def _record_kinds(store: RecordStore, tag: Tag) -> list[Literal["plot", "table"]]:
     kinds: list[Literal["plot", "table"]] = []
-    if store.get_records_of_type(PlottableData2D, tag=tag):
+    if store.has_records(tag=tag, object_type=PlottableData2D):
         kinds.append("plot")
-    if store.get_table_entries(tag).height > 0:
+    if store.has_table_entries(tag):
         kinds.append("table")
     return kinds
 
@@ -118,6 +123,8 @@ def build_tag_tree(store: RecordStore) -> list[TagNode]:
         if node is not None:
             node.tag = tag
 
+    sizes = store.get_tag_byte_sizes()
+
     def to_nodes(level: dict[str, _TrieNode]) -> list[TagNode]:
         nodes = []
         for label, node in level.items():
@@ -129,6 +136,7 @@ def build_tag_tree(store: RecordStore) -> list[TagNode]:
                     children=to_nodes(node.children),
                     has_records=tag is not None,
                     record_kinds=_record_kinds(store, tag) if tag is not None else [],
+                    size_bytes=sizes.get(tag, 0) if tag is not None else 0,
                 )
             )
         # Two stable sorts: alphabetical first, then by category. The second sort's stability

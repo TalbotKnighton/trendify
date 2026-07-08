@@ -38,13 +38,13 @@ class HistogramStyle(HashableBase):
     histtype: Literal["bar", "step", "stepfilled"] = "stepfilled"
     """Histogram type corresponding to matplotlib argument of same name"""
 
-    alpha_edge: float = 0
+    alpha_edge: float = 1.0
     """Opacity of bar edge"""
 
     alpha_face: float = 0.3
     """Opacity of bar face"""
 
-    linewidth: float = 2
+    linewidth: float = 2.0
     """Line width of bar outline"""
 
     zorder: int = 1
@@ -213,17 +213,13 @@ class HistogramEntry(PlottableData2D):
     tags: Tags
     """Tags used to sort records"""
 
-    style: HistogramStyle | None = Field(default_factory=HistogramStyle)
+    style: HistogramStyle = Field(default_factory=HistogramStyle)
     """Style of histogram display"""
 
     model_config = ConfigDict(extra="forbid")
 
     def add_to_plotly(self, plotly_figure: PlotlyFigure) -> PlotlyFigure:
         """Add histogram entry to plotly figure, merging with existing traces if possible"""
-        if not self.style:
-            logger.error("HistogramEntry style is not defined.")
-            return plotly_figure
-
         # Create legend group key based on the label and color
         legend_key = (
             f"{self.style.label}_{self.style.rgba_face}" if self.style.label else None

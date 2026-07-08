@@ -9,6 +9,7 @@ import { plotView } from "./lib/plot-view";
 import { contentTabs } from "./lib/content-tabs";
 import { sidebarNode } from "./lib/sidebar-node";
 import { sidebarFilter } from "./lib/sidebar-filter";
+import { schedulePrefetch } from "./lib/prefetch";
 import { loadSelectionFromUrl, saveSelectionToUrl } from "./lib/url-state";
 import { installPlotlyToastBridge } from "./lib/plotly-toast-bridge";
 import type { ToastKind } from "./lib/toast";
@@ -63,6 +64,7 @@ document.addEventListener("alpine:init", () => {
         this.selectedTag = stored.tag;
         this.selectedRecordKinds = stored.recordKinds;
       }
+      schedulePrefetch(this.selectedTag);
       startConnectionMonitor({
         pingUrl: "/api/ping",
         intervalMs: 5000,
@@ -88,6 +90,7 @@ document.addEventListener("alpine:init", () => {
       this.selectedTag = detail.tag;
       this.selectedRecordKinds = detail.recordKinds;
       saveSelectionToUrl(detail.tag, detail.recordKinds);
+      schedulePrefetch(detail.tag);
       this.push(`Viewing ${formatTag(detail.tag)}`, "info", 2000);
     },
     async copyDbPath(path: string) {

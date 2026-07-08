@@ -18,6 +18,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from trendify.store.record_store import RecordStore
+from trendify.viewer.hydration import HydrationRunner
 from trendify.viewer.routes import api, pages
 
 __all__ = ["create_app", "create_app_from_env"]
@@ -59,6 +60,14 @@ def create_app(db_path: Path) -> FastAPI:
     `async def`, not `def`: FastAPI dispatches plain `def` handlers to a worker threadpool,
     which would hand the connection to yet another thread and raise `sqlite3.ProgrammingError`.
 
+    Those handlers also have no internal `await` points, so once one starts running it has the
+    event loop to itself until it returns -- fine for an ordinary click, but the viewer's
+    background-hydration feature (`routes.api`) deliberately fires additional, potentially
+    expensive requests for tags the user hasn't clicked yet, and those must not be able to
+    stall a real click behind them. `app.state.hydration_runner` (a `HydrationRunner`) gives
+    hydration-tagged requests their own worker thread and their own read-only store connection,
+    so they run genuinely concurrently with whatever the main thread is doing.
+
     Args:
         db_path (Path): path to the `.db` file to serve.
 
@@ -70,10 +79,12 @@ def create_app(db_path: Path) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.store = RecordStore.open(db_path, readonly=True)
+        app.state.hydration_runner = HydrationRunner(db_path)
         try:
             yield
         finally:
             app.state.store.close()
+            app.state.hydration_runner.close()
 
     app = FastAPI(title="trendify", version=_get_version(), lifespan=lifespan)
     app.state.response_cache = {}

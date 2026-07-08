@@ -117,7 +117,7 @@ def _render_tag_assets(
         renderer.filetype
     )
     save_path.parent.mkdir(parents=True, exist_ok=True)
-    logger.info(f"Saving to {save_path}")
+    logger.info(f"Saving to '{save_path}'")
     saf.savefig(save_path, dpi=renderer.dpi if isinstance(renderer, Rastered) else None)
     plt.close(saf.fig)
     logger.info(f"Finished plot for {tag = }")

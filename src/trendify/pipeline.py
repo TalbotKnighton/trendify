@@ -75,7 +75,7 @@ class TrendifyPipeline(BaseModel):
 
         """
         logger.info(
-            f"Rendering assets from {self.db_path} into {self.assets_dir} "
+            f"Rendering assets from '{self.db_path}' into '{self.assets_dir}' "
             f"({self.n_procs} worker process{'es' if self.n_procs > 1 else ''})"
         )
         render_assets(
@@ -83,7 +83,7 @@ class TrendifyPipeline(BaseModel):
             self.assets_dir,
             n_procs=self.n_procs,
         )
-        logger.info(f"Finished rendering assets into {self.assets_dir}")
+        logger.info(f"Finished rendering assets into '{self.assets_dir}'")
 
     def run(
         self,
@@ -98,11 +98,13 @@ class TrendifyPipeline(BaseModel):
             (int): total number of records written by `generate`
 
         """
-        logger.info(f"Running full pipeline (generate -> render) for {self.output_dir}")
+        logger.info(
+            f"Running full pipeline (generate -> render) for '{self.output_dir}'"
+        )
 
         total = self.generate(record_generator=record_generator, data_dirs=data_dirs)
 
         self.render()
 
-        logger.info(f"Finished full pipeline for {self.output_dir}")
+        logger.info(f"Finished full pipeline for '{self.output_dir}'")
         return total

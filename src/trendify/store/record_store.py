@@ -262,6 +262,25 @@ class RecordStore:
             )
         return {decode_tag(r["tag_key"]) for r in rows}
 
+    def get_tag_byte_sizes(self) -> dict[Tag, int]:
+        """
+        Total payload size in bytes for each tag, summed across every record carrying that
+        tag. A record with N tags counts its full payload size toward all N (matches how
+        `write_run` stores one payload row referenced by N `record_tags` rows, not divided
+        N ways). Backs the viewer's background-hydration prioritization (`viewer.tag_tree`),
+        which starts prefetching the largest tag at the level the user is browsing.
+
+        Returns:
+            (dict[Tag, int]): total payload bytes per tag
+
+        """
+        rows = self._conn.execute(
+            "SELECT rt.tag_key AS tag_key, SUM(LENGTH(r.payload)) AS size "
+            "FROM record_tags rt JOIN records r ON r.id = rt.record_id "
+            "GROUP BY rt.tag_key"
+        ).fetchall()
+        return {decode_tag(r["tag_key"]): r["size"] for r in rows}
+
     def tag_tree(self, object_type: type[Record] | None = None) -> list[Tag]:
         """
         Returns:
@@ -325,6 +344,19 @@ class RecordStore:
         """
         return list(self.get_records(tag=tag, object_type=object_type))
 
+    def has_records(
+        self, tag: Tag | None = None, object_type: type[Record] | None = None
+    ) -> bool:
+        """
+        Cheap existence check for `get_records`'s same `(tag, object_type)` filter: stops at
+        the first matching row instead of deserializing every one, for callers (like the
+        viewer's tag tree, `viewer.tag_tree._record_kinds`) that only need to know whether
+        *any* record matches, not what it is.
+        """
+        return (
+            next(self.get_records(tag=tag, object_type=object_type), None) is not None
+        )
+
     def get_table_entries(self, tag: Tag) -> pl.DataFrame:
         """
         Fetches `TableEntry` rows for `tag` directly from the `table_entries` table, skipping
@@ -378,3 +410,13 @@ class RecordStore:
                 "unit": pl.Utf8,
             },
         )
+
+    def has_table_entries(self, tag: Tag) -> bool:
+        """
+        Cheap existence check for `get_table_entries`'s same `tag` filter, without building a
+        `pl.DataFrame` (or resolving each row's value union) just to check whether it's empty.
+        """
+        row = self._conn.execute(
+            "SELECT 1 FROM table_entries WHERE tag_key = ? LIMIT 1", (encode_tag(tag),)
+        ).fetchone()
+        return row is not None

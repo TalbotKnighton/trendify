@@ -503,12 +503,6 @@ def _add_histogram_alpha_combinations(records: RecordList) -> None:
 
 def _add_histogram_style_edge_case_combinations(records: RecordList) -> None:
     rng = np.random.default_rng(seed=4)
-    for value in rng.normal(size=30):
-        HistogramEntry(
-            tags=[("histogram_style_edge_cases", "histogram_style_omitted")],
-            value=float(value),
-            style=None,
-        ).append_to_list(records)
 
     for value in rng.normal(loc=-1, scale=0.5, size=20):
         HistogramEntry(

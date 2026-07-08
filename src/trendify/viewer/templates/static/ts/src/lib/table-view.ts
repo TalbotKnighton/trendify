@@ -1,5 +1,5 @@
 import type { Api } from "datatables.net";
-import { getTable, type Tag, type TableView as TableViewKind } from "./api";
+import { getTable, isAbortError, type Tag, type TableView as TableViewKind } from "./api";
 import { loadTableViewFromUrl, saveTableViewToUrl } from "./url-state";
 import { loadJSON, saveJSON } from "./local-storage";
 
@@ -10,6 +10,7 @@ interface TableViewContext {
   view: TableViewKind;
   unavailable: boolean;
   requestId: number;
+  currentAbortController: AbortController | null;
   selectedTag: Tag | null;
   $watch(property: string, callback: (value: unknown) => void): void;
   $refs: Record<string, HTMLElement>;
@@ -29,6 +30,15 @@ function filtersStorageKey(tag: Tag, view: TableViewKind): string {
 /** Per-tag, so each table product remembers which tab (Melted/Pivot/Statistics) it was last on. */
 function viewStorageKey(tag: Tag): string {
   return `trendify:table-view:${JSON.stringify(tag)}`;
+}
+
+/**
+ * Same fallback `init()`'s `selectedTag` watcher below uses. Exported for reuse by
+ * prefetch.ts, which needs to warm the exact cache key (including any per-tag saved tab) that
+ * this view will actually request when the tag is clicked.
+ */
+export function resolveTableView(tag: Tag): TableViewKind {
+  return loadJSON<TableViewKind>(viewStorageKey(tag)) ?? "stats";
 }
 
 /** Adds a small draggable handle to the right edge of every header cell for manual column resize. */
@@ -121,6 +131,7 @@ export function tableView() {
     view: "stats" as TableViewKind,
     unavailable: false,
     requestId: 0,
+    currentAbortController: null as AbortController | null,
     setView(this: TableViewContext, view: TableViewKind) {
       this.view = view;
       saveTableViewToUrl(view);
@@ -134,11 +145,7 @@ export function tableView() {
 
       this.$watch("view", () => this.render());
       this.$watch("selectedTag", (tag) => {
-        const remembered =
-          tag !== null
-            ? loadJSON<TableViewKind>(viewStorageKey(tag as Tag))
-            : null;
-        this.setView(remembered ?? "stats");
+        this.setView(tag !== null ? resolveTableView(tag as Tag) : "stats");
       });
       this.render();
     },
@@ -149,7 +156,21 @@ export function tableView() {
       // Guards against out-of-order async resolution if the user switches tabs/tags again
       // before this fetch resolves -- only the most recently started render() may apply.
       const requestId = ++this.requestId;
-      const data = await getTable(tag, this.view);
+      // Cancelling the previous request (rather than just letting the requestId guard above
+      // ignore its result) frees up its connection/bandwidth immediately, same as plot-view.ts.
+      this.currentAbortController?.abort();
+      const controller = new AbortController();
+      this.currentAbortController = controller;
+
+      let data;
+      try {
+        data = await getTable(tag, this.view, { signal: controller.signal, priority: "high" });
+      } catch (err) {
+        // Expected whenever a newer render() aborts this one above -- the newer request
+        // already owns `unavailable`, so there's nothing to do here.
+        if (isAbortError(err)) return;
+        throw err;
+      }
       if (requestId !== this.requestId) return;
 
       const tableEl = this.$refs.table as HTMLTableElement;

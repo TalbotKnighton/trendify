@@ -5,7 +5,7 @@ function folderOpenStorageKey(path: string[]): string {
   return `trendify:folder-open:${JSON.stringify(path)}`;
 }
 
-function tagToParts(tag: Tag | null): string[] {
+export function tagToParts(tag: Tag | null): string[] {
   if (tag === null) return [];
   return Array.isArray(tag) ? tag.map(String) : [String(tag)];
 }

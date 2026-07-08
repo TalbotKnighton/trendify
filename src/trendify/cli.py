@@ -194,13 +194,23 @@ def _configure_logging(verbose: int, quiet: int, logo: bool = True) -> logging.L
     return setup_logger(level=level)
 
 
-def _resolve_input_directories(patterns: list[str]) -> list[Path]:
+def _resolve_input_directories(patterns: list[str], ctx: typer.Context) -> list[Path]:
     """
     Expands glob patterns (and plain paths) into a list of directories. A match on a file
     resolves to its parent directory.
+
+    `ctx.args` picks up bare paths that Click couldn't bind to `-i`/`--input-directories`
+    directly. Git Bash/MSYS2 glob-expands wildcard arguments to *native* (non-MSYS)
+    executables at process-spawn time, even when the argument was quoted in bash (bash
+    itself correctly leaves a quoted `*` alone, but MSYS's runtime re-expands it before the
+    native `trendify` executable ever sees argv). That turns `-i "data/*"` into
+    `-i data/1 data/2 data/3 ...`, but `-i` only consumes the one value immediately
+    following it, so `data/2`/`data/3`/etc. would otherwise be rejected as unexpected extra
+    arguments (the commands using this opt into that via
+    `context_settings={"allow_extra_args": True}`).
     """
     dirs: list[Path] = []
-    for pattern in patterns:
+    for pattern in [*patterns, *ctx.args]:
         for match in glob.glob(pattern, root_dir=Path.cwd(), recursive=True):
             path = Path(match)
             dirs.append((path.parent if path.is_file() else path).resolve())
@@ -222,7 +232,11 @@ def _resolve_record_generator(spec: str) -> RecordGenerator:
     Resolves a `"module:function"` / `"module:Class.method"` / `"/path/to/file.py:function"`
     spec string into a callable.
     """
-    module_path, _, attr_path = spec.partition(":")
+    # `rpartition` (not `partition`): a Windows absolute path's drive letter is itself a
+    # colon (`C:\...\gen.py:generate`), so splitting on the *first* colon mistakes the
+    # drive letter for the module/function separator. The attr path never contains a
+    # colon, so the *last* colon is always the real separator.
+    module_path, _, attr_path = spec.rpartition(":")
     if not attr_path:
         raise typer.BadParameter(
             f"{spec!r} must be in the form 'module:function' or 'path/to/file.py:function'"
@@ -249,7 +263,7 @@ def _resolve_record_generator(spec: str) -> RecordGenerator:
     return cast(RecordGenerator, obj)
 
 
-@app.command(name="generate")
+@app.command(name="generate", context_settings={"allow_extra_args": True})
 def generate(
     ctx: typer.Context,
     input_directories: list[str] = InputDirectoriesOption,
@@ -264,7 +278,7 @@ def generate(
     pipeline = TrendifyPipeline(output_dir=output_directory, n_procs=n_procs)
     _total = pipeline.generate(
         record_generator=_resolve_record_generator(record_generator),
-        data_dirs=_resolve_input_directories(input_directories),
+        data_dirs=_resolve_input_directories(input_directories, ctx),
     )
 
 
@@ -282,7 +296,7 @@ def render(
     typer.echo(f"Rendered assets to {pipeline.assets_dir}")
 
 
-@app.command(name="run")
+@app.command(name="run", context_settings={"allow_extra_args": True})
 def run(
     ctx: typer.Context,
     input_directories: list[str] = InputDirectoriesOption,
@@ -297,7 +311,7 @@ def run(
     pipeline = TrendifyPipeline(output_dir=output_directory, n_procs=n_procs)
     total = pipeline.run(
         record_generator=_resolve_record_generator(record_generator),
-        data_dirs=_resolve_input_directories(input_directories),
+        data_dirs=_resolve_input_directories(input_directories, ctx),
     )
     logger.info(f"Wrote {total} records; assets under {pipeline.assets_dir}")
 

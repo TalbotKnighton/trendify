@@ -1,4 +1,4 @@
-import { getPlot, type Tag } from "./api";
+import { getPlot, isAbortError, type Tag } from "./api";
 import type { PlotConfig } from "./plot-config.generated";
 import { loadJSON, saveJSON } from "./local-storage";
 import type { Data, Layout, PlotlyHTMLElement } from "plotly.js";
@@ -17,6 +17,7 @@ interface PlotViewContext {
   unavailable: boolean;
   loading: boolean;
   requestId: number;
+  currentAbortController: AbortController | null;
   historyStack: string[];
   historyIndex: number;
   isUndoing: boolean;
@@ -45,7 +46,9 @@ function configStorageKey(tag: Tag): string {
   return `trendify:plot-config:${JSON.stringify(tag)}`;
 }
 
-function loadConfigForTag(tag: Tag | null): PlotConfig {
+/** Exported for reuse by prefetch.ts, which needs to warm the exact cache key (including any
+ * per-tag saved settings) that this view will actually request when the tag is clicked. */
+export function loadConfigForTag(tag: Tag | null): PlotConfig {
   const saved = tag !== null ? loadJSON<Partial<PlotConfig>>(configStorageKey(tag)) : null;
   return { ...DEFAULT_CONFIG, ...(saved ?? {}) };
 }
@@ -118,6 +121,7 @@ export function plotView() {
     unavailable: false,
     loading: false,
     requestId: 0,
+    currentAbortController: null as AbortController | null,
     historyStack: [] as string[],
     historyIndex: -1,
     isUndoing: false,
@@ -214,9 +218,19 @@ export function plotView() {
 
       // Guards against out-of-order async resolution, same as `table-view.ts`'s `render()`.
       const requestId = ++this.requestId;
+      // Cancelling the previous tag's still-in-flight request (rather than just letting the
+      // requestId guard above ignore its result) frees up its connection/bandwidth immediately
+      // instead of leaving it to finish in the background -- this is what makes switching tags
+      // feel instant rather than queued behind whatever was already loading.
+      this.currentAbortController?.abort();
+      const controller = new AbortController();
+      this.currentAbortController = controller;
       this.loading = true;
       try {
-        const response = await getPlot(tag, this.config);
+        const response = await getPlot(tag, this.config, {
+          signal: controller.signal,
+          priority: "high",
+        });
         if (requestId !== this.requestId) return;
 
         this.unavailable = !response.available;
@@ -264,6 +278,10 @@ export function plotView() {
             }
           });
         }
+      } catch (err) {
+        // Expected whenever a newer render() aborts this one via currentAbortController above --
+        // the newer request already owns `loading`/`unavailable`, so there's nothing to do here.
+        if (!isAbortError(err)) throw err;
       } finally {
         // A stale in-flight request finishing after a newer one started must not clear the
         // spinner out from under the request that's still actually loading.

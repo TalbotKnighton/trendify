@@ -74,7 +74,7 @@ def _init_worker_with_logging(
 
 def _compute(run_dir: Path) -> tuple[Path, RecordList]:
     assert _worker_generator is not None
-    logger.info(f"Processing run_dir = {run_dir}")
+    logger.info(f"Processing run_dir = '{run_dir}'")
     return run_dir, _worker_generator(run_dir)
 
 
@@ -129,7 +129,7 @@ def generate_records(
                     for future in as_completed(futures):
                         run_dir, records = future.result()
                         total += store.write_run(run_dir, records)
-                        logger.info(f"Wrote records for run_dir = {run_dir}")
+                        logger.info(f"Wrote records for run_dir = '{run_dir}'")
             finally:
                 # Blocks until every already-queued log record has been dispatched, so worker
                 # log output isn't lost or interleaved with what follows.
@@ -139,7 +139,7 @@ def generate_records(
             for run_dir in sorted_dirs:
                 _, records = _compute(run_dir)
                 total += store.write_run(run_dir, records)
-                logger.info(f"Wrote records for run_dir = {run_dir}")
+                logger.info(f"Wrote records for run_dir = '{run_dir}'")
 
     logger.info(
         f"Finished generating Records: {total} records written across "

@@ -1,6 +1,7 @@
 """Tests for the viewing API."""
 
 import json
+import logging
 from pathlib import Path
 
 import pytest
@@ -79,10 +80,19 @@ class TestTagsApi:
 
         assert "group" in nodes
         assert nodes["group"]["has_records"] is False
+        assert nodes["group"]["size_bytes"] == 0
         [child] = nodes["group"]["children"]
         assert child["label"] == "trace"
         assert child["key"] == ["group", "trace"]
         assert child["record_kinds"] == ["plot"]
+        assert child["size_bytes"] > 0
+
+    def test_size_bytes_reflects_larger_payload(self, client: TestClient):
+        # "long" (a 20-point Trace2D) has a bigger JSON payload than "scatter" (a single
+        # Point2D), so its size_bytes should sort above it -- this is the signal the
+        # viewer's background hydration prioritizes on.
+        nodes = {n["label"]: n for n in client.get("/api/tags").json()}
+        assert nodes["long"]["size_bytes"] > nodes["scatter"]["size_bytes"]
 
     def test_response_is_cached(self, client: TestClient):
         first = client.get("/api/tags").json()
@@ -206,6 +216,66 @@ class TestPlotApi:
         response = client.get("/api/plot", params={"tag": json.dumps("nope")})
         assert response.status_code == 200
         assert response.json()["available"] is False
+
+
+class TestHydrationLogging:
+    def test_logs_when_hydrate_header_present(
+        self, client: TestClient, caplog: pytest.LogCaptureFixture
+    ):
+        with caplog.at_level(logging.INFO, logger="trendify.viewer.routes.api"):
+            client.get(
+                "/api/plot",
+                params={"tag": json.dumps("scatter")},
+                headers={"X-Trendify-Hydrate": "1"},
+            )
+        assert any("Hydrating tag" in r.message for r in caplog.records)
+
+    def test_no_log_without_header(
+        self, client: TestClient, caplog: pytest.LogCaptureFixture
+    ):
+        with caplog.at_level(logging.INFO, logger="trendify.viewer.routes.api"):
+            client.get("/api/plot", params={"tag": json.dumps("scatter")})
+        assert not any("Hydrating tag" in r.message for r in caplog.records)
+
+
+class TestHydrationRouting:
+    """
+    A hydration-tagged request runs against `HydrationRunner`'s separate store instead of
+    `_get_store`'s main one (see routes/api.py's `resolve()` in `get_plot`/`get_table`) -- these
+    confirm that alternate path still produces identical, correct results, not just that it
+    doesn't crash.
+    """
+
+    def test_hydrated_plot_matches_a_normal_request(self, client: TestClient):
+        # The hydration-tagged request goes first so it's the one that actually populates the
+        # response cache (i.e. this exercises the hydration_runner code path, not a cache hit).
+        hydrated = client.get(
+            "/api/plot",
+            params={"tag": json.dumps("scatter")},
+            headers={"X-Trendify-Hydrate": "1"},
+        ).json()
+        normal = client.get("/api/plot", params={"tag": json.dumps("scatter")}).json()
+        assert hydrated["available"] is True
+        assert hydrated == normal
+
+    def test_hydrated_table_matches_a_normal_request(self, client: TestClient):
+        hydrated = client.get(
+            "/api/table",
+            params={"tag": json.dumps("table"), "view": "stats"},
+            headers={"X-Trendify-Hydrate": "1"},
+        ).json()
+        normal = client.get(
+            "/api/table", params={"tag": json.dumps("table"), "view": "stats"}
+        ).json()
+        assert hydrated["available"] is True
+        assert hydrated == normal
+
+    def test_hydrated_tags_matches_a_normal_request(self, client: TestClient):
+        # prefetch.ts's tag-tree lookup is tagged as hydration too (not just the per-tag
+        # plot/table calls), since build_tag_tree itself can be nontrivial for a large tree.
+        hydrated = client.get("/api/tags", headers={"X-Trendify-Hydrate": "1"}).json()
+        normal = client.get("/api/tags").json()
+        assert hydrated == normal
 
 
 class TestStaticAssets:

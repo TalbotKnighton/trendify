@@ -101,6 +101,28 @@ class TestGetTags:
         assert depths == sorted(depths)
 
 
+class TestGetTagByteSizes:
+    def test_sums_payload_length_per_tag(self, store: RecordStore, tmp_path: Path):
+        store.write_run(tmp_path / "run1", _sample_records())
+        sizes = store.get_tag_byte_sizes()
+        assert set(sizes) == {"a", ("a", "b"), "tbl", "h"}
+        assert all(v > 0 for v in sizes.values())
+
+    def test_multi_tagged_record_counts_full_payload_toward_each_tag(
+        self, store: RecordStore, tmp_path: Path
+    ):
+        # A record with N tags backs one payload row referenced by N record_tags rows (see
+        # write_run), so its full payload size should count toward every one of its tags,
+        # not get divided N ways.
+        store.write_run(tmp_path / "run1", [Point2D(tags=["a", ("a", "b")], x=1, y=2)])
+        sizes = store.get_tag_byte_sizes()
+        (payload_len,) = store._conn.execute(
+            "SELECT LENGTH(payload) FROM records"
+        ).fetchone()
+        assert sizes["a"] == payload_len
+        assert sizes[("a", "b")] == payload_len
+
+
 class TestGetRecords:
     def test_filters_by_tag(self, store: RecordStore, tmp_path: Path):
         store.write_run(tmp_path / "run1", _sample_records())
@@ -143,6 +165,46 @@ class TestGetRecords:
         assert list(trace.x) == [0, 1, 2]
         assert list(trace.y) == [0, 1, 4]
         assert trace.pen.label == "hi"
+
+
+class TestHasRecords:
+    def test_matches_get_records_of_type_truthiness(
+        self, store: RecordStore, tmp_path: Path
+    ):
+        store.write_run(tmp_path / "run1", _sample_records())
+        assert store.has_records(tag="a", object_type=XYData) is True
+        assert store.has_records(tag="h", object_type=XYData) is False
+        assert store.has_records(tag="nope") is False
+
+    def test_only_deserializes_the_first_matching_record(
+        self, store: RecordStore, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        # has_records's whole point over get_records_of_type(...) truthiness is stopping at
+        # the first match instead of deserializing every one -- assert it only ever touches one,
+        # even though "many" has 50 matching records.
+        store.write_run(
+            tmp_path / "run1",
+            [Point2D(tags=["many"], x=float(i), y=float(i)) for i in range(50)],
+        )
+        original_deserialize = Record.deserialize
+        calls: list[str] = []
+
+        def counting_deserialize(record_type: str, payload: str):
+            calls.append(record_type)
+            return original_deserialize(record_type, payload)
+
+        monkeypatch.setattr(Record, "deserialize", staticmethod(counting_deserialize))
+        assert store.has_records(tag="many") is True
+        assert len(calls) == 1
+
+
+class TestHasTableEntries:
+    def test_matches_get_table_entries_truthiness(
+        self, store: RecordStore, tmp_path: Path
+    ):
+        store.write_run(tmp_path / "run1", _sample_records())
+        assert store.has_table_entries("tbl") is True
+        assert store.has_table_entries("nope") is False
 
 
 class TestFormat2DUpsert:
