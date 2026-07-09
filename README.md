@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="Trendify" src="assets/read-me-banner.png" style="width: 100%">
+    <img alt="Trendify" src="https://raw.githubusercontent.com/TalbotKnighton/trendify/refs/heads/main/docs/assets/read-me-banner.png" style="width: 100%">
 </p>
 
 # trendify: Efficient Plotting and Table Building
