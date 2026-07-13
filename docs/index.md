@@ -14,7 +14,7 @@ hide:
 </style>
 
 <p align="center" class="splash">
-    <img alt="Trendify" src="assets/read-me-banner.svg" style="width: 100%">
+    <img alt="Trendify" src="./assets/read-me-banner.svg" style="width: 100%">
 </p>
 
 # trendify: Efficient Plotting and Table Building

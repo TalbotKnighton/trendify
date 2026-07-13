@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate coverage report
         if: matrix.python-version == '3.14' && github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: uv run --python ${{ matrix.python-version }} --group dev pytest --cov=stochas --cov-report=xml
+        run: uv run --python ${{ matrix.python-version }} --group dev pytest --cov=trendify --cov-report=xml
 
       - name: Generate coverage badge
         if: matrix.python-version == '3.14' && github.event_name == 'push' && github.ref == 'refs/heads/main'
