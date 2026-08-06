@@ -7,14 +7,12 @@ on:
   pull_request:
     branches: ["main"] # Run tests on PRs
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
   test:
     name: "Test (Python ${{ matrix.python-version }})"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       matrix:
         python-version: ["3.12", "3.13", "3.14"]
