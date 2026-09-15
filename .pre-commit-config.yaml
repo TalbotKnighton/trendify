@@ -37,3 +37,12 @@ repos:
         stages: [pre-push]
         pass_filenames: false
         files: ^(src/|tests/|pyproject\.toml|uv\.lock)
+  - repo: local
+    hooks:
+      - id: verify-changelog-tag
+        name: Verify CHANGELOG.md entry and date for current tag push
+        entry: python scripts/verify_changelog_by_tag.py
+        language: python
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true
