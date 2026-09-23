@@ -17,6 +17,7 @@ watch:
 
 nav:
   - Home: index.md
+  - Changelog: changelog.md
   - User Guide: user-guide.md
   - Code Reference:
       - reference/trendify/index.md
